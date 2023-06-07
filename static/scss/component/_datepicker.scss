@@ -1,0 +1,415 @@
+/*****************************************************************
+jq-Datepicker
+*****************************************************************/
+.ui-datepicker-trigger,
+.ui-swiper-datepicker-btn {
+  @include text-blind;
+  position: absolute;
+  top: 0;
+  right: 1.1rem;
+  width: 2.4rem;
+  height: 4.6rem;
+  overflow: hidden;
+  @include bg-etc(2.4rem auto, center center);
+  @include ico-calendar;
+}
+.ui-widget {
+  font-size: 1.1em;
+  .ui-widget {
+    font-size: 1em;
+  }
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 1em;
+  }
+}
+.ui-icon {
+  display: block;
+  @include text-blind;
+  overflow: hidden;
+  background-repeat: no-repeat;
+}
+.datepicker-dimmed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  @include dimm;
+  z-index: 299;
+}
+.ui-datepicker {
+  position: relative;
+  padding: 0 1.5rem;
+  background: #ffffff;
+  &:not(.ui-datepicker-inline) {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    width: 32rem;
+    display: none;
+    padding: 2rem 2rem 2rem;
+    transform: translateY(-50%);
+    margin-left: -16rem;
+    z-index: 300 !important;
+    border-radius: 0;
+    border: 0 none;
+    border-radius: 0.8rem;
+    overflow: hidden;
+  }
+  .swipe-arr {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 5.3rem;
+    overflow: hidden;
+    opacity: 0.08;
+    .txt {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #ededed;
+      text-align: center;
+    }
+    .arr {
+      position: absolute;
+      width: 4rem;
+      height: 4rem;
+      @include bg-etc;
+      // background: url(../images/common/icon-calendar-swiper.png) no-repeat left top / 5rem auto;
+      animation-duration: 1.5s;
+      animation-timing-function: ease;
+      &.top,
+      &.bottom {
+        left: 50%;
+        margin-left: -2rem;
+      }
+      &.top {
+        top: 2rem;
+        animation-name: bounceInDown;
+        // background-position: 0 -5rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)'%3E%3Cpath d='M 66.878 37.366 c -0.781 -0.781 -2.047 -0.781 -2.828 0 L 47 54.415 V 2 c 0 -1.104 -0.896 -2 -2 -2 s -2 0.896 -2 2 v 52.415 L 25.95 37.366 c -0.78 -0.781 -2.048 -0.781 -2.828 0 c -0.781 0.781 -0.781 2.047 0 2.828 l 20.463 20.462 c 0.093 0.094 0.196 0.177 0.307 0.251 c 0.048 0.032 0.099 0.053 0.148 0.081 c 0.065 0.036 0.127 0.075 0.196 0.103 c 0.065 0.027 0.133 0.042 0.2 0.062 c 0.058 0.017 0.113 0.039 0.173 0.051 c 0.129 0.026 0.26 0.039 0.392 0.039 s 0.262 -0.014 0.392 -0.039 c 0.06 -0.012 0.115 -0.034 0.173 -0.051 c 0.067 -0.02 0.135 -0.035 0.2 -0.062 c 0.069 -0.028 0.131 -0.067 0.196 -0.103 c 0.049 -0.027 0.101 -0.049 0.148 -0.081 c 0.11 -0.074 0.213 -0.157 0.307 -0.251 l 20.463 -20.462 C 67.659 39.413 67.659 38.146 66.878 37.366 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3Cpath d='M 45 90 C 20.187 90 0 69.813 0 45 C 0 26.412 11.681 9.498 29.066 2.913 c 1.034 -0.393 2.188 0.129 2.579 1.162 c 0.392 1.033 -0.129 2.188 -1.162 2.579 C 14.643 12.653 4 28.064 4 45 c 0 22.607 18.393 41 41 41 s 41 -18.393 41 -41 c 0 -16.936 -10.643 -32.347 -26.483 -38.347 c -1.033 -0.391 -1.554 -1.545 -1.162 -2.579 c 0.391 -1.033 1.548 -1.553 2.578 -1.162 C 78.319 9.498 90 26.412 90 45 C 90 69.813 69.813 90 45 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+      }
+      &.bottom {
+        bottom: 2rem;
+        animation-name: bounceInUp;
+        // background-position: 0 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81) matrix(1 0 0 -1 0 90)'%3E%3Cpath d='M 66.878 37.366 c -0.781 -0.781 -2.047 -0.781 -2.828 0 L 47 54.415 V 2 c 0 -1.104 -0.896 -2 -2 -2 s -2 0.896 -2 2 v 52.415 L 25.95 37.366 c -0.78 -0.781 -2.048 -0.781 -2.828 0 c -0.781 0.781 -0.781 2.047 0 2.828 l 20.463 20.462 c 0.093 0.094 0.196 0.177 0.307 0.251 c 0.048 0.032 0.099 0.053 0.148 0.081 c 0.065 0.036 0.127 0.075 0.196 0.103 c 0.065 0.027 0.133 0.042 0.2 0.062 c 0.058 0.017 0.113 0.039 0.173 0.051 c 0.129 0.026 0.26 0.039 0.392 0.039 s 0.262 -0.014 0.392 -0.039 c 0.06 -0.012 0.115 -0.034 0.173 -0.051 c 0.067 -0.02 0.135 -0.035 0.2 -0.062 c 0.069 -0.028 0.131 -0.067 0.196 -0.103 c 0.049 -0.027 0.101 -0.049 0.148 -0.081 c 0.11 -0.074 0.213 -0.157 0.307 -0.251 l 20.463 -20.462 C 67.659 39.413 67.659 38.146 66.878 37.366 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3Cpath d='M 45 90 C 20.187 90 0 69.813 0 45 C 0 26.412 11.681 9.498 29.066 2.913 c 1.034 -0.393 2.188 0.129 2.579 1.162 c 0.392 1.033 -0.129 2.188 -1.162 2.579 C 14.643 12.653 4 28.064 4 45 c 0 22.607 18.393 41 41 41 s 41 -18.393 41 -41 c 0 -16.936 -10.643 -32.347 -26.483 -38.347 c -1.033 -0.391 -1.554 -1.545 -1.162 -2.579 c 0.391 -1.033 1.548 -1.553 2.578 -1.162 C 78.319 9.498 90 26.412 90 45 C 90 69.813 69.813 90 45 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+      }
+      &.left,
+      &.right {
+        top: 50%;
+        margin-top: -2rem;
+      }
+      &.left {
+        left: 2rem;
+        animation-name: bounceInLeft;
+        // background-position: 0 -15rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(1.4065934065934158 254.59340659340654) rotate(-90) scale(2.81 2.81)'%3E%3Cpath d='M 66.878 37.366 c -0.781 -0.781 -2.047 -0.781 -2.828 0 L 47 54.415 V 2 c 0 -1.104 -0.896 -2 -2 -2 s -2 0.896 -2 2 v 52.415 L 25.95 37.366 c -0.78 -0.781 -2.048 -0.781 -2.828 0 c -0.781 0.781 -0.781 2.047 0 2.828 l 20.463 20.462 c 0.093 0.094 0.196 0.177 0.307 0.251 c 0.048 0.032 0.099 0.053 0.148 0.081 c 0.065 0.036 0.127 0.075 0.196 0.103 c 0.065 0.027 0.133 0.042 0.2 0.062 c 0.058 0.017 0.113 0.039 0.173 0.051 c 0.129 0.026 0.26 0.039 0.392 0.039 s 0.262 -0.014 0.392 -0.039 c 0.06 -0.012 0.115 -0.034 0.173 -0.051 c 0.067 -0.02 0.135 -0.035 0.2 -0.062 c 0.069 -0.028 0.131 -0.067 0.196 -0.103 c 0.049 -0.027 0.101 -0.049 0.148 -0.081 c 0.11 -0.074 0.213 -0.157 0.307 -0.251 l 20.463 -20.462 C 67.659 39.413 67.659 38.146 66.878 37.366 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3Cpath d='M 45 90 C 20.187 90 0 69.813 0 45 C 0 26.412 11.681 9.498 29.066 2.913 c 1.034 -0.393 2.188 0.129 2.579 1.162 c 0.392 1.033 -0.129 2.188 -1.162 2.579 C 14.643 12.653 4 28.064 4 45 c 0 22.607 18.393 41 41 41 s 41 -18.393 41 -41 c 0 -16.936 -10.643 -32.347 -26.483 -38.347 c -1.033 -0.391 -1.554 -1.545 -1.162 -2.579 c 0.391 -1.033 1.548 -1.553 2.578 -1.162 C 78.319 9.498 90 26.412 90 45 C 90 69.813 69.813 90 45 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+      }
+      &.right {
+        right: 2rem;
+        animation-name: bounceInRight;
+        // background-position: 0 -10rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(1.4065934065933874 254.5934065934066) rotate(-90) scale(2.81 2.81) matrix(1 0 0 -1 0 90)'%3E%3Cpath d='M 66.878 37.366 c -0.781 -0.781 -2.047 -0.781 -2.828 0 L 47 54.415 V 2 c 0 -1.104 -0.896 -2 -2 -2 s -2 0.896 -2 2 v 52.415 L 25.95 37.366 c -0.78 -0.781 -2.048 -0.781 -2.828 0 c -0.781 0.781 -0.781 2.047 0 2.828 l 20.463 20.462 c 0.093 0.094 0.196 0.177 0.307 0.251 c 0.048 0.032 0.099 0.053 0.148 0.081 c 0.065 0.036 0.127 0.075 0.196 0.103 c 0.065 0.027 0.133 0.042 0.2 0.062 c 0.058 0.017 0.113 0.039 0.173 0.051 c 0.129 0.026 0.26 0.039 0.392 0.039 s 0.262 -0.014 0.392 -0.039 c 0.06 -0.012 0.115 -0.034 0.173 -0.051 c 0.067 -0.02 0.135 -0.035 0.2 -0.062 c 0.069 -0.028 0.131 -0.067 0.196 -0.103 c 0.049 -0.027 0.101 -0.049 0.148 -0.081 c 0.11 -0.074 0.213 -0.157 0.307 -0.251 l 20.463 -20.462 C 67.659 39.413 67.659 38.146 66.878 37.366 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3Cpath d='M 45 90 C 20.187 90 0 69.813 0 45 C 0 26.412 11.681 9.498 29.066 2.913 c 1.034 -0.393 2.188 0.129 2.579 1.162 c 0.392 1.033 -0.129 2.188 -1.162 2.579 C 14.643 12.653 4 28.064 4 45 c 0 22.607 18.393 41 41 41 s 41 -18.393 41 -41 c 0 -16.936 -10.643 -32.347 -26.483 -38.347 c -1.033 -0.391 -1.554 -1.545 -1.162 -2.579 c 0.391 -1.033 1.548 -1.553 2.578 -1.162 C 78.319 9.498 90 26.412 90 45 C 90 69.813 69.813 90 45 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+      }
+      &.off {
+        opacity: 0;
+        animation: none;
+      }
+    }
+  }
+  &.add-guide .swipe-arr {
+    bottom: 5rem;
+  }
+  .ui-datepicker-header {
+    position: relative;
+    display: flex;
+    height: 4.8rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    .ui-state-disabled {
+      opacity: 0.3;
+    }
+  }
+  .ui-datepicker-prev-y,
+  .ui-datepicker-next-y,
+  .ui-datepicker-prev,
+  .ui-datepicker-next {
+    display: block;
+    padding: 0;
+    width: 2.4rem;
+    height: 4.8rem;
+    background: none !important;
+    border-radius: 0;
+    overflow: hidden;
+    text-align: center;
+    z-index: 1;
+    span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      @include text-blind;
+      @include bg-etc;
+    }
+  }
+  .ui-datepicker-prev-y {
+    order: 1;
+    span {
+      //background-image: url(../images/icon/btn-datepicker-prev-y.png);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(254.59340659340654 254.59340659340654) rotate(180) scale(2.81 2.81) matrix(1 0 0 -1 0 90)'%3E%3Cpath d='M 33.25 90 c -0.384 0 -0.768 -0.146 -1.061 -0.439 c -0.586 -0.586 -0.586 -1.535 0 -2.121 L 74.629 45 L 32.189 2.561 c -0.586 -0.585 -0.586 -1.536 0 -2.121 c 0.586 -0.586 1.535 -0.586 2.121 0 l 43.5 43.5 c 0.586 0.585 0.586 1.536 0 2.121 l -43.5 43.5 C 34.018 89.854 33.634 90 33.25 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(29,29,27); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3Cpath d='M 13.25 90 c -0.384 0 -0.768 -0.146 -1.061 -0.439 c -0.586 -0.586 -0.586 -1.535 0 -2.121 L 54.629 45 L 12.189 2.561 c -0.586 -0.585 -0.586 -1.536 0 -2.121 c 0.586 -0.586 1.535 -0.586 2.121 0 l 43.5 43.5 c 0.586 0.585 0.586 1.536 0 2.121 l -43.5 43.5 C 14.018 89.854 13.634 90 13.25 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(29,29,27); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+    }
+  }
+  .ui-datepicker-prev {
+    order: 2;
+    span {
+      // background-image: url(../images/icon/btn-datepicker-prev.png);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(254.59340659340654 254.59340659340654) rotate(180) scale(2.81 2.81) matrix(1 0 0 -1 0 90)'%3E%3Cpath d='M 23.25 90 c -0.384 0 -0.768 -0.146 -1.061 -0.439 c -0.586 -0.586 -0.586 -1.535 0 -2.121 L 64.629 45 L 22.189 2.561 c -0.586 -0.585 -0.586 -1.536 0 -2.121 c 0.586 -0.586 1.535 -0.586 2.121 0 l 43.5 43.5 c 0.586 0.585 0.586 1.536 0 2.121 l -43.5 43.5 C 24.018 89.854 23.634 90 23.25 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(29,29,27); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+    }
+  }
+  .ui-datepicker-next {
+    order: 4;
+    span {
+      // background-image: url(../images/icon/btn-datepicker-next.png);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)'%3E%3Cpath d='M 23.25 90 c -0.384 0 -0.768 -0.146 -1.061 -0.439 c -0.586 -0.586 -0.586 -1.535 0 -2.121 L 64.629 45 L 22.189 2.561 c -0.586 -0.585 -0.586 -1.536 0 -2.121 c 0.586 -0.586 1.535 -0.586 2.121 0 l 43.5 43.5 c 0.586 0.585 0.586 1.536 0 2.121 l -43.5 43.5 C 24.018 89.854 23.634 90 23.25 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(29,29,27); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+    }
+  }
+  .ui-datepicker-next-y {
+    order: 5;
+    span {
+      // background-image: url(../images/icon/btn-datepicker-next-y.png);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' width='256' height='256' viewBox='0 0 256 256' xml:space='preserve'%3E%3Cdefs%3E%3C/defs%3E%3Cg style='stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;' transform='translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)'%3E%3Cpath d='M 33.25 90 c -0.384 0 -0.768 -0.146 -1.061 -0.439 c -0.586 -0.586 -0.586 -1.535 0 -2.121 L 74.629 45 L 32.189 2.561 c -0.586 -0.585 -0.586 -1.536 0 -2.121 c 0.586 -0.586 1.535 -0.586 2.121 0 l 43.5 43.5 c 0.586 0.585 0.586 1.536 0 2.121 l -43.5 43.5 C 34.018 89.854 33.634 90 33.25 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(29,29,27); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3Cpath d='M 13.25 90 c -0.384 0 -0.768 -0.146 -1.061 -0.439 c -0.586 -0.586 -0.586 -1.535 0 -2.121 L 54.629 45 L 12.189 2.561 c -0.586 -0.585 -0.586 -1.536 0 -2.121 c 0.586 -0.586 1.535 -0.586 2.121 0 l 43.5 43.5 c 0.586 0.585 0.586 1.536 0 2.121 l -43.5 43.5 C 14.018 89.854 13.634 90 13.25 90 z' style='stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(29,29,27); fill-rule: nonzero; opacity: 1;' transform=' matrix(1 0 0 1 0 0) ' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+    }
+  }
+
+  .ui-datepicker-title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    line-height: 4.8rem;
+    height: 4.8rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 500;
+    order: 3;
+    z-index: 1;
+    margin: 0 2rem;
+    select {
+      background: transparent;
+      font-size: 1.8rem;
+      margin: 0;
+      width: auto;
+      height: 4.8rem;
+      line-height: 4.8rem;
+      padding: 0;
+      border: 0 none;
+      color: var(--strong-txt-color);
+      vertical-align: top;
+      font-weight: 500;
+      text-align: left;
+      appearance: none;
+      option {
+        color: var(--strong-txt-color);
+      }
+      &.ui-datepicker-month,
+      &.ui-datepicker-year {
+        width: auto;
+      }
+      &.ui-datepicker-year {
+        text-align: right;
+      }
+    }
+  }
+  .ui-datepicker-calendar {
+    width: 100%;
+    font-size: 1.5rem;
+    border-collapse: collapse;
+    position: relative;
+    z-index: 1;
+    th {
+      height: 4rem;
+      padding-bottom: 0.4rem;
+      text-align: center;
+      font-size: 1.3rem;
+      border: 0 none;
+      font-weight: normal;
+    }
+    td {
+      height: 4rem;
+      margin: 0;
+      padding: 0;
+      border: 0 none;
+      font-size: 1.4rem;
+      text-align: center;
+      white-space: nowrap;
+      font-weight: 500;
+      span,
+      a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.6rem;
+        height: 3.6rem;
+        font-size: 1.4rem;
+        color: var(--strong-txt-color);
+        text-decoration: none;
+        border-radius: 50%;
+        margin: 0 auto;
+      }
+    }
+    .ui-datepicker-week-end {
+      span,
+      a {
+        color: #0075c5;
+      }
+      &:first-child {
+        span,
+        a {
+          color: #f0431a;
+        }
+      }
+    }
+    .ui-state-disabled .ui-state-default {
+      opacity: 0.3;
+    }
+    .ui-state-default {
+      &.ui-state-highlight {
+        border: 0.1rem solid var(--strong-txt-color);
+        background-color: var(--strong-txt-color);
+        font-weight: bold;
+        color: #fff !important;
+      }
+      &.ui-priority-secondary {
+        opacity: 0.5;
+      }
+      &.ui-state-hover {
+        border-color: #000;
+        background-color: #000;
+        color: #fff !important;
+      }
+      &.ui-state-active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #fff !important;
+      }
+    }
+  }
+  .ui-datepicker-buttonpane {
+    background: none;
+    border: none;
+    button {
+      display: block;
+      position: absolute;
+      top: 3.6rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      cursor: pointer;
+      z-index: 2;
+      &.ui-datepicker-current {
+        display: none;
+        left: 2rem;
+
+        font-size: 1.3rem;
+        line-height: 2.5rem;
+        text-align: center;
+        background: none;
+      }
+    }
+  }
+}
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-close {
+  display: none;
+  top: 3.2rem;
+  right: 2rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  @include text-blind;
+  @include bg-etc;
+  // background-image: url(../images/icon/btn-close-24.png);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5.98954 4.67878C5.69665 4.38588 5.22178 4.38588 4.92888 4.67878C4.63599 4.97167 4.63599 5.44654 4.92888 5.73944L10.9395 11.75L4.92884 17.7606C4.63594 18.0535 4.63594 18.5284 4.92884 18.8213C5.22173 19.1142 5.6966 19.1142 5.9895 18.8213L12.0001 12.8107L18.0104 18.8209C18.3033 19.1138 18.7781 19.1138 19.071 18.8209C19.3639 18.528 19.3639 18.0531 19.071 17.7603L13.0608 11.75L19.071 5.73981C19.3639 5.44692 19.3639 4.97204 19.071 4.67915C18.7781 4.38626 18.3032 4.38626 18.0103 4.67915L12.0001 10.6893L5.98954 4.67878Z' fill='%23222222'/%3E%3C/svg%3E");
+}
+
+/* with multiple calendars */
+.ui-datepicker-multi {
+  &.ui-datepicker {
+    width: auto;
+  }
+  .ui-datepicker-group {
+    float: left;
+  }
+  .ui-datepicker-group table {
+    width: 95%;
+    margin: 0 auto 0.4em;
+  }
+  .ui-datepicker-group-last .ui-datepicker-header,
+  .ui-datepicker-group-middle .ui-datepicker-header {
+    border-left-width: 0;
+  }
+  .ui-datepicker-buttonpane {
+    clear: left;
+  }
+}
+.ui-datepicker-multi-2 .ui-datepicker-group {
+  width: 50%;
+}
+.ui-datepicker-multi-3 .ui-datepicker-group {
+  width: 33.3%;
+}
+.ui-datepicker-multi-4 .ui-datepicker-group {
+  width: 25%;
+}
+.ui-datepicker-row-break {
+  clear: both;
+  width: 100%;
+  font-size: 0;
+}
+
+/* RTL support */
+.ui-datepicker-rtl {
+  direction: rtl;
+  .ui-datepicker-prev {
+    right: 0.2rem;
+    left: auto;
+    &:hover {
+      right: 0.1rem;
+      left: auto;
+    }
+  }
+  .ui-datepicker-next {
+    left: 0.2rem;
+    right: auto;
+    &:hover {
+      left: 0.1rem;
+      right: auto;
+    }
+  }
+  .ui-datepicker-buttonpane {
+    clear: right;
+    button {
+      float: left;
+    }
+  }
+  .ui-datepicker-buttonpane button.ui-datepicker-current,
+  .ui-datepicker-group {
+    float: right;
+  }
+  .ui-datepicker-group-last .ui-datepicker-header,
+  .ui-datepicker-group-middle .ui-datepicker-header {
+    border-right-width: 0;
+    border-left-width: 0.1rem;
+  }
+}
+.datepicker-guide {
+  height: 5rem;
+  padding: 0.9rem 2rem;
+  margin: 2.5rem -2rem -2rem;
+  font-size: 1.1rem;
+  text-align: center;
+  background: #f0f0f0;
+}

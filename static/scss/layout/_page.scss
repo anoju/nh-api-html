@@ -1,0 +1,35 @@
+.page {
+  position: relative;
+  display: flex;
+  min-height: -vh(100);
+  flex-direction: column;
+  background-color: #fff;
+  @include web-center;
+}
+@include media-min-width($max-window-width) {
+  body {
+    background-color: #fafafa;
+  }
+  .page {
+    background-color: #fff;
+  }
+}
+
+// lock
+// html.lock,
+// .lock body {
+//   height: -vh(100);
+//   overflow: hidden;
+//   -webkit-overflow-scrolling: none;
+// }
+.page.lock-wrap {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  -webkit-overflow-scrolling: none;
+  @include media-min-width($max-window-width) {
+    @include web-center-fixed;
+    width: 102.4rem;
+  }
+}

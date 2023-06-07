@@ -1,0 +1,441 @@
+// 탭
+.tab-line {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+  .tab-line-moving & {
+    transition: 0.3s;
+  }
+  &.ty2 {
+    right: 100%;
+    width: auto;
+  }
+}
+.tab-inner {
+  position: relative;
+  @include scroll-x;
+  @include scroll-hide;
+}
+.tab-list {
+  position: relative;
+  display: inline-flex;
+  min-width: 100%;
+  white-space: nowrap;
+  text-align: center;
+}
+.tab-navi-menu {
+  .section & {
+    @include outer;
+  }
+  position: relative;
+  height: 5rem;
+  background: #fff;
+  border-bottom: 0.1rem solid #ddd;
+  transition: box-shadow 0.3s, transform 0.3s;
+  &.tab-fixed,
+  &.pop-fixed {
+    position: sticky;
+    top: 4rem;
+    z-index: 10;
+  }
+  // &.top-fixed,
+  // &.pop-top-fixed {
+  // @include dimm-white;
+  //}
+  .tab-line {
+    z-index: 1;
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 1.1rem;
+      left: 50%;
+      width: 0.4rem;
+      height: 0.4rem;
+      margin-left: -0.2rem;
+      border-radius: 50%;
+      background: var(--primary-color);
+    }
+  }
+  .tab-list {
+    padding: 0 1.2rem;
+  }
+  .tab {
+    width: 100%;
+    position: relative;
+    text-align: center;
+    & > a {
+      position: relative;
+      display: block;
+      padding: 1rem 0.8rem 1.7rem;
+      height: 5rem;
+      text-align: center;
+      color: var(--strong-txt-color2);
+      font-weight: 500;
+      font-size: 1.5rem;
+      line-height: 2.2rem;
+      overflow: hidden;
+      transition: 0.3s;
+    }
+    &.active > a {
+      color: var(--primary-color);
+    }
+  }
+  .tab-expand-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 3.4rem;
+    height: calc(100% - 0.1rem);
+    background: #fff;
+    z-index: 1;
+    // box-shadow: -1rem 0 1rem rgba(255,255,255,1);
+    &:before {
+      content: '';
+      position: absolute;
+      right: 100%;
+      top: 0;
+      width: 2rem;
+      height: 100%;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 50%, #fff 100%);
+      pointer-events: none;
+    }
+    button {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      &:before {
+        content: '';
+        display: block;
+        width: 2.4rem;
+        height: 2.4rem;
+        margin-top: -0.5rem;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M18.707 8.2929C19.0977 8.6834 19.0977 9.31658 18.707 9.70708L12.3428 16.0711C12.1426 16.2717 11.8774 16.3692 11.6147 16.3637C11.3521 16.3692 11.0869 16.2717 10.8867 16.0711L4.52246 9.70709C4.13184 9.31658 4.13184 8.6834 4.52246 8.2929C4.91309 7.90237 5.54639 7.90237 5.93652 8.2929L11.6147 13.9708L17.293 8.2929C17.6831 7.90237 18.3164 7.90237 18.707 8.2929Z' fill='%23666666'/%3E%3C/svg%3E") no-repeat center center / contain;
+        @include rotateZ(0);
+        transition: 0.3s;
+      }
+      &.on {
+        opacity: 1;
+        &:before {
+          @include rotateZ(180);
+        }
+      }
+    }
+  }
+  .tab-expand {
+    position: absolute;
+    top: 4.9rem;
+    left: 0;
+    width: 100%;
+    border-top: 0.1rem solid #eee;
+    background: #f7f7f7;
+    box-shadow: 0 1rem 1rem 0 rgba(0, 0, 0, 0.2);
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 1.6rem 1.8rem;
+      li {
+        padding: 0.4rem 0.6rem;
+        a {
+          font-size: 1.5rem;
+          font-weight: 500;
+          color: var(--strong-txt-color2);
+        }
+        &.active {
+          a {
+            color: var(--primary-color);
+          }
+        }
+      }
+    }
+  }
+  &.scroll-able {
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2rem;
+      height: 100%;
+      background-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 50%, #fff 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .tab-list {
+      padding-right: 4.6rem;
+    }
+  }
+}
+.tab-panels {
+  &.transition {
+    overflow: hidden;
+    transition: height 0.3s ease-out;
+  }
+}
+.tab-panel {
+  display: none;
+  &.active {
+    display: block;
+    &.flex {
+      display: flex;
+    }
+  }
+}
+.tab-swipe-panels {
+  .section & {
+    @include outer;
+    .tab-panel {
+      padding: 0 var(--base-padding);
+    }
+  }
+  .tab-panel {
+    display: block;
+  }
+  .swiper-pagination {
+    display: none;
+  }
+}
+
+.tab-box-menu {
+  position: relative;
+  .section & {
+    @include outer;
+  }
+  .tab-line {
+    border: 0.1rem solid #222;
+    background: #fff;
+    border-radius: 0.4rem;
+    height: 100%;
+    z-index: 1;
+  }
+  .tab-list {
+    padding: 0 var(--base-padding);
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: var(--base-padding);
+      top: 0;
+      right: var(--base-padding);
+      bottom: 0;
+      border: 0.1rem solid #ddd;
+      border-radius: 0.4rem;
+      background: #f8f8f8;
+      border-radius: 0.4rem;
+    }
+  }
+  .tab {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+    & > a {
+      position: relative;
+      display: block;
+      padding: 1.2rem 1rem;
+      text-align: center;
+
+      font-size: 1.5rem;
+      line-height: 2.4rem;
+      overflow: hidden;
+      transition: color 0.3s;
+    }
+    &.active > a {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--strong-txt-color);
+    }
+  }
+  .section &.scroll-able {
+    @include outer;
+  }
+}
+
+.tab-line-menu {
+  position: relative;
+  background: #fff;
+  transition: box-shadow 0.3s, transform 0.3s;
+  &.tab-fixed,
+  &.pop-fixed {
+    position: sticky;
+    top: 4rem;
+  }
+  &.top-fixed {
+    @include dimm-white;
+    z-index: 10;
+  }
+  .tab-line {
+    height: 0.2rem;
+    background: var(--strong-txt-color2);
+  }
+  .tab-list {
+    padding: 0 var(--base-padding);
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: var(--base-padding);
+      right: var(--base-padding);
+      bottom: 0;
+      width: auto;
+      height: 0.2rem;
+      background: var(--line-color);
+    }
+  }
+  .tab {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    & > a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 4.8rem;
+      color: var(--gray-txt-color);
+      font-weight: 500;
+      font-size: 1.6rem;
+      line-height: 2rem;
+      overflow: hidden;
+      padding: 0 1.2rem;
+      transition: 0.3s;
+    }
+    &.active > a {
+      font-weight: 700;
+      color: var(--strong-txt-color2);
+      &:after {
+        left: 0;
+        width: 100%;
+        opacity: 1;
+      }
+    }
+  }
+  .section & {
+    @include outer;
+  }
+  &.tab-fixed {
+    .tab-list {
+      padding: 0;
+      // padding: 0 0.8rem;
+      &:before {
+        left: 0;
+        right: 0;
+      }
+    }
+  }
+}
+
+.tab-round-menu {
+  .section & {
+    @include outer;
+  }
+  .tab-line {
+    height: 100%;
+    background-color: rgba($primary-color, 0.3);
+    border-radius: 1.8rem;
+    z-index: 0;
+  }
+  .tab-list {
+    padding: 0 var(--base-padding);
+  }
+  .tab {
+    position: relative;
+    + .tab {
+      margin-left: 0.8rem;
+    }
+    & > a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 3.6rem;
+      padding: 0 1.6rem;
+      border: 0.1rem solid var(--line-color);
+      background-color: #fff;
+      // background: #eee;
+      border-radius: 1.8rem;
+      color: var(--gray-txt-color);
+      font-size: 1.4rem;
+      font-weight: 500;
+      overflow: hidden;
+      transition: 0.3s;
+    }
+    &.active {
+      > a {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+      }
+    }
+  }
+}
+
+.tab-txt-menu {
+  display: flex;
+  flex-wrap: wrap;
+  .tab-line {
+    display: none;
+  }
+  .tab {
+    position: relative;
+    padding-right: 0.1rem;
+    margin: 0.4rem 0;
+    &:after {
+      content: '';
+      display: block;
+      width: 0.1rem;
+      height: 1.2rem;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      margin-top: -0.6rem;
+      background: #ddd;
+    }
+    &:first-child {
+      a {
+        padding-left: 0;
+      }
+    }
+    &:last-child {
+      &:after {
+        content: none;
+      }
+      a {
+        padding-right: 0;
+      }
+    }
+    > a {
+      display: block;
+      padding: 0 1.2rem;
+      font-size: 1.4rem;
+      line-height: 2rem;
+      color: #999;
+      white-space: nowrap;
+    }
+    &.active {
+      > a {
+        color: var(--strong-txt-color);
+      }
+    }
+  }
+}
+
+.spy-scroll {
+  position: relative;
+  .spy-scroll-navi {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    &.fixed {
+      position: fixed;
+    }
+  }
+  .spy-scroll-body {
+    position: relative;
+  }
+}

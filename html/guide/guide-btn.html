@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+    <title>클럽메타</title>
+
+    <!-- 퍼블용 include: 개발팀에서 재include 하길 바랍니다. -->
+    <script class="__include" src="../include/head.js"></script>
+  </head>
+  <body>
+    <article class="page">
+      <!-- 헤더 -->
+      <header class="page-head">
+        <div class="head-inner">
+          <div class="head-left">
+            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
+          </div>
+          <div class="head-title">
+            <h1>가이드</h1>
+          </div>
+        </div>
+      </header>
+      <!-- //헤더 -->
+
+      <!-- 컨테이너(컨텐츠) -->
+      <main class="page-body">
+        <div class="tab-line-menu tab-fixed">
+          <div class="tab-inner">
+            <i class="tab-line" aria-hidden="true"></i>
+            <ul class="tab-list">
+              <li class="tab">
+                <a href="guide-dev.html"><span>개발자참고</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-txt.html"><span>텍스트</span></a>
+              </li>
+              <li class="tab active">
+                <a href="guide-btn.html"><span>버튼</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-form.html"><span>폼요소</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-form-ui.html"><span>입력 UI</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-list.html"><span>리스트</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-table.html"><span>테이블</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-popup.html"><span>팝업</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-animate.html"><span>애니메이션</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-swiper.html"><span>swiper</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-etc.html"><span>기타</span></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <!--텍스트-->
+          <div>
+            <h1 class="gd__h1">button</h1>
+            <div>
+              <div>button이나 a태그에 .button클래스 사용: 태그는 아무거나 상황에 맞게 사용</div>
+              <button type="button" class="button">버튼(button 태그)</button>
+              <button type="button" class="button line">버튼(button 태그)</button>
+              <a href="#" class="button line">버튼(a 태그)</a>
+
+              <h2 class="gd__h2">컬러</h2>
+              <div>
+                <div class="btn-wrap">
+                  <div class="flex">
+                    <a href="#" class="button primary">primary</a>
+                    <!-- <a href="#" class="button secondary">secondary</a>
+                    <a href="#" class="button triad">triad</a> -->
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button gray">gray</a>
+                    <a href="#" class="button gray2">gray2</a>
+                    <a href="#" class="button gray3">gray3</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">line</a>
+                    <a href="#" class="button line gray">line + gray</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line primary">line + primary</a>
+                    <!-- <a href="#" class="button line secondary">line + secondary</a> -->
+                  </div>
+                </div>
+              </div>
+
+              <h2 class="gd__h2">사이즈</h2>
+              <div class="flex align-center">
+                <button type="button" class="button primary h24">h24</button>
+                <button type="button" class="button line h32">h32</button>
+                <button type="button" class="button primary h38">h38</button>
+                <button type="button" class="button line">기본(h48)</button>
+                <button type="button" class="button primary h60">h60</button>
+              </div>
+
+              <h2 class="gd__h2">라운드</h2>
+              <div class="flex align-center">
+                <button type="button" class="button round primary h24">h24</button>
+                <button type="button" class="button round line h32">h32</button>
+                <button type="button" class="button round primary h38">h38</button>
+                <button type="button" class="button round line">기본</button>
+                <button type="button" class="button round primary h60">h60</button>
+              </div>
+
+              <h2 class="gd__h2">비활성화</h2>
+              <div>
+                <div>button태그는 disabled속성, a태그는 disabled 클래스 (button태그 사용권장)</div>
+                <div class="btn-wrap">
+                  <div class="flex">
+                    <button type="button" disabled class="button primary">primary</button>
+                    <button type="button" disabled class="button line">line</button>
+                    <a href="#" class="button line primary disabled">line + primary</a>
+                  </div>
+                </div>
+              </div>
+              <h2 class="gd__h2">btn-wrap:레이아웃</h2>
+              <div>
+                <h3 class="gd__h3">기본</h3>
+                <div class="btn-wrap">
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line">버튼3</a>
+                    <a href="#" class="button line">버튼4</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line">버튼3</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                  </div>
+                </div>
+                <h3 class="gd__h3">응용</h3>
+                <div class="btn-wrap">
+                  <div class="flex">
+                    <a href="#" class="button line w-60f">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line">버튼3</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line w-100f">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line w-100f">버튼3</a>
+                  </div>
+                </div>
+                <div class="btn-wrap bottom-fixed is-restore">
+                  <div class="flex">
+                    <button type="button" class="button h60 gray">취소</button>
+                    <button type="button" class="button h60 primary">확인</button>
+                  </div>
+                </div>
+                <h3 class="gd__h3">단독</h3>
+                <div class="btn-wrap">
+                  <a href="#" class="button line">버튼1</a>
+                </div>
+                <h3 class="gd__h3">세로(vertical)</h3>
+                <div class="btn-wrap vertical">
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line">버튼3</a>
+                  </div>
+                </div>
+                <div class="btn-wrap">
+                  <a href="#" class="button line">버튼1</a>
+                  <a href="#" class="button line">버튼2</a>
+                  <a href="#" class="button line">버튼3</a>
+                </div>
+                <h3 class="gd__h3">그룹(group)</h3>
+                <div class="btn-wrap group">
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line">버튼3</a>
+                    <a href="#" class="button line">버튼4</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                    <a href="#" class="button line">버튼3</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                    <a href="#" class="button line">버튼2</a>
+                  </div>
+                  <div class="flex">
+                    <a href="#" class="button line">버튼1</a>
+                  </div>
+                </div>
+              </div>
+              <h2 class="gd__h2">텍스트버튼</h2>
+              <div>
+                <button type="button" class="btn-txt">텍스트 텍스트<i class="i-ico-arr-right-24" aria-hidden="true"></i></button>
+                <br />
+                <a href="#" class="btn-txt">텍스트 텍스트<i class="i-ico-arr-right-24" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <h1 class="gd__h1">툴팁</h1>
+            <div>
+              <h2 class="gd__h2">버튼(기능없음)</h2>
+              <button type="button" class="tooltip-btn" aria-label="자세한 내용 확인"><i class="i-ico-tooltip" aria-hidden="true"></i></button>
+
+              <h2 class="gd__h2">버튼(일반)</h2>
+              <div>
+                <div class="tooltip-wrap">
+                  <button type="button" class="tooltip-btn" aria-label="자세한 내용 확인"><i class="i-ico-tooltip" aria-hidden="true"></i></button>
+                  <div class="tooltip-body">툴팁내용내용내용내용내용내용내용내용내용내용내용내용내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용</div>
+                </div>
+                <div class="tooltip-wrap">
+                  <button type="button" class="tooltip-btn" aria-label="자세한 내용 확인"><i class="i-ico-tooltip" aria-hidden="true"></i></button>
+                  <div class="tooltip-body">
+                    <dl class="dl">
+                      <dt class="tit">툴팁이란?</dt>
+                      <dd>툴팁의 내용이 들어갑니다.</dd>
+                      <dd>툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.</dd>
+                    </dl>
+                  </div>
+                </div>
+
+                <div class="tooltip-wrap">
+                  <button type="button" class="tooltip-btn button gray h38">버튼</button>
+                  <div class="tooltip-body">툴팁내용내용내용내용내용내용내용내용내용내용내용내용내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용</div>
+                </div>
+              </div>
+              <h2 class="gd__h2">버튼(팝업: .is-pop 클래스추가)</h2>
+              <div class="tooltip-wrap">
+                <button type="button" class="tooltip-btn is-pop" aria-label="자세한 내용 확인"><i class="i-ico-tooltip" aria-hidden="true"></i></button>
+                <div class="tooltip-body">툴팁내용내용내용내용내용내용내용내용내용내용내용내용내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용 툴팁내용</div>
+              </div>
+              <div class="tooltip-wrap">
+                <button type="button" class="tooltip-btn is-pop" aria-label="자세한 내용 확인"><i class="i-ico-tooltip" aria-hidden="true"></i></button>
+                <div class="tooltip-body">
+                  <dl class="dl">
+                    <dt class="tit">툴팁제목 툴팁제목</dt>
+                    <dd>툴팁의 내용이 들어갑니다.</dd>
+                    <dd>툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.</dd>
+                  </dl>
+                </div>
+              </div>
+              <div class="tooltip-wrap">
+                <button type="button" class="tooltip-btn is-pop" aria-label="자세한 내용 확인"><i class="i-ico-tooltip" aria-hidden="true"></i></button>
+                <div class="tooltip-body" title="툴팁제목 툴팁제목">
+                  <div>툴팁의 내용이 들어갑니다.</div>
+                  <div>툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.툴팁의 내용이 들어갑니다.</div>
+                </div>
+              </div>
+            </div>
+            <h1 class="gd__h1">탭메뉴</h1>
+            <div>
+              <h2 class="gd__h2">tab-line-menu</h2>
+              <div class="tab-line-menu ui-tab">
+                <div class="tab-inner">
+                  <i class="tab-line" aria-hidden="true"></i>
+                  <ul class="tab-list">
+                    <li class="tab"><a href="#lineTabCont1">텝메뉴1</a></li>
+                    <li class="tab"><a href="#lineTabCont2">텝메뉴2</a></li>
+                    <li class="tab"><a href="#lineTabCont3">텝메뉴3</a></li>
+                    <li class="tab"><a href="#lineTabCont4">텝메뉴4</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-panels">
+                <!-- .tab-panels 영역 없어도 됨(전환될때 인터렉션용) -->
+                <div id="lineTabCont1" class="tab-panel">텝메뉴1텝메뉴1</div>
+                <div id="lineTabCont2" class="tab-panel">텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2</div>
+                <div id="lineTabCont3" class="tab-panel">텝메뉴3텝메뉴3</div>
+                <div id="lineTabCont4" class="tab-panel">텝메뉴4텝메뉴4</div>
+              </div>
+              <br />
+              <div class="tab-line-menu ui-tab">
+                <div class="tab-inner">
+                  <i class="tab-line" aria-hidden="true"></i>
+                  <ul class="tab-list">
+                    <li class="tab"><a href="#">텝메뉴1</a></li>
+                    <li class="tab"><a href="#">텝메뉴2</a></li>
+                    <li class="tab"><a href="#">텝메뉴3</a></li>
+                    <li class="tab"><a href="#">텝메뉴4</a></li>
+                    <li class="tab"><a href="#">텝메뉴5</a></li>
+                    <li class="tab"><a href="#">텝메뉴6</a></li>
+                    <li class="tab"><a href="#">텝메뉴7</a></li>
+                    <li class="tab"><a href="#">텝메뉴8</a></li>
+                    <li class="tab"><a href="#">텝메뉴9</a></li>
+                    <li class="tab"><a href="#">텝메뉴10</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <h2 class="gd__h2">tab-round-menu</h2>
+              <div class="tab-round-menu ui-tab">
+                <div class="tab-inner">
+                  <i class="tab-line" aria-hidden="true"></i>
+                  <ul class="tab-list">
+                    <li class="tab"><a href="#">#탭메뉴1</a></li>
+                    <li class="tab"><a href="#">#탭메뉴2</a></li>
+                    <li class="tab"><a href="#">#탭메뉴3</a></li>
+                    <li class="tab"><a href="#">#탭메뉴4</a></li>
+                    <li class="tab"><a href="#">#탭메뉴5</a></li>
+                    <li class="tab"><a href="#">#탭메뉴6</a></li>
+                    <li class="tab"><a href="#">#탭메뉴7</a></li>
+                    <li class="tab"><a href="#">#탭메뉴8</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <h2 class="gd__h2">tab-navi-menu(사용안함)</h2>
+              <div class="tab-navi-menu ui-tab">
+                <div class="tab-inner">
+                  <div class="tab-line" aria-hidden="true"></div>
+                  <ul class="tab-list">
+                    <li class="tab">
+                      <a href="#tabPanel1"><span>텝메뉴1</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="#tabPanel2"><span>텝메뉴2</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="#tabPanel3"><span>텝메뉴3</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="#tabPanel4"><span>텝메뉴4</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="#tabPanel5"><span>텝메뉴5</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="#tabPanel6"><span>텝메뉴6</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="#tabPanel7"><span>텝메뉴7</span></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-panels">
+                <!-- .tab-panels 영역 없어도 됨(전환될때 인터렉션용) -->
+                <div id="tabPanel1" class="tab-panel">텝메뉴1텝메뉴1</div>
+                <div id="tabPanel2" class="tab-panel">텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2</div>
+                <div id="tabPanel3" class="tab-panel">텝메뉴3텝메뉴3<br />텝메뉴3텝메뉴3<br />텝메뉴3텝메뉴3</div>
+                <div id="tabPanel4" class="tab-panel">텝메뉴4텝메뉴4<br />텝메뉴4텝메뉴4</div>
+                <div id="tabPanel5" class="tab-panel">텝메뉴5텝메뉴5</div>
+                <div id="tabPanel6" class="tab-panel">텝메뉴6텝메뉴6<br />텝메뉴6텝메뉴6<br />텝메뉴6텝메뉴6</div>
+                <div id="tabPanel7" class="tab-panel">텝메뉴7텝메뉴7<br />텝메뉴7텝메뉴7</div>
+              </div>
+
+              <h2 class="gd__h2">tab-box-menu(사용안함)</h2>
+              <div>
+                <div class="tab-box-menu ui-tab">
+                  <div class="tab-inner">
+                    <i class="tab-line" aria-hidden="true"></i>
+                    <ul class="tab-list">
+                      <li class="tab"><a href="#tabBox1">텝메뉴1</a></li>
+                      <li class="tab"><a href="#tabBox2">텝메뉴2</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <h2 class="gd__h2 mt-10">tab-swipe-panels(사용안함)</h2>
+                <div class="tab-panels tab-swipe-panels">
+                  <div id="tabBox1" class="tab-panel">텝메뉴1텝메뉴1<br />텝메뉴1텝메뉴1</div>
+                  <div id="tabBox2" class="tab-panel">텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2<br />텝메뉴2텝메뉴2</div>
+                </div>
+                <br />
+                <br />
+                <div class="tab-box-menu ui-tab">
+                  <div class="tab-inner">
+                    <i class="tab-line" aria-hidden="true"></i>
+                    <ul class="tab-list" id="tab">
+                      <li class="tab"><a href="#">텝메뉴1</a></li>
+                      <li class="tab"><a href="#">텝메뉴2</a></li>
+                      <li class="tab"><a href="#">텝메뉴3</a></li>
+                      <li class="tab"><a href="#">텝메뉴4</a></li>
+                      <li class="tab"><a href="#">텝메뉴5</a></li>
+                      <li class="tab"><a href="#">텝메뉴6</a></li>
+                      <li class="tab"><a href="#">텝메뉴7</a></li>
+                      <li class="tab"><a href="#">텝메뉴8</a></li>
+                      <li class="tab"><a href="#">텝메뉴9</a></li>
+                      <li class="tab"><a href="#">텝메뉴10</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <h2 class="gd__h2">tab-txt-menu(사용안함)</h2>
+              <div>
+                <ul class="tab-txt-menu ui-tab">
+                  <li><a href="#">탭메뉴1</a></li>
+                  <li><a href="#">탭메뉴2</a></li>
+                  <li><a href="#">탭메뉴3</a></li>
+                </ul>
+              </div>
+
+              <h2 class="gd__h2">다른 요소를 탭처럼 쓸때</h2>
+              <div>
+                <h3 class="gd__h3">ui-tab-select</h3>
+                <div>
+                  <div class="select">
+                    <select title="선택" class="ui-tab-select">
+                      <option value="1" data-show="#selectShow1">선택1</option>
+                      <option value="2" data-show="#selectShow2">선택2</option>
+                    </select>
+                  </div>
+                  <br />
+
+                  <!-- 패널 형태 안쓸때 -->
+                  <!-- <div id="selectShow1" class="hide">선택1선택1</div>
+                    <div id="selectShow2" class="hide">선택2선택2</div> -->
+
+                  <!-- 패널 형태 유지할때 -->
+                  <div class="tab-panels">
+                    <div id="selectShow1" class="tab-panel">선택1선택1</div>
+                    <div id="selectShow2" class="tab-panel">선택2선택2<br />선택2선택2</div>
+                  </div>
+                </div>
+                <h3 class="gd__h3">ui-tab-radio</h3>
+                <div>
+                  <div class="flex ui-tab-radio">
+                    <div class="radio btn">
+                      <input type="radio" id="rdo1" name="rdo1" data-show="#radioShow1" /><i aria-hidden="true"></i>
+                      <label for="rdo1" class="lbl">선택1</label>
+                    </div>
+                    <div class="radio btn">
+                      <input type="radio" id="rdo2" name="rdo1" data-show="#radioShow2" checked /><i aria-hidden="true"></i>
+                      <label for="rdo2" class="lbl">선택2</label>
+                    </div>
+                  </div>
+
+                  <!-- 패널 형태 안쓸때 -->
+                  <!-- <div id="radioShow1" class="hide">선택1선택1</div>
+                    <div id="radioShow2" class="hide">선택2선택2</div> -->
+
+                  <!-- 패널 형태 유지할때 -->
+                  <div class="tab-panels">
+                    <div id="radioShow1" class="tab-panel">선택1선택1</div>
+                    <div id="radioShow2" class="tab-panel">선택2선택2<br />선택2선택2</div>
+                  </div>
+                </div>
+                <h3 class="gd__h3">ui-tab-check</h3>
+                <div>
+                  <div class="flex ui-tab-check">
+                    <div class="checkbox btn">
+                      <input type="checkbox" id="chk1" data-show="#checkShow1" checked /><i aria-hidden="true"></i>
+                      <label for="chk1" class="lbl">선택1</label>
+                    </div>
+                    <div class="checkbox btn">
+                      <input type="checkbox" id="chk2" name="rdo1" data-show="#checkShow2" checked /><i aria-hidden="true"></i>
+                      <label for="chk2" class="lbl">선택2</label>
+                    </div>
+                  </div>
+
+                  <!-- 패널 형태 안쓸때 -->
+                  <!-- <div id="checkShow1" class="hide">선택1선택1</div>
+                    <div id="checkShow2" class="hide">선택2선택2</div> -->
+
+                  <!-- 패널 형태 유지할때 -->
+                  <div class="tab-panels">
+                    <div id="checkShow1" class="tab-panel">선택1선택1</div>
+                    <div id="checkShow2" class="tab-panel">선택2선택2<br />선택2선택2</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- 컨테이너(컨텐츠) -->
+
+      <!-- 하단 플로팅 -->
+      <div class="floating-btn">
+        <a href="#" class="btn btn-quick" aria-label="퀵 메뉴">퀵 메뉴</a>
+      </div>
+      <!-- //하단 플로팅 -->
+
+      <!-- 팝업 -->
+      <!-- //팝업 -->
+    </article>
+  </body>
+</html>

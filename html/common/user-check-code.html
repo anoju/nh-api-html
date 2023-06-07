@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script class="__include" src="../include/head.js"></script>
+    <title>CLUBMETA | 클럽메타</title>
+  </head>
+  <body>
+    <article class="page">
+      <!-- 헤더 -->
+      <header class="page-head">
+        <div class="head-inner">
+          <div class="head-left">
+            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
+          </div>
+          <div class="head-title">
+            <h1>본인인증</h1>
+          </div>
+        </div>
+      </header>
+      <!-- //헤더 -->
+
+      <!-- 컨테이너(컨텐츠) -->
+      <main class="page-body">
+        <div class="section">
+          <h1 class="tit-h3">6자리 코드입력</h1>
+          <p class="mt-20">코드는 <span id="setData"></span>(으)로 전송되었습니다.</p>
+          <div class="form-item mt-30">
+            <div class="flex user-chkeck-input">
+              <div class="input"><input type="tel" class="no-del" id="inpUserCheck1" title="인증번호 1번째자리입력" maxlength="1" /></div>
+              <div class="input"><input type="tel" class="no-del" id="inpUserCheck2" title="인증번호 2번째자리입력" maxlength="1" /></div>
+              <div class="input"><input type="tel" class="no-del" id="inpUserCheck3" title="인증번호 3번째자리입력" maxlength="1" /></div>
+              <div class="input"><input type="tel" class="no-del" id="inpUserCheck4" title="인증번호 4번째자리입력" maxlength="1" /></div>
+              <div class="input"><input type="tel" class="no-del" id="inpUserCheck5" title="인증번호 5번째자리입력" maxlength="1" /></div>
+              <div class="input"><input type="tel" class="no-del" id="inpUserCheck6" title="인증번호 6번째자리입력" maxlength="1" /></div>
+            </div>
+            <div class="user-chkeck-time">03:00</div>
+          </div>
+          <div class="validate-txt is-error _timeover" style="display: none">인증시간이 초과 되었습니다.</div>
+        </div>
+      </main>
+      <!-- 컨테이너(컨텐츠) -->
+
+      <!-- 하단고정 -->
+      <div class="btn-wrap bottom-fixed _timeover" style="display: none">
+        <div class="flex">
+          <button type="button" class="button h60 primary">코드 재전송</button>
+        </div>
+      </div>
+      <!-- //하단고정 -->
+    </article>
+
+    <script>
+      // const $pageTitle = decodeURIComponent(getUrlParams().title);
+      // if ($pageTitle) $('.head-title h1').text($pageTitle + ' ' + $('.head-title h1').text());
+
+      const userCheckType = JSON.parse(uiStorage.get('userCheckType'));
+      let checkType;
+      if (userCheckType) {
+        if (userCheckType.title) $('.head-title h1').text(userCheckType.title);
+        if (userCheckType.checkType) checkType = userCheckType.checkType;
+        if (userCheckType.data) $('#setData').html(userCheckType.data);
+        uiStorage.remove('userCheckType');
+      }
+
+      // 만료시간 처리
+      let codeExpTimeSec = 180;
+      function fn_setConfirmCodeTimeout() {
+        // 남은 시간 표시
+        var remainMin = parseInt(codeExpTimeSec / 60);
+        var remainSec = codeExpTimeSec % 60;
+        if (remainMin < 10) remainMin = '0' + remainMin;
+        if (remainSec < 10) remainSec = '0' + remainSec;
+        $('.user-chkeck-time').html(remainMin + ':' + remainSec);
+
+        if (codeExpTimeSec == 0) {
+          // 남은 시간이 0이면
+          $('._timeover').show();
+        } else {
+          // 남은 시간이 있으면
+          // 1초 빼주고
+          codeExpTimeSec -= 1;
+          // 다시 timeout걸어주기
+          setTimeout(fn_setConfirmCodeTimeout, 1000);
+        }
+      }
+      fn_setConfirmCodeTimeout();
+
+      const $length = $('.user-chkeck-input input').length;
+      $('.user-chkeck-input input')
+        .on('focus', function () {
+          const $this = $(this);
+          const $input = $this.closest('.input');
+          const $prev = $input.prev('.input');
+          // 맨 앞부터 입력 가능하도록
+          if ($prev.length && $prev.find('input').val() === '') {
+            $prev.find('input').focus();
+          }
+        })
+        .on('input', function (e) {
+          const $this = $(this);
+          const $input = $this.closest('.input');
+          if ($this.val().length > 1) {
+            $this.val(e.target.old);
+          } else {
+            e.target.old = $this.val();
+          }
+
+          // 값 입력시 다음칸으로 이동
+          const $next = $input.next('.input');
+          if ($next.length && $this.val() !== '') {
+            $next.find('input').focus();
+          }
+
+          // 모두 다 입력 시
+          if ($this.val() !== '' && $input.index() === $length - 1) {
+            console.log('전부 입력!!!');
+            if (checkType === 'passwordReset') {
+              location.href = '../mypage/password-form.html?type=reset';
+            } else if (checkType === 'passwordChange') {
+              location.href = '../mypage/password-form.html?type=change';
+            } else if (checkType === 'join') {
+              location.href = '../mypage/password-form.html?type=join';
+            }
+          }
+        })
+        .on('keydown', function (e) {
+          const $this = $(this);
+          const $input = $this.closest('.input');
+          const $keyCode = e.keyCode ? e.keyCode : e.which;
+          const $prev = $input.prev('.input');
+          // 빈칸에서 삭제 누르면 앞칸으로 이동해서 삭제
+          if ($prev.length && $keyCode === 8 && $this.val() === '') {
+            $prev.find('input').val('');
+            $prev.find('input').focus();
+          }
+        });
+    </script>
+  </body>
+</html>

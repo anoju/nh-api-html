@@ -1,0 +1,95 @@
+@use 'sass:math';
+@use 'sass:color';
+
+// px to rem
+@function rem($value) {
+  $remValue: math.div($value, 16) * 1rem;
+  @return $remValue;
+}
+
+// 색을 약간 밝게 한다
+@function to-light($color, $percentage) {
+  @return color.mix(#fff, $color, $percentage * 1%);
+}
+
+// 색을 약간 어둡게 한다
+@function to-dark($color, $percentage) {
+  @return color.mix(#000, $color, $percentage * 1%);
+}
+
+@function toRGBCode($color) {
+  @return red($color) + ', ' + green($color) + ', ' + blue($color);
+}
+
+@function -vh($val: 1, $add: null, $isMinus: false) {
+  @if ($add) {
+    @if ($isMinus) {
+      @return calc((var(--vh) * #{$val}) - #{$add});
+    } @else {
+      @return calc((var(--vh) * #{$val}) + #{$add});
+    }
+  } @else {
+    @return calc(var(--vh) * #{$val});
+  }
+}
+
+@function -absPX($add) {
+  @return abs($add) * 0.1rem;
+}
+
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+
+  @return $number;
+}
+@function -iosConstant($value: 0, $top: true, $miuns: false) {
+  @if ($value==0) {
+    @if ($top) {
+      @return constant(safe-area-inset-top);
+    } @else {
+      @return constant(safe-area-inset-bottom);
+    }
+  } @else {
+    @if ($miuns) {
+      @if ($top) {
+        @return calc(#{$value} - constant(safe-area-inset-top));
+      } @else {
+        @return calc(#{$value} - constant(safe-area-inset-bottom));
+      }
+    } @else {
+      @if ($top) {
+        @return calc(#{$value} + constant(safe-area-inset-top));
+      } @else {
+        @return calc(#{$value} + constant(safe-area-inset-bottom));
+      }
+    }
+  }
+}
+@function -iosEnv($value: 0, $top: true, $miuns: false) {
+  @if ($value==0) {
+    @if ($top) {
+      @return env(safe-area-inset-top);
+    } @else {
+      @return env(safe-area-inset-bottom);
+    }
+  } @else {
+    @if ($miuns) {
+      @if ($top) {
+        @return calc(#{$value} - env(safe-area-inset-top));
+      } @else {
+        @return calc(#{$value} - env(safe-area-inset-bottom));
+      }
+    } @else {
+      @if ($top) {
+        @return calc(#{$value} + env(safe-area-inset-top));
+      } @else {
+        @return calc(#{$value} + env(safe-area-inset-bottom));
+      }
+    }
+  }
+}
+@function -WH-ratio($width: 1, $height: 1, $unit: '%') {
+  @return (math.div($height, $width) * 100) + #{$unit};
+}

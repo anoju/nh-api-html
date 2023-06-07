@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+    <title>클럽메타</title>
+
+    <!-- 퍼블용 include: 개발팀에서 재include 하길 바랍니다. -->
+    <script class="__include" src="../include/head.js"></script>
+  </head>
+  <body>
+    <article class="page">
+      <!-- 헤더 -->
+      <header class="page-head ty-fixed">
+        <div class="head-inner">
+          <div class="head-left">
+            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
+          </div>
+          <div class="head-title"><h1>타이틀</h1></div>
+        </div>
+      </header>
+      <!-- //헤더 -->
+
+      <!-- 컨테이너(컨텐츠) -->
+      <main class="page-body">
+        <div class="section">
+          <div data-include-html="include-test.html"></div>
+          <div style="height: 300vh; background: red; color: #fff">컨텐츠</div>
+        </div>
+      </main>
+      <!-- 컨테이너(컨텐츠) -->
+
+      <div class="btn-wrap bottom-fixed">
+        <div class="flex">
+          <button class="button primary">확인</button>
+          <button class="button gray">취소</button>
+        </div>
+      </div>
+    </article>
+  </body>
+</html>

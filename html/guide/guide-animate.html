@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+    <title>클럽메타</title>
+
+    <!-- 퍼블용 include: 개발팀에서 재include 하길 바랍니다. -->
+    <script class="__include" src="../include/head.js"></script>
+
+    <style>
+      .floating-menu-bar {
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <article class="page">
+      <!-- 헤더 -->
+      <header class="page-head">
+        <div class="head-inner">
+          <div class="head-left">
+            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
+          </div>
+          <div class="head-title">
+            <h1>가이드</h1>
+          </div>
+        </div>
+      </header>
+      <!-- //헤더 -->
+
+      <!-- 컨테이너(컨텐츠) -->
+      <main class="page-body">
+        <div class="tab-line-menu tab-fixed">
+          <div class="tab-inner">
+            <i class="tab-line" aria-hidden="true"></i>
+            <ul class="tab-list">
+              <li class="tab">
+                <a href="guide-dev.html"><span>개발자참고</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-txt.html"><span>텍스트</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-btn.html"><span>버튼</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-form.html"><span>폼요소</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-form-ui.html"><span>입력 UI</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-list.html"><span>리스트</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-table.html"><span>테이블</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-popup.html"><span>팝업</span></a>
+              </li>
+              <li class="tab active">
+                <a href="guide-animate.html"><span>애니메이션</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-swiper.html"><span>swiper</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-etc.html"><span>기타</span></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <h1 class="gd__h1">lottie(after effect)</h1>
+          <div>
+            <h2 class="gd__h2">loading</h2>
+            <div class="flex t-center">
+              <div>
+                <div class="gd__lottie-box _loop" data-lottie="../../static/lottie/loading.json"></div>
+              </div>
+              <div>
+                <div class="gd__lottie-box _loop" data-lottie="../../static/lottie/loading-bar.json"></div>
+              </div>
+            </div>
+          </div>
+          <h1 class="gd__h1">scroll event</h1>
+          <div>
+            <h2 class="gd__h2">addClass('on','active','checked','selected')</h2>
+            <div>
+              <div class="flex">
+                <div class="gd__box" data-animation="on">on</div>
+                <div class="gd__box ml-10" data-animation="on">on</div>
+              </div>
+              <div class="gd__box" data-animation="active">active</div>
+              <div class="gd__box" data-animation="checked">checked</div>
+              <div class="gd__box" data-animation="selected">selected</div>
+            </div>
+            <h2 class="gd__h2">+ splitting.js</h2>
+            <div>
+              <div class="t-center" data-splitting data-animation="active"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="on"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="on" style="--spl-highlight-color: red"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <br />
+              <div class="t-center" data-splitting data-animation="spl-down"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="spl-up"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <br />
+              <div class="t-center" data-splitting data-animation="spl-left"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="spl-right"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <br />
+              <div class="t-center" data-splitting data-animation="spl-hidden-down"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="spl-hidden-up"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <br />
+              <div class="t-center" data-splitting data-animation="spl-hidden-left"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="spl-hidden-right"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <br />
+              <div class="t-center" data-splitting data-animation="spl-size-down"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="spl-size-up"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <br />
+              <div class="t-center" data-splitting data-animation="spl-rotate-down"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+              <div class="t-center" data-splitting data-animation="spl-rotate-up"><strong class="fz-32 fw-600">가나다라마바사</strong></div>
+            </div>
+            <h2 class="gd__h2">function</h2>
+            <div>
+              <div class="t-right"><strong class="fz-32 fw-600" data-animation="rolling-number">1,123,456</strong></div>
+              <br />
+              <br />
+              <div class="t-right"><strong class="fz-32 fw-600" data-animation="count-number">1,123,456</strong></div>
+            </div>
+            <h1 class="gd__h1">countNumber</h1>
+            <div>
+              <div class="flex not-full align-center">
+                <div id="txtRandom"></div>
+                <strong class="ml-auto fz-32 fw-600" id="numRandom">987,654</strong>
+                <button id="btnRandom" class="button h32 line">랜덤</button>
+              </div>
+              <script>
+                $('#btnRandom').click(function () {
+                  const $random = parseInt(randomNumber(1, 9999999, 0));
+                  $('#txtRandom').text($random);
+                  $('#numRandom').countNumber($random);
+                });
+              </script>
+            </div>
+
+            <h2 class="gd__h2">animate.css</h2>
+            <div class="overflow-hidden">
+              <h3 class="gd__h3">Attention seekers</h3>
+              <div class="gd__box" data-animation="bounce">bounce</div>
+              <div class="gd__box" data-animation="bounce">bounce</div>
+              <div class="gd__box" data-animation="bounce">bounce</div>
+              <div class="gd__box" data-animation="bounce">bounce</div>
+              <div class="gd__box" data-animation="bounce">bounce</div>
+              <div class="gd__box" data-animation="flash">flash</div>
+              <div class="gd__box" data-animation="pulse">pulse</div>
+              <div class="gd__box" data-animation="rubberBand">rubberBand</div>
+              <div class="gd__box" data-animation="shakeX">shakeX</div>
+              <div class="gd__box" data-animation="shakeY">shakeY</div>
+              <div class="gd__box" data-animation="headShake">headShake</div>
+              <div class="gd__box" data-animation="swing">swing</div>
+              <div class="gd__box" data-animation="tada">tada</div>
+              <div class="gd__box" data-animation="wobble">wobble</div>
+              <div class="gd__box" data-animation="jello">jello</div>
+              <div class="gd__box" data-animation="heartBeat">heartBeat</div>
+
+              <h3 class="gd__h3">Back entrances</h3>
+              <div class="gd__box" data-animation="backInDown">backInDown</div>
+              <div class="gd__box" data-animation="backInLeft">backInLeft</div>
+              <div class="gd__box" data-animation="backInRight">backInRight</div>
+              <div class="gd__box" data-animation="backInUp">backInUp</div>
+
+              <h3 class="gd__h3">Back exits</h3>
+              <div class="gd__box" data-animation="backOutDown">backOutDown</div>
+              <div class="gd__box" data-animation="backOutLeft">backOutLeft</div>
+              <div class="gd__box" data-animation="backOutRight">backOutRight</div>
+              <div class="gd__box" data-animation="backOutUp">backOutUp</div>
+
+              <h3 class="gd__h3">Bouncing entrances</h3>
+              <div class="gd__box" data-animation="bounceIn">bounceIn</div>
+              <div class="gd__box" data-animation="bounceInDown">bounceInDown</div>
+              <div class="gd__box" data-animation="bounceInLeft">bounceInLeft</div>
+              <div class="gd__box" data-animation="bounceInRight">bounceInRight</div>
+              <div class="gd__box" data-animation="bounceInUp">bounceInUp</div>
+
+              <h3 class="gd__h3">Bouncing exits</h3>
+              <div class="gd__box" data-animation="bounceOut">bounceOut</div>
+              <div class="gd__box" data-animation="bounceOutDown">bounceOutDown</div>
+              <div class="gd__box" data-animation="bounceOutLeft">bounceOutLeft</div>
+              <div class="gd__box" data-animation="bounceOutRight">bounceOutRight</div>
+              <div class="gd__box" data-animation="bounceOutUp">bounceOutUp</div>
+
+              <h3 class="gd__h3">Fading entrances</h3>
+              <div class="gd__box" data-animation="fadeIn">fadeIn</div>
+              <div class="gd__box" data-animation="fadeInDown">fadeInDown</div>
+              <div class="gd__box" data-animation="fadeInDownBig">fadeInDownBig</div>
+              <div class="gd__box" data-animation="fadeInLeft">fadeInLeft</div>
+              <div class="gd__box" data-animation="fadeInLeftBig">fadeInLeftBig</div>
+              <div class="gd__box" data-animation="fadeInRight">fadeInRight</div>
+              <div class="gd__box" data-animation="fadeInRightBig">fadeInRightBig</div>
+              <div class="gd__box" data-animation="fadeInUp">fadeInUp</div>
+              <div class="gd__box" data-animation="fadeInUpBig">fadeInUpBig</div>
+              <div class="gd__box" data-animation="fadeInTopLeft">fadeInTopLeft</div>
+              <div class="gd__box" data-animation="fadeInTopRight">fadeInTopRight</div>
+              <div class="gd__box" data-animation="fadeInBottomLeft">fadeInBottomLeft</div>
+              <div class="gd__box" data-animation="fadeInBottomRight">fadeInBottomRight</div>
+
+              <h3 class="gd__h3">Fading exits</h3>
+              <div class="gd__box" data-animation="fadeOut">fadeOut</div>
+              <div class="gd__box" data-animation="fadeOutDown">fadeOutDown</div>
+              <div class="gd__box" data-animation="fadeOutDownBig">fadeOutDownBig</div>
+              <div class="gd__box" data-animation="fadeOutLeft">fadeOutLeft</div>
+              <div class="gd__box" data-animation="fadeOutLeftBig">fadeOutLeftBig</div>
+              <div class="gd__box" data-animation="fadeOutRight">fadeOutRight</div>
+              <div class="gd__box" data-animation="fadeOutRightBig">fadeOutRightBig</div>
+              <div class="gd__box" data-animation="fadeOutUp">fadeOutUp</div>
+              <div class="gd__box" data-animation="fadeOutUpBig">fadeOutUpBig</div>
+              <div class="gd__box" data-animation="fadeOutTopLeft">fadeOutTopLeft</div>
+              <div class="gd__box" data-animation="fadeOutTopRight">fadeOutTopRight</div>
+              <div class="gd__box" data-animation="fadeOutBottomRight">fadeOutBottomRight</div>
+              <div class="gd__box" data-animation="fadeOutBottomLeft">fadeOutBottomLeft</div>
+
+              <h3 class="gd__h3">Flippers</h3>
+              <div class="gd__box" data-animation="flip">flip</div>
+              <div class="gd__box" data-animation="flipInX">flipInX</div>
+              <div class="gd__box" data-animation="flipInY">flipInY</div>
+              <div class="gd__box" data-animation="flipOutX">flipOutX</div>
+              <div class="gd__box" data-animation="flipOutY">flipOutY</div>
+
+              <h3 class="gd__h3">Lightspeed</h3>
+              <div class="gd__box" data-animation="lightSpeedInRight">lightSpeedInRight</div>
+              <div class="gd__box" data-animation="lightSpeedInLeft">lightSpeedInLeft</div>
+              <div class="gd__box" data-animation="lightSpeedOutRight">lightSpeedOutRight</div>
+              <div class="gd__box" data-animation="lightSpeedOutLeft">lightSpeedOutLeft</div>
+
+              <h3 class="gd__h3">Rotating entrances</h3>
+              <div class="gd__box" data-animation="rotateIn">rotateIn</div>
+              <div class="gd__box" data-animation="rotateInDownLeft">rotateInDownLeft</div>
+              <div class="gd__box" data-animation="rotateInDownRight">rotateInDownRight</div>
+              <div class="gd__box" data-animation="rotateInUpLeft">rotateInUpLeft</div>
+              <div class="gd__box" data-animation="rotateInUpRight">rotateInUpRight</div>
+
+              <h3 class="gd__h3">Rotating exits</h3>
+              <div class="gd__box" data-animation="rotateOutDownLeft">rotateOutDownLeft</div>
+              <div class="gd__box" data-animation="rotateOutDownRight">rotateOutDownRight</div>
+              <div class="gd__box" data-animation="rotateOutUpLeft">rotateOutUpLeft</div>
+              <div class="gd__box" data-animation="rotateOutUpRight">rotateOutUpRight</div>
+
+              <h3 class="gd__h3">Specials</h3>
+              <div class="gd__box" data-animation="hinge">hinge</div>
+              <div class="gd__box" data-animation="jackInTheBox">jackInTheBox</div>
+              <div class="gd__box" data-animation="rollIn">rollIn</div>
+              <div class="gd__box" data-animation="rollOut">rollOut</div>
+
+              <h3 class="gd__h3">Zooming entrances</h3>
+              <div class="gd__box" data-animation="zoomIn">zoomIn</div>
+              <div class="gd__box" data-animation="zoomInDown">zoomInDown</div>
+              <div class="gd__box" data-animation="zoomInLeft">zoomInLeft</div>
+              <div class="gd__box" data-animation="zoomInRight">zoomInRight</div>
+              <div class="gd__box" data-animation="zoomInUp">zoomInUp</div>
+
+              <h3 class="gd__h3">Zooming exits</h3>
+              <div class="gd__box" data-animation="zoomOut">zoomOut</div>
+              <div class="gd__box" data-animation="zoomOutDown">zoomOutDown</div>
+              <div class="gd__box" data-animation="zoomOutLeft">zoomOutLeft</div>
+              <div class="gd__box" data-animation="zoomOutRight">zoomOutRight</div>
+              <div class="gd__box" data-animation="zoomOutUp">zoomOutUp</div>
+
+              <h3 class="gd__h3">Sliding entrances</h3>
+              <div class="gd__box" data-animation="slideInDown">slideInDown</div>
+              <div class="gd__box" data-animation="slideInLeft">slideInLeft</div>
+              <div class="gd__box" data-animation="slideInRight">slideInRight</div>
+              <div class="gd__box" data-animation="slideInUp">slideInUp</div>
+
+              <h3 class="gd__h3">Sliding exits</h3>
+              <div class="gd__box" data-animation="slideOutDown">slideOutDown</div>
+              <div class="gd__box" data-animation="slideOutLeft">slideOutLeft</div>
+              <div class="gd__box" data-animation="slideOutRight">slideOutRight</div>
+              <div class="gd__box" data-animation="slideOutUp">slideOutUp</div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <!-- 컨테이너(컨텐츠) -->
+
+      <!-- 팝업 -->
+      <!-- //팝업 -->
+    </article>
+    <script>
+      $('.gd-lottie-btn').click(function () {
+        const anim = $(this).parent().prev().data('lottie-opt');
+        if (anim) anim.goToAndPlay(0, true);
+      });
+
+      $('.floating-menu-bar a').click(function () {
+        const $oldOn = $('.floating-menu-bar .on');
+        const $oldLottieEl = $oldOn.find('.lottie');
+        if ($oldLottieEl.length) {
+          const $oldLottie = $oldLottieEl.data('lottie-opt');
+          // $oldLottie.goToAndPlay(35, true);
+          // $oldLottie.goToAndStop(0, true);
+          $oldLottie.playSegments([35, 70], true);
+        }
+
+        $(this).addClass('on').siblings().removeClass('on');
+        const $newOn = $(this);
+        const $newLottieEl = $newOn.find('.lottie');
+        if ($newLottieEl.length) {
+          const $newLottie = $newLottieEl.data('lottie-opt');
+          $newLottie.playSegments([0, 35], true);
+        }
+      });
+    </script>
+  </body>
+</html>

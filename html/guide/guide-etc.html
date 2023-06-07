@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+    <title>클럽메타</title>
+
+    <!-- 퍼블용 include: 개발팀에서 재include 하길 바랍니다. -->
+    <script class="__include" src="../include/head.js"></script>
+  </head>
+  <body>
+    <article class="page">
+      <!-- 헤더 -->
+      <header class="page-head">
+        <div class="head-inner">
+          <div class="head-left">
+            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
+          </div>
+          <div class="head-title">
+            <h1>가이드</h1>
+          </div>
+        </div>
+      </header>
+      <!-- //헤더 -->
+
+      <!-- 컨테이너(컨텐츠) -->
+      <main class="page-body">
+        <div class="tab-line-menu tab-fixed">
+          <div class="tab-inner">
+            <i class="tab-line" aria-hidden="true"></i>
+            <ul class="tab-list">
+              <li class="tab">
+                <a href="guide-dev.html"><span>개발자참고</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-txt.html"><span>텍스트</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-btn.html"><span>버튼</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-form.html"><span>폼요소</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-form2.html"><span>입력 UI</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-list.html"><span>리스트</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-table.html"><span>테이블</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-popup.html"><span>팝업</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-animate.html"><span>애니메이션</span></a>
+              </li>
+              <li class="tab">
+                <a href="guide-swiper.html"><span>swiper</span></a>
+              </li>
+              <li class="tab active">
+                <a href="guide-etc.html"><span>기타</span></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="section">
+          <h2 class="gd__h1">유튜브 테스트</h2>
+          <div class="youtube-box">
+            <iframe src="https://www.youtube.com/embed/js1CtxSY38I?modestbranding=1&amp;enablejsapi=1&amp;showinfo=0&amp;rel=0&amp;playsinline=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+
+          <h2 class="gd__h1">btn loading</h2>
+          <div class="btn-wrap">
+            <div class="flex">
+              <a href="#" class="button gray" onclick="ui.button.loading('#btnLoading', false);">로딩취소</a>
+              <a href="#" id="btnLoading" class="button primary" onclick="ui.button.loading(this);">버튼 속 로딩</a>
+            </div>
+          </div>
+
+          <h2 class="gd__h1">모핑(morphing)팝업(풀팝업만 가능)</h2>
+          <div>
+            <a href="#fullPopup" class="button primary ui-pop-open">모핑팝업</a>
+            <a href="#fullPopup" class="button line ui-pop-open">모핑팝업</a>
+          </div>
+
+          <h2 class="gd__h1">page-fade-title</h2>
+          <h1 class="tit-h1 page-fade-title">
+            스크롤을 내려서 <br />
+            해당글자가 안보이면 <br />
+            헤더에 타이틀이 보입니다.
+          </h1>
+          <h2 class="gd__h1">ui-touch-rotate</h2>
+          <div style="overflow: hidden">
+            <div class="ui-touch-rotate mg-40">
+              <div class="rotate-items">
+                <div class="rotate-item">
+                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                </div>
+                <div class="rotate-item">
+                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                </div>
+                <div class="rotate-item">
+                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                </div>
+                <div class="rotate-item">
+                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                </div>
+                <div class="rotate-item">
+                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+      </main>
+      <!-- 컨테이너(컨텐츠) -->
+    </article>
+
+    <!-- 팝업 -->
+    <div id="fullPopup" class="popup full morphing" role="dialog" aria-hidden="true">
+      <article class="page">
+        <header class="page-head">
+          <div class="head-inner">
+            <div class="head-left">
+              <h1>전체팝업</h1>
+            </div>
+            <div class="head-right">
+              <button type="button" class="head-close head-btn ui-pop-close" aria-label="닫기"></button>
+            </div>
+          </div>
+        </header>
+        <main class="page-body">
+          <div class="section">
+            <!-- CMS 영역 -->
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            <div class="input"><input type="text" name="" id="" /></div>
+            팝업 컨텐츠<br />
+            <h1 class="tit-h1 pop-fade-title">
+              스크롤을 내려서 <br />
+              해당글자가 안보이면 <br />
+              헤더에 타이틀이 보입니다.
+            </h1>
+            <div class="tab-line-menu ui-tab pop-fixed">
+              <div class="tab-inner">
+                <i class="tab-line" aria-hidden="true"></i>
+                <ul class="tab-list">
+                  <li class="tab">
+                    <a href="#"><span>popup 속 탭1</span></a>
+                  </li>
+                  <li class="tab">
+                    <a href="#"><span>popup 속 탭2</span></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            <div style="height: 1500px; background: #f1f1f1; text-align: center">스크롤을 위한 임시영역</div>
+            팝업 컨텐츠<br />
+            팝업 컨텐츠<br />
+            <!-- //CMS 영역 -->
+          </div>
+        </main>
+        <div class="pop-foot">
+          <div>
+            <div class="flex">
+              <button type="button" class="button primary ui-pop-close">확인</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+    <!-- //팝업 -->
+    <script>
+      // 임시 앱용 클래스
+      // $('html').addClass('is-app');
+      $('input[name=confettiBgTg]').click(function () {
+        const $val = $('input[name=confettiBgTg]:checked').val();
+        if ($val === '1') {
+          $('.gd__confetti').addClass('dark');
+        } else {
+          $('.gd__confetti').removeClass('dark');
+        }
+      });
+
+      //검색 결과
+      $('#searchInput').keyup(function () {
+        const $val = $(this).val();
+        if ($val === '') {
+          $('.not__keyword').show();
+          $('.is__keyword').hide();
+        } else {
+          $('.not__keyword').hide();
+          $('.is__keyword').show();
+        }
+      });
+    </script>
+  </body>
+</html>

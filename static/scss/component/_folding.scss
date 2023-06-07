@@ -1,0 +1,129 @@
+// folding
+// .section {
+//   .folding-list {
+//     @include outer;
+//   }
+// }
+.folding-list {
+  > li {
+    border-bottom: 0.1rem solid #f2f4f6;
+  }
+  > li,
+  > .folding-head {
+    position: relative;
+  }
+  .folding-head {
+    background: #fff;
+    font-size: 1.5rem;
+    line-height: 1.47;
+  }
+  .folding-btn {
+    display: block;
+    position: relative;
+    padding: 1.8rem 5.8rem 1.8rem var(--base-padding);
+    font-size: 1.4rem;
+    line-height: 2rem;
+    color: var(--strong-txt-color);
+    overflow: hidden;
+    font-weight: 500;
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 1.6rem;
+      right: var(--base-padding);
+      width: 2.4rem;
+      height: 2.4rem;
+      @include bg-etc;
+      // background-image: url(../images/icon/ico-folding.png);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M7 10L12 15L17 10' stroke='%23B0B0B0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      @include rotateZ(0);
+      transition: 0.3s;
+    }
+    &.reverse-arr {
+      &:after {
+        @include rotateZ(180);
+      }
+    }
+    &.disabled {
+      background: #f0f0f0;
+      color: #858585;
+      &:after {
+        border-color: #858585;
+      }
+    }
+    &.open {
+      font-weight: 500;
+      color: var(--strong-txt-color2);
+    }
+    .section & {
+      @include outer(true);
+    }
+  }
+  div.folding-btn {
+    padding-right: var(--base-padding);
+    &:after {
+      content: none;
+    }
+  }
+
+  > li.open {
+    border-bottom-width: 0;
+    .folding-btn {
+      font-weight: 500;
+      color: var(--strong-txt-color2);
+    }
+  }
+  li.open .folding-btn:after,
+  .folding-btn.open:after {
+    @include rotateZ(180);
+  }
+  li.open .folding-btn.reverse-arr:after,
+  .folding-btn.reverse-arr.open:after {
+    @include rotateZ(0);
+  }
+  .folding-panel {
+    display: none;
+    position: relative;
+  }
+  &.notice-dl {
+    @include outer;
+    border-top: 0.8rem solid #f3f3f3;
+    border-bottom-color: var(--line-color);
+    .folding-head {
+      border-top: 0.1rem solid var(--line-color);
+    }
+    .folding-btn {
+      display: flex;
+      align-items: center;
+      padding-top: 2.9rem;
+      padding-bottom: 2.9rem;
+      font-size: 1.5rem;
+      line-height: 2.2rem;
+      margin: 0;
+      &:after {
+        top: 2.8rem;
+      }
+      @include class-begins('i-ico-') {
+        &:first-child {
+          margin-right: 0.8rem;
+        }
+      }
+    }
+    .folding-panel {
+      padding: 0 var(--base-padding) 3rem;
+    }
+  }
+}
+.ui-folding-btn {
+  @include class-begins('i-ico-arr') {
+    display: block;
+    @include rotateZ(0);
+    transition: 0.3s;
+  }
+  &.open {
+    @include class-begins('i-ico-arr') {
+      @include rotateZ(180);
+    }
+  }
+}

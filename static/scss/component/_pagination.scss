@@ -1,0 +1,23 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.6rem;
+  font-size: 1.2rem;
+  > div {
+    margin: 0 1.6rem;
+  }
+  .btn {
+    width: 2.4rem;
+    height: 2.4rem;
+    background: url(../images/icon/ico-pagination@3x.png) no-repeat center center / contain;
+    &.prev {
+      transform: rotate(180deg);
+    }
+    &.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+      cursor: pointer;
+    }
+  }
+}

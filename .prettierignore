@@ -1,0 +1,6 @@
+**/node_modules/*
+**/*.min.*
+**/lib/*
+**/mail/*
+_font.scss
+front.scss

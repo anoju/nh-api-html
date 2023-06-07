@@ -1,0 +1,65 @@
+// toast
+.toast-box,
+.alarm-box {
+  position: fixed;
+  bottom: 2.4rem;
+  left: var(--base-padding);
+  right: var(--base-padding);
+  z-index: 120;
+  // overflow: hidden;
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity 0.5s, transform 0.5s;
+  > div {
+    display: flex;
+    align-items: center;
+    border-radius: 0.4rem;
+    @include web-center(true);
+  }
+  .txt {
+    display: block;
+    flex: 1 1 auto;
+    padding: 1.1rem 0.5rem 1.1rem 0;
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+    &:first-child {
+      padding-left: 1.5rem;
+    }
+    &:last-child {
+      padding-right: 1.5rem;
+    }
+  }
+  .close {
+    display: block;
+    flex-shrink: 0;
+    // padding: 1.5rem 1.5rem 1.5rem 0.5rem;
+    // font-size: 1.3rem;
+    // &:before {
+    //   content: '닫기';
+    // }
+    width: 2.8rem;
+    height: 2.8rem;
+    margin-right: 0.9rem;
+    @include bg-etc(1.6rem auto);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4.09514 4.55454C3.96829 4.42768 3.96829 4.222 4.09514 4.09514C4.222 3.96829 4.42768 3.96829 4.55453 4.09514L11.9048 11.4454C12.0316 11.5723 12.0316 11.778 11.9048 11.9048C11.7779 12.0317 11.5722 12.0317 11.4454 11.9048L4.09514 4.55454Z' fill='%23B0B0B0'/%3E%3Cpath d='M11.4455 4.09516C11.5723 3.96831 11.778 3.96831 11.9049 4.09516C12.0317 4.22202 12.0317 4.4277 11.9049 4.55456L4.55462 11.9049C4.42776 12.0317 4.22208 12.0317 4.09523 11.9049C3.96837 11.778 3.96837 11.5723 4.09523 11.4455L11.4455 4.09516Z' fill='%23B0B0B0'/%3E%3C/svg%3E");
+  }
+  &.on {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0s;
+  }
+}
+.toast-box {
+  color: #fff;
+  > div {
+    text-align: center;
+    background: rgba(33, 33, 33, 0.8);
+  }
+}
+.alarm-box {
+  > div {
+    border-radius: 0.8rem;
+    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.1);
+    @include dimm-white;
+  }
+}

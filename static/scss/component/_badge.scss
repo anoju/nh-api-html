@@ -1,0 +1,112 @@
+//badge
+.badge {
+  display: inline-flex;
+  font-size: 1.4rem;
+  height: 2.4rem;
+  padding: 0 0.8rem;
+  vertical-align: middle;
+  white-space: nowrap;
+  align-items: center;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  &.small {
+    height: 2rem;
+    padding: 0 0.6rem;
+    font-size: 1.2rem;
+  }
+  &.large {
+    height: 3.4rem;
+    padding: 0 0.8rem;
+    font-size: 1.8rem;
+  }
+  &.h28 {
+    height: 2.8rem;
+    padding: 0 1.2rem;
+  }
+
+  &.primary {
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+  &.gray {
+    background-color: #f2f4f6;
+    color: #818892;
+  }
+  &.gray2 {
+    background-color: #b9c1c9;
+    color: #fff;
+  }
+  &.red {
+    background-color: #ffebee;
+    color: #e43333;
+  }
+  &.green {
+    background-color: #e5f5ed;
+    color: #15b071;
+  }
+  &.blue {
+    background-color: rgba(68, 126, 238, 0.1);
+    color: #447eee;
+  }
+  &.blue2 {
+    background-color: rgba(34, 165, 209, 0.1);
+    color: #22a5d1;
+  }
+  &.orange {
+    background-color: #fff3d2;
+    color: #f99336;
+  }
+  &.black {
+    background-color: var(--strong-txt-color);
+    color: #fff;
+  }
+
+  &.line {
+    background: #fff;
+    color: var(--strong-txt-color);
+
+    padding: 0 0.7rem;
+    border: 0.1rem solid #eee;
+    &.primary {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+  }
+
+  &.square {
+    border-radius: 0;
+  }
+  &.round {
+    border-radius: 2rem;
+  }
+
+  &.ty2 {
+    height: 2.8rem;
+    border-radius: 1.4rem;
+    padding: 0 1.2rem;
+    background: none;
+    color: var(--primary-color);
+    border: 0.1rem solid var(--primary-color);
+
+    $portfolioColors: #f66fa0, #fbc846, #00caca, #5846ff, #fd7e64;
+    @for $i from 1 through length($portfolioColors) {
+      $color: nth($portfolioColors, $i);
+      &.pt-color-#{$i} {
+        border-color: $color;
+        color: $color;
+        // background-color: to-light($color, 90);
+      }
+    }
+  }
+
+  &.ty3 {
+    display: inline-flex;
+    padding: 0 0.6rem;
+    border: 0.1rem solid #c2c2c2;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    height: 1.9rem;
+    align-items: center;
+    color: #b0b0b0;
+  }
+}

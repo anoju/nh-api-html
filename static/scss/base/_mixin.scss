@@ -1,0 +1,286 @@
+/* @mixin */
+@use 'sass:selector';
+@use 'sass:math';
+
+// selector
+@mixin unify-parent($child) {
+  @at-root #{selector.unify(&, $child)} {
+    @content;
+  }
+}
+
+@mixin media-min-width($size) {
+  @media (min-width:#{$size}px) {
+    @content;
+  }
+}
+@mixin media-max-width($size) {
+  @media (max-width:#{$size}px) {
+    @content;
+  }
+}
+@mixin media-min-height($size) {
+  @media (min-height:#{$size}px) {
+    @content;
+  }
+}
+@mixin media-max-height($size) {
+  @media (max-height:#{$size}px) {
+    @content;
+  }
+}
+@mixin sticky-supports {
+  @supports ((position: -webkit-sticky) or (position: sticky)) {
+    @content;
+  }
+}
+@mixin when-is($element-selector) {
+  @at-root #{$element-selector + &} {
+    @content;
+  }
+}
+
+@mixin class-begins($class, $mark: false) {
+  @if ($mark) {
+    #{$mark}[class^='#{$class}'],
+    #{$mark}[class*=' #{$class}'] {
+      @content;
+    }
+  } @else {
+    [class^='#{$class}'],
+    [class*=' #{$class}'] {
+      @content;
+    }
+  }
+}
+
+// css
+@mixin text-blind {
+  font-size: 0.3rem;
+  color: transparent;
+}
+
+@mixin ellipsis($line: 0) {
+  overflow: hidden;
+  word-break: break-all;
+  @if ($line == 0) {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line;
+  }
+}
+
+@mixin clear-fix {
+  content: '';
+  display: block;
+  clear: both;
+}
+@mixin bg-etc($size: contain, $position: center center) {
+  background-repeat: no-repeat;
+  background-position: $position;
+  @if $size {
+    background-size: $size;
+  }
+}
+
+@mixin img-fit($isAbsolute: false, $type: cover) {
+  @if $isAbsolute {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  width: 100%;
+  height: 100%;
+  object-fit: $type;
+}
+
+@mixin outer($isPadding: false) {
+  margin-left: var(--outer-padding);
+  margin-right: var(--outer-padding);
+  @if $isPadding {
+    padding-left: var(--base-padding);
+    padding-right: var(--base-padding);
+  }
+}
+
+@mixin ff-pps($weight: 600) {
+  font-family: 'Poppins';
+  font-weight: $weight;
+}
+
+@mixin scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+@mixin scroll-y {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@mixin scroll-padding($padding: null) {
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    flex-shrink: 0;
+    @if $padding {
+      width: #{$padding}rem;
+    } @else {
+      width: var(--base-padding);
+    }
+  }
+}
+@mixin scroll-hide {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin web-center($isInner: false) {
+  @if ($isInner) {
+    max-width: calc(($max-window-width * 0.1rem) - (var(--base-padding) * 2));
+  } @else {
+    // max-width: 102.4rem;
+    max-width: $max-window-width * 0.1rem;
+  }
+  margin-left: auto;
+  margin-right: auto;
+}
+@mixin web-center-fixed {
+  left: 50%;
+  margin-left: $max-window-width * -0.05rem;
+}
+
+@mixin dimm($value: 0.5, $blur: 1) {
+  background-color: rgba(0, 0, 0, $value);
+  @if ($blur > 0) {
+    backdrop-filter: blur(#{$blur}px);
+  }
+}
+@mixin dimm-white($value: 0.95, $blur: 1) {
+  background: rgba(255, 255, 255, $value);
+  @if ($blur > 0) {
+    backdrop-filter: blur(#{$blur}px);
+  }
+}
+
+@mixin ios-top($key, $value: 0, $miuns: false) {
+  // #{$key}: $value;
+  @if ($miuns) {
+    #{$key}: -iosConstant($value, true, true);
+    #{$key}: -iosEnv($value, true, true);
+  } @else {
+    #{$key}: -iosConstant($value, true, false);
+    #{$key}: -iosEnv($value, true, false);
+  }
+}
+@mixin ios-bottom($key, $value: 0, $miuns: false) {
+  // #{$key}: $value;
+  @if ($miuns) {
+    #{$key}: -iosConstant($value, false, true);
+    #{$key}: -iosEnv($value, false, true);
+  } @else {
+    #{$key}: -iosConstant($value, false, false);
+    #{$key}: -iosEnv($value, false, false);
+  }
+}
+@mixin rotateZ($value) {
+  transform: rotate3d(1, 0, 0, #{$value}deg);
+  html.ios & {
+    transform: rotate(-#{$value}deg);
+  }
+}
+@mixin is-native {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// icon
+@mixin icon-default {
+  position: relative;
+  display: inline-block;
+  width: 2.4rem;
+  height: 2.4rem;
+  flex-shrink: 0;
+  @include bg-etc;
+  @include text-blind;
+}
+@mixin ico-after-apend($width: 2.4rem, $height: 2.4rem) {
+  content: '';
+  display: block;
+  width: $width;
+  height: $height;
+  @include bg-etc;
+}
+@mixin ico-arr-right {
+  // background-image: url(../images/icon/ico-arr-right-24.png);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.22922 7.21967C9.53485 6.92678 10.0304 6.92678 10.336 7.21967L14.7708 11.4697C15.0764 11.7626 15.0764 12.2375 14.7708 12.5303L10.336 16.7803C10.0304 17.0732 9.53485 17.0732 9.22922 16.7803C8.92359 16.4874 8.92359 16.0126 9.22922 15.7197L13.1106 12L9.22922 8.28033C8.92359 7.98744 8.92359 7.51256 9.22922 7.21967Z' fill='%23818892'/%3E%3C/svg%3E");
+}
+@mixin arr-right-24 {
+  @include ico-after-apend;
+  @include ico-arr-right;
+}
+@mixin ico-check-off {
+  // background-image: url(../images/icon/ico-check-off.png);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='12' viewBox='0 0 14 12' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M13.6486 0.331936C14.0965 0.795514 14.1192 1.57218 13.6993 2.06666L5.744 11.6121C5.53385 11.8596 5.24028 12 4.933 12C4.62573 12 4.33216 11.8596 4.122 11.6121L0.300667 7.11211C-0.119242 6.61763 -0.096548 5.84097 0.351354 5.37739C0.799257 4.91381 1.50276 4.93886 1.92266 5.43335L4.933 8.97832L12.0773 0.387894C12.4972 -0.106589 13.2007 -0.131642 13.6486 0.331936Z' fill='%23D6DBE1'/%3E%3C/svg%3E");
+}
+@mixin ico-check-on {
+  // background-image: url(../images/icon/ico-check-2-on.png);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='12' viewBox='0 0 14 12' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M13.6486 0.331936C14.0965 0.795514 14.1192 1.57218 13.6993 2.06666L5.744 11.6121C5.53385 11.8596 5.24028 12 4.933 12C4.62573 12 4.33216 11.8596 4.12201 11.6121L0.300667 7.11211C-0.119242 6.61763 -0.096548 5.84097 0.351354 5.37739C0.799257 4.91381 1.50276 4.93886 1.92266 5.43335L4.933 8.97832L12.0773 0.387894C12.4972 -0.106589 13.2007 -0.131642 13.6486 0.331936Z' fill='%23#{$primary-color-only}'/%3E%3C/svg%3E");
+}
+@mixin ico-calendar {
+  // background-image: url(../images/icon/ico-calendar.png);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M7 2.75C7 2.33579 7.33579 2 7.75 2C8.16421 2 8.5 2.33579 8.5 2.75V4H15.5V2.75C15.5 2.33579 15.8358 2 16.25 2C16.6642 2 17 2.33579 17 2.75V4H17.4C19.3882 4 21 5.61177 21 7.6V10V11.5V18.4C21 20.3882 19.3882 22 17.4 22H6.6C4.61177 22 3 20.3882 3 18.4V11.5V10V7.6C3 5.61177 4.61177 4 6.6 4H7V2.75ZM15.5 5.35V6.25C15.5 6.66421 15.8358 7 16.25 7C16.6642 7 17 6.66421 17 6.25V5.35H17.4C18.6426 5.35 19.65 6.35736 19.65 7.6V10H4.35V7.6C4.35 6.35736 5.35736 5.35 6.6 5.35H7V6.25C7 6.66421 7.33579 7 7.75 7C8.16421 7 8.5 6.66421 8.5 6.25V5.35H15.5ZM19.65 11.5V18.4C19.65 19.6426 18.6426 20.65 17.4 20.65H6.6C5.35736 20.65 4.35 19.6426 4.35 18.4V11.5H19.65Z' fill='%23424242'/%3E%3C/svg%3E");
+}
+@mixin line-form {
+  border-width: 0;
+  border-bottom: 0.2rem solid #d6dbe1;
+  border-radius: 0;
+  background: none;
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: -0.2rem;
+    width: 0;
+    height: 0.2rem;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+  }
+}
+@mixin line-form-input {
+  border-radius: 0;
+  font-size: 2rem;
+}
+@mixin line-form-lbl {
+  padding-top: 1.4rem;
+}
+@mixin line-form-lbl-input {
+  height: 3.6rem;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  line-height: 2.4rem;
+}
+@mixin line-form-lbl-off {
+  position: absolute;
+  left: 0;
+  top: 1.8rem;
+  font-size: 2rem;
+  line-height: 1.4;
+  color: var(--placeholder-txt-color);
+  transition: 0.3s;
+  &:not(label) {
+    pointer-events: none;
+  }
+}
+@mixin line-form-lbl-on {
+  //top: 0.4rem;
+  top: 0;
+  font-size: 1rem;
+  color: #818892;
+}
