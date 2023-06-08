@@ -11,13 +11,12 @@
         'base/common';
 
 @import 'layout/page', 
-        'layout/header', 
-        'layout/body', 
         'layout/floating';
 
 @import 'component/animation',
         'component/badge',
         'component/button',
+        'component/breadcrumb',
         'component/etc',
         'component/chart',
         'component/datepicker',

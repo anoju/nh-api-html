@@ -1,8 +1,9 @@
 $primary-color: #3579d4;
 $primary-color-only: str-slice('#{$primary-color}', 2);
-$max-window-width: 1024;
+$max-window-width: 1900;
 $primary-color-rgb: toRGBCode($primary-color);
 :root {
+  --page-width: #{$max-window-width * 0.1}rem;
   --vh: 1vh;
   --primary-color: #{$primary-color};
   accent-color: var(--primary-color);

@@ -10,39 +10,79 @@
     <script class="__include" src="./include/head.js"></script>
   </head>
   <body>
-    <article class="page">
+    <article id="#wrap" class="page">
       <!-- 헤더 -->
-      <header class="page-head">
-        <div class="head-inner">
-          <div class="head-left">
-            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
-          </div>
-          <div class="head-title">
-            <h1>레이아웃</h1>
-          </div>
+      <header id="header" class="page-head">
+        <div class="page-inner">
+          <h1 class="page-logo"><a href="#">농협 공공데이터 포털</a></h1>
+          <div class="head-search">검색창</div>
+          <div class="head-info">유저 정보 유틸</div>
         </div>
+        <nav id="gnb" class="page-gnb-wrap">
+          <div class="page-inner">
+            <ul class="page-gnb">
+              <li><a href="#">공공데이터</a></li>
+              <li><a href="#">정보공유</a></li>
+              <li><a href="#">이용안내</a></li>
+              <li><a href="#">마이페이지</a></li>
+              <li><a href="#">시스템관리</a></li>
+            </ul>
+            <button class="page-gnb-btn">
+              <span class="blind">전체메뉴</span>
+              <i></i>
+            </button>
+          </div>
+        </nav>
       </header>
       <!-- //헤더 -->
 
       <!-- 컨테이너(컨텐츠) -->
-      <main class="page-body">
-        <div class="section">
-          <div class="input-mail">
-            <div class="input">
-              <input type="text" id="inpMail0" placeholder="이메일 입력" title="이메일 입력" />
+      <div id="container" class="page-body">
+        <div class="page-inner">
+          <aside id="lnb" class="page-lnb-wrap">
+            <nav class="page-lnb">
+              <h2>공공데이터</h2>
+              <ul>
+                <li><a href="#">데이터목록</a></li>
+                <li><a href="#">API서비스</a></li>
+                <li><a href="#">공공데이터가이드</a></li>
+              </ul>
+            </nav>
+          </aside>
+          <main id="contents" class="page-contents">
+            <div class="page-title-wrap">
+              <div class="page-title">
+                <h1>데이터목록</h1>
+              </div>
+              <ol class="breadcrumb">
+                <li><a href="#" class="home">Home</a></li>
+                <li><a href="#">공공데이터</a></li>
+                <li class="active">데이터목록</li>
+              </ol>
             </div>
-          </div>
-        </div>
-      </main>
-      <!-- 컨테이너(컨텐츠) -->
+            <!-- 컨텐츠 시작 -->
 
-      <!-- 하단고정 -->
-      <div class="btn-wrap bottom-fixed">
-        <div class="flex">
-          <button type="button" class="button h60 primary">확인</button>
+            컨텐츠 내용 <br />
+            컨텐츠 내용 <br />
+            컨텐츠 내용 <br />
+            컨텐츠 내용 <br />
+            컨텐츠 내용 <br />
+            컨텐츠 내용 <br />
+
+            <!-- 컨텐츠 끝 -->
+          </main>
+          <aside id="quickMenu" class="page-quick-wrap">
+            <div class="page-quick">
+              <h2>퀵메뉴</h2>
+            </div>
+          </aside>
         </div>
       </div>
-      <!-- //하단고정 -->
+      <!-- 컨테이너(컨텐츠) -->
+
+      <footer id="footer" class="page-footer">
+        <div class="page-inner">푸터</div>
+      </footer>
     </article>
   </body>
 </html>
