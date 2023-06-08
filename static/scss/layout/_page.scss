@@ -110,7 +110,7 @@
 }
 .page-contents {
   position: relative;
-  min-height: 80vh;
+  min-height: calc(100vh - 40.3rem);
 }
 .page-lnb-wrap {
   position: absolute;
@@ -136,6 +136,29 @@
     background-color: #4fe6af;
     color: #fff;
     font-size: 3rem;
+  }
+
+  > ul {
+    > li {
+      + li {
+        border-top: 1px solid #e5e5e5;
+      }
+      > a {
+        display: block;
+        font-size: 1.7rem;
+        color: var(--strong-txt-color);
+        padding: 1.8rem 6rem 1.8rem 2.8rem;
+        &:hover,
+        &:focus {
+          background-color: #f9f9f9;
+        }
+      }
+      &.active {
+        a {
+          color: var(--primary-color);
+        }
+      }
+    }
   }
 }
 .page-quick-wrap {
