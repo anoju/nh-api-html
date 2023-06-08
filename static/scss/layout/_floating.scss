@@ -124,17 +124,11 @@
     }
   }
   &.fixed-none {
-    .section & {
-      @include outer;
-    }
     > div {
       position: static;
     }
   }
   &.btn-wrap:not(.is-restore) {
     margin-top: 0;
-  }
-  &.outer {
-    @include outer;
   }
 }

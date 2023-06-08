@@ -211,9 +211,6 @@
       // padding: 0 var(--base-padding);
       box-sizing: content-box;
     }
-    .section & {
-      @include outer;
-    }
   }
 }
 body > .highcharts-tooltip-container {

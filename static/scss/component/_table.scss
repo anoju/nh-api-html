@@ -93,9 +93,6 @@
     }
   }
 }
-.section .tbl-scroll {
-  @include outer;
-}
 .tbl-scroll {
   position: relative;
   .tbl-scroll-in {

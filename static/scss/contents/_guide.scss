@@ -100,7 +100,6 @@
   }
 }
 .gd__img {
-  @include outer;
   background: red;
   > div {
     position: relative;

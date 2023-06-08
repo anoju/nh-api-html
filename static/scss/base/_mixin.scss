@@ -97,15 +97,6 @@
   object-fit: $type;
 }
 
-@mixin outer($isPadding: false) {
-  margin-left: var(--outer-padding);
-  margin-right: var(--outer-padding);
-  @if $isPadding {
-    padding-left: var(--base-padding);
-    padding-right: var(--base-padding);
-  }
-}
-
 @mixin ff-pps($weight: 600) {
   font-family: 'Poppins';
   font-weight: $weight;

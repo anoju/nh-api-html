@@ -28,9 +28,6 @@
   text-align: center;
 }
 .tab-navi-menu {
-  .section & {
-    @include outer;
-  }
   position: relative;
   height: 5rem;
   background: #fff;
@@ -187,12 +184,6 @@
   }
 }
 .tab-swipe-panels {
-  .section & {
-    @include outer;
-    .tab-panel {
-      padding: 0 var(--base-padding);
-    }
-  }
   .tab-panel {
     display: block;
   }
@@ -203,9 +194,6 @@
 
 .tab-box-menu {
   position: relative;
-  .section & {
-    @include outer;
-  }
   .tab-line {
     border: 0.1rem solid #222;
     background: #fff;
@@ -250,9 +238,6 @@
       font-weight: bold;
       color: var(--strong-txt-color);
     }
-  }
-  .section &.scroll-able {
-    @include outer;
   }
 }
 
@@ -315,9 +300,6 @@
       }
     }
   }
-  .section & {
-    @include outer;
-  }
   &.tab-fixed {
     .tab-list {
       padding: 0;
@@ -331,9 +313,6 @@
 }
 
 .tab-round-menu {
-  .section & {
-    @include outer;
-  }
   .tab-line {
     height: 100%;
     background-color: rgba($primary-color, 0.3);

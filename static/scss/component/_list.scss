@@ -127,9 +127,6 @@
       font-weight: 500;
     }
   }
-  .section & {
-    @include outer(true);
-  }
   .list-arr-item & {
     &:where(a) {
       padding-right: 3.2rem;
@@ -139,12 +136,6 @@
         right: 0;
         margin-top: -1.2rem;
         @include arr-right-24;
-      }
-      .section & {
-        padding-right: 5.6rem;
-        &:after {
-          right: var(--base-padding);
-        }
       }
     }
   }

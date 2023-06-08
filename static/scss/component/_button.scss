@@ -469,15 +469,6 @@ button.btn-click-outer {
         }
       }
     }
-    &.out {
-      @include outer;
-      .button:first-child {
-        border-left-width: 0;
-      }
-      .button:last-child {
-        border-right-width: 0;
-      }
-    }
   }
   &.vertical {
     > div {

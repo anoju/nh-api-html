@@ -34,7 +34,6 @@
     align-items: center;
   }
   &.line-gray {
-    @include outer(true);
     background: #f8f8f8;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -328,10 +327,6 @@
   color: var(--base-txt-color);
   padding-left: var(--base-padding);
   padding-right: var(--base-padding);
-  .section & {
-    padding-left: 0;
-    padding-right: 0;
-  }
   .tab-panel > & {
     padding-top: var(--base-padding);
   }

@@ -871,9 +871,6 @@ div.checkbox.ty2:not(.btn):not(.switch):not(.switch2) {
         // }
       }
     }
-    .section & {
-      @include outer;
-    }
   }
   .item-tit {
     font-size: 1.6rem;
@@ -911,21 +908,12 @@ div.checkbox.ty2:not(.btn):not(.switch):not(.switch2) {
     &:where(button) {
       width: 100%;
     }
-    .section & {
-      @include outer;
-      &:where(button) {
-        width: calc(100% + (var(--base-padding) * 2));
-      }
-    }
   }
   .add-btn.button {
     position: absolute;
     top: 50%;
     right: 6.4rem;
     transform: translateY(-50%);
-    .section & {
-      right: 4rem;
-    }
   }
   .state-txt {
     color: var(--primary-color);

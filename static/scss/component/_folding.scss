@@ -1,9 +1,4 @@
 // folding
-// .section {
-//   .folding-list {
-//     @include outer;
-//   }
-// }
 .folding-list {
   > li {
     border-bottom: 0.1rem solid var(--line-color);
@@ -56,9 +51,6 @@
       font-weight: 500;
       color: var(--strong-txt-color);
     }
-    .section & {
-      @include outer(true);
-    }
   }
   div.folding-btn {
     padding-right: var(--base-padding);
@@ -87,7 +79,6 @@
     position: relative;
   }
   &.notice-dl {
-    @include outer;
     border-top: 0.8rem solid #f3f3f3;
     border-bottom-color: var(--line-color);
     .folding-head {

@@ -124,7 +124,7 @@
 .page-lnb {
   position: sticky;
   top: 0.1rem;
-  h2 {
+  .page-lnb-title {
     position: relative;
     margin: 0 -1px;
     display: flex;
@@ -135,10 +135,12 @@
     height: 12rem;
     background-color: #4fe6af;
     color: #fff;
-    font-size: 3rem;
+    h2 {
+      font-size: 3rem;
+    }
   }
 
-  > ul {
+  .page-lnb-menu {
     > li {
       + li {
         border-top: 1px solid #e5e5e5;

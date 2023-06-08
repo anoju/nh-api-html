@@ -6,9 +6,6 @@
 .ui-swiper {
   position: relative;
   &.full {
-    .section & {
-      @include outer;
-    }
     .img-box img {
       border-radius: 0;
     }
@@ -24,9 +21,6 @@
   }
 
   &.items {
-    .section & {
-      @include outer;
-    }
     .swiper {
       padding: 0 1.9rem;
     }

@@ -665,10 +665,6 @@ $bdTypes: (solid, dashed, dotted);
 }
 .scroll-x {
   @include scroll-x;
-  .section & {
-    @include outer;
-    @include scroll-padding;
-  }
 }
 .scroll-y {
   @include scroll-y;
@@ -814,9 +810,6 @@ $bdTypes: (solid, dashed, dotted);
   }
   &.ty2 {
     background: #ebebeb;
-  }
-  .section &:not(.inset) {
-    @include outer;
   }
 }
 
