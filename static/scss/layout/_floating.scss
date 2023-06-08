@@ -11,10 +11,6 @@
   width: auto !important;
   z-index: 50;
   transition: padding 0.3s, bottom 0.3s;
-  @include media-min-width($max-window-width) {
-    right: 50%;
-    margin-right: calc(-51.2rem + var(--base-padding));
-  }
   &.top-on {
     padding-bottom: 6.4rem;
   }
