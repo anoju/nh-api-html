@@ -23,8 +23,8 @@ const ui = {
     bottomFixedSpace: '.bottom-fixed-space'
   },
   basePath: function () {
-    let rtnVal = '/to-be/static';
-    if (location.hostname.indexOf('github') > -1) rtnVal = '/club-html' + rtnVal;
+    let rtnVal = '/static';
+    if (location.hostname.indexOf('github') > -1) rtnVal = '/nh-api-html' + rtnVal;
     return rtnVal;
   },
   isInit: false,

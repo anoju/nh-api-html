@@ -1,44 +1,10 @@
-$primary-color-rgb: toRGBCode($primary-color);
-:root {
-  --vh: 1vh;
-  --primary-color: #{$primary-color};
-  accent-color: var(--primary-color);
-  --spl-highlight-color: var(--primary-color);
-  --primary-color-rgb: #{$primary-color-rgb};
-  --item-margin-x: 0.8rem;
-  --item-margin-y: 0.8rem;
-
-  --base-txt-color: #606060;
-  --strong-txt-color: #212121;
-  --strong-txt-color2: #424242;
-
-  --gray-txt-color: #979797;
-
-  // --alert-txt-color: #dc512f;
-  --alert-txt-color: #e43333;
-  --placeholder-txt-color: #b9c1c9;
-
-  --line-color: #ebebeb;
-
-  --disabled-color: #b0b0b0;
-  --disabled-bg-color: #dedede;
-
-  --input-disabled-color: #c2c2c2;
-  --input-disabled-bg-color: #f2f4f6;
-
-  --base-padding: 2.4rem;
-  --outer-padding: -2.4rem;
-
-  --loading-svg-offset: 187;
-  --loading-svg-duration: 1.4s;
-}
 html {
   height: 100%;
   font-size: 62.5%;
   text-size-adjust: none;
 }
 body {
-  font: normal 1.6rem/1.44 'Noto Sans KR', 'Apple SD Gothic Neo', 'AppleSDGothicNeo', sans-serif;
+  font: normal 1.5rem/1.44 'Noto Sans KR', 'Apple SD Gothic Neo', 'AppleSDGothicNeo', sans-serif;
   color: var(--base-txt-color);
   letter-spacing: -0.02em;
   word-break: keep-all;

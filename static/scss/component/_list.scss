@@ -181,7 +181,7 @@
   &.ty2 {
     .item-tit {
       line-height: inherit;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
       + .item-sub {
         margin-top: 0.2rem;
       }
@@ -219,7 +219,7 @@
   align-items: center;
   justify-content: flex-end;
   font-size: 2rem;
-  color: var(--strong-txt-color2);
+  color: var(--strong-txt-color);
   font-weight: 500;
   sub {
     font-size: 1.2rem;
@@ -257,7 +257,7 @@
     }
   }
   .item-tit {
-    font-size: var(--strong-txt-color2);
+    font-size: var(--strong-txt-color);
   }
 }
 .list-item-3 {
@@ -371,13 +371,6 @@
   border-width: 0;
   > li {
     border-top-width: 0;
-    &:after {
-      content: '';
-      display: block;
-      height: 0.1rem;
-      background: var(--line-color);
-      margin: 0 2rem;
-    }
   }
   &.no-last-line {
     > li:last-child:after {

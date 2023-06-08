@@ -1,3 +1,38 @@
-$primary-color: #ff69a0;
+$primary-color: #3579d4;
 $primary-color-only: str-slice('#{$primary-color}', 2);
 $max-window-width: 1024;
+$primary-color-rgb: toRGBCode($primary-color);
+:root {
+  --vh: 1vh;
+  --primary-color: #{$primary-color};
+  accent-color: var(--primary-color);
+  --spl-highlight-color: var(--primary-color);
+  --primary-color-rgb: #{$primary-color-rgb};
+  --item-margin-x: 0.8rem;
+  --item-margin-y: 0.8rem;
+
+  --base-txt-color: #666;
+  --placeholder-txt-color: #bbbbbb;
+  --strong-txt-color: #000;
+  --gray-txt-color: #979797;
+
+  --alert-txt-color: #e43333;
+
+  --line-color: #dcdcdc;
+
+  --disabled-color: #b0b0b0;
+  --disabled-bg-color: #dedede;
+
+  --input-font-size: 1.7rem;
+  --input-txt-color: #000;
+  --input-disabled-color: #c2c2c2;
+  --input-disabled-bg-color: #f2f4f6;
+
+  --base-padding: 2.4rem;
+  --outer-padding: -2.4rem;
+
+  --loading-svg-offset: 187;
+  --loading-svg-duration: 1.4s;
+
+  --gray-bg-color: #f9f9f9;
+}

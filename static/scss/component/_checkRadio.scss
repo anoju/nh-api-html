@@ -476,7 +476,7 @@ div.checkbox.ty2:not(.btn):not(.switch):not(.switch2) {
       line-height: 2.3rem;
       font-size: 1.6rem;
       font-weight: 500;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
     }
     .lbl-child {
       border-top-width: 0.1rem;
@@ -656,7 +656,7 @@ div.checkbox.ty2:not(.btn):not(.switch):not(.switch2) {
       line-height: 2.3rem;
       font-size: 1.6rem;
       font-weight: 500;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
     }
     + .lbl-child {
       border-top-width: 0.1rem;
@@ -877,7 +877,7 @@ div.checkbox.ty2:not(.btn):not(.switch):not(.switch2) {
   }
   .item-tit {
     font-size: 1.6rem;
-    color: var(--strong-txt-color2);
+    color: var(--strong-txt-color);
     strong {
       font-weight: 500;
     }
@@ -907,7 +907,7 @@ div.checkbox.ty2:not(.btn):not(.switch):not(.switch2) {
     height: 6rem;
     padding: 1.5rem var(--base-padding);
     font-size: 1.6rem;
-    color: var(--strong-txt-color2);
+    color: var(--strong-txt-color);
     &:where(button) {
       width: 100%;
     }

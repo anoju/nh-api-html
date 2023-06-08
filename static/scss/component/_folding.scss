@@ -6,7 +6,7 @@
 // }
 .folding-list {
   > li {
-    border-bottom: 0.1rem solid #f2f4f6;
+    border-bottom: 0.1rem solid var(--line-color);
   }
   > li,
   > .folding-head {
@@ -54,7 +54,7 @@
     }
     &.open {
       font-weight: 500;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
     }
     .section & {
       @include outer(true);
@@ -71,7 +71,7 @@
     border-bottom-width: 0;
     .folding-btn {
       font-weight: 500;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
     }
   }
   li.open .folding-btn:after,

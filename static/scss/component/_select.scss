@@ -1,21 +1,8 @@
-@mixin ico-select {
-  // background-image: url(../images/icon/ico-select.png);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M7 10L12 15L17 10' stroke='%23424242' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-}
-@mixin ico-select-off {
-  // background-image: url(../images/icon/ico-select-off.png);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M7 10L12 15L17 10' stroke='%23B0B0B0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+@mixin ico-select($color: '0,0,0') {
+  // background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='13px' height='8px'%3E%3Cpath fill-rule='evenodd' fill='rgb(#{$color})' d='M12.536,1.879 L6.879,7.535 L6.500,7.157 L6.121,7.535 L0.464,1.879 L1.879,0.464 L6.500,5.086 L11.121,0.464 L12.536,1.879 Z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='19px' height='12px'%3E%3Cpath fill-rule='evenodd' fill='rgb(#{$color})' d='M18.553,2.818 L10.068,11.303 L9.500,10.735 L8.932,11.303 L0.447,2.818 L2.568,0.697 L9.500,7.629 L16.432,0.697 L18.553,2.818 Z'/%3E%3C/svg%3E");
 }
 // select
-.select {
-  color: var(--strong-txt-color);
-  font-size: 1.6rem;
-  background-color: #fff;
-  border: 0.1rem solid var(--line-color);
-  border-radius: 1rem;
-  transition: border 0.3s;
-}
-
 .select select,
 .btn-select {
   position: relative;
@@ -28,9 +15,10 @@
   white-space: nowrap;
   background-color: transparent;
   line-height: 3.6rem;
-  font-weight: 500;
   appearance: none;
   transition: color 0.3s ease;
+  font-size: var(--input-font-size);
+  color: var(--input-txt-color);
   &.off {
     color: var(--placeholder-txt-color);
   }
@@ -43,17 +31,17 @@
   align-items: center;
   &:after {
     position: absolute;
-    right: 1.2rem;
+    right: 1rem;
     top: 50%;
-    margin-top: -1.2rem;
+    margin-top: -0.4rem;
     @include rotateZ(0);
     transition: 0.3s;
-    @include ico-after-apend;
+    @include ico-after-apend(1.3rem, 0.8rem);
     @include ico-select;
   }
   // &.off {
   //   &:after {
-  //     @include ico-select-off;
+  //     @include ico-select('220,220,220');
   //   }
   // }
   &.open,
@@ -67,25 +55,30 @@
   }
 }
 .select {
-  display: flex;
+  display: inline-flex;
   position: relative;
-  width: 100%;
   overflow: hidden;
+  font-size: 1.7rem;
+  background-color: #fff;
+  border: 0.1rem solid var(--line-color);
+  border-radius: 1rem;
+  transition: border 0.3s;
+
   select {
-    @include bg-etc(2.4rem auto, right 1.2rem center);
+    @include bg-etc(1.3rem auto, right 1rem center);
     @include ico-select;
     // &.off {
-    //   @include ico-select-off;
+    //   @include ico-select('220,220,220');
     // }
     &:disabled {
       display: block !important;
       color: var(--input-disabled-color);
-      @include ico-select-off;
+      @include ico-select('220,220,220');
       ~ .btn-select {
         display: none;
         color: var(--input-disabled-color);
         &:after {
-          @include ico-select-off;
+          @include ico-select('220,220,220');
         }
       }
     }
@@ -159,7 +152,7 @@
     .btn-select {
       height: 2.4rem;
       line-height: 2.4rem;
-      padding: 0 2.4rem 0 0;
+      padding: 0 1.8rem 0 0;
       font-weight: inherit;
     }
     select {
@@ -167,10 +160,7 @@
     }
     .btn-select {
       &:after {
-        width: 2.4rem;
-        height: 2.4rem;
         right: 0;
-        margin-top: -1.2rem;
       }
     }
     // select:disabled ~ .btn-select {
@@ -335,7 +325,7 @@
       }
       &:not(.disabled):not(.selected) {
         .select-item-txt {
-          color: var(--strong-txt-color2);
+          color: var(--strong-txt-color);
         }
       }
     }

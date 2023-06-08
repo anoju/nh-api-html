@@ -288,7 +288,7 @@
         color: #979797;
       }
       > .dd {
-        color: var(--strong-txt-color2);
+        color: var(--strong-txt-color);
       }
       + li {
         margin-top: 0.4rem;
@@ -297,7 +297,7 @@
   }
 }
 .num-list-1 {
-  color: var(--strong-txt-color2);
+  color: var(--strong-txt-color);
   font-size: 1.6rem;
   line-height: 2.3rem;
   > li {
@@ -314,7 +314,7 @@
       font-size: 1.2rem;
       color: #fff;
       text-align: center;
-      background: var(--strong-txt-color2);
+      background: var(--strong-txt-color);
       border-radius: 50%;
     }
     + li {
@@ -355,7 +355,7 @@
   h3,
   h4 {
     margin-top: 3.2rem;
-    color: var(--strong-txt-color2);
+    color: var(--strong-txt-color);
     &:first-child {
       margin-top: 0;
     }

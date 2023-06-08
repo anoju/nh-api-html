@@ -74,7 +74,7 @@
       padding: 1rem 0.8rem 1.7rem;
       height: 5rem;
       text-align: center;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
       font-weight: 500;
       font-size: 1.5rem;
       line-height: 2.2rem;
@@ -144,7 +144,7 @@
         a {
           font-size: 1.5rem;
           font-weight: 500;
-          color: var(--strong-txt-color2);
+          color: var(--strong-txt-color);
         }
         &.active {
           a {
@@ -271,7 +271,7 @@
   }
   .tab-line {
     height: 0.2rem;
-    background: var(--strong-txt-color2);
+    background: var(--strong-txt-color);
   }
   .tab-list {
     padding: 0 var(--base-padding);
@@ -307,7 +307,7 @@
     }
     &.active > a {
       font-weight: 700;
-      color: var(--strong-txt-color2);
+      color: var(--strong-txt-color);
       &:after {
         left: 0;
         width: 100%;
