@@ -1,6 +1,6 @@
-$primary-color: #3579d4;
+$primary-color: #2d71c4;
 $primary-color-only: str-slice('#{$primary-color}', 2);
-$max-window-width: 1900;
+$max-window-width: 1800;
 $primary-color-rgb: toRGBCode($primary-color);
 :root {
   --page-width: #{$max-window-width * 0.1}rem;
@@ -12,22 +12,17 @@ $primary-color-rgb: toRGBCode($primary-color);
   --item-margin-x: 0.8rem;
   --item-margin-y: 0.8rem;
 
-  --base-txt-color: #666;
-  --placeholder-txt-color: #bbbbbb;
+  --base-txt-color: #000;
+
   --strong-txt-color: #000;
   --gray-txt-color: #979797;
 
   --alert-txt-color: #e43333;
 
-  --line-color: #dcdcdc;
+  --line-color: #e5e5e5;
 
   --disabled-color: #b0b0b0;
   --disabled-bg-color: #dedede;
-
-  --input-font-size: 1.7rem;
-  --input-txt-color: #000;
-  --input-disabled-color: #c2c2c2;
-  --input-disabled-bg-color: #f2f4f6;
 
   --base-padding: 2.4rem;
   --outer-padding: -2.4rem;
@@ -38,4 +33,31 @@ $primary-color-rgb: toRGBCode($primary-color);
   --gray-bg-color: #f9f9f9;
 
   //layout
+  --page-body-padding-top: 2rem;
+  --page-body-padding-side: 6rem;
+  --gnb-line-color: #000;
+  --gnb-line-color2: var(--line-color);
+  --gnb-radius: 1.5rem;
+  --gnb-active-txt-color: #fcb827;
+  --lnb-width: 28rem;
+  --lnb-line-color: var(--line-color);
+  --lnb-radius: 2rem;
+  --lnb-active-txt-color: #fcb827;
+  --quick-width: 12rem;
+  --quick-line-color: #dcdcdc;
+  --quick-radius: 1.2rem;
+  --page-title-height: 12rem;
+
+  //form
+  --placeholder-txt-color: #d9d9d9;
+
+  --input-font-size: 1.7rem;
+  --input-txt-color: #000;
+  --input-disabled-color: #c2c2c2;
+  --input-disabled-bg-color: #f2f4f6;
+  --input-line-color: #d3d3d3;
+  --input-radius: 0.5rem;
+
+  --select-font-size: 1.8rem;
+  --select-line-color: #aeb1b4;
 }

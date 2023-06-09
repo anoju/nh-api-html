@@ -1,3 +1,118 @@
+//layout mixin
+@mixin depth2($type: 'gnb') {
+  $depth-line: var(--gnb-line-color2);
+  $depth-active-color: var(--gnb-active-txt-color);
+  @if ($type == 'lnb') {
+    $depth-line: var(--lnb-line-color);
+    $depth-active-color: var(--lnb-active-txt-color);
+  }
+
+  > li {
+    border-bottom: 0.1rem solid $depth-line;
+    > a {
+      position: relative;
+      display: block;
+      font-weight: 500;
+      @if ($type == 'gnb') {
+        font-size: 1.6rem;
+        line-height: 2.4rem;
+        padding: 1.3rem 1.2rem;
+      } @else if($type == 'lnb') {
+        font-size: 1.7rem;
+        padding: 1.8rem 6rem 1.8rem 1.1rem;
+      }
+
+      &:hover,
+      &:focus {
+        font-weight: bold;
+      }
+      &.toggle {
+        &:after {
+          @include ico-after-apend(1.6rem, 1rem);
+          position: absolute;
+          right: 0.9rem;
+          top: 50%;
+          margin-top: -0.5rem;
+          @include ico-gnb-arrow;
+          @include bg-etc;
+          transition: 0.3s ease-in-out;
+        }
+        &.open {
+          &:after {
+            @include rotateZ(180);
+          }
+        }
+      }
+    }
+    &.active {
+      > a {
+        font-weight: bold;
+        color: $depth-active-color;
+      }
+    }
+  }
+}
+@mixin depth3($type: 'gnb') {
+  @if ($type == 'gnb') {
+    border-top: 0.1rem solid var(--gnb-line-color2);
+  } @else if($type == 'lnb') {
+    border-top: 0.3rem solid var(--primary-color);
+  }
+  background-color: #f9f9f9;
+  padding: 1.6rem;
+  > li {
+    position: relative;
+    padding-left: 1.7rem;
+    &:before {
+      @include ico-after-apend(1rem, 0.3rem);
+      position: absolute;
+      left: 0;
+      top: 1rem;
+      background: #a9a9a9;
+    }
+    + li {
+      margin-top: 0.8rem;
+    }
+    > a {
+      font-size: 1.6rem;
+      &:hover,
+      &:focus {
+        font-weight: bold;
+      }
+    }
+    &.active {
+      &:before {
+        background-color: #000;
+      }
+      > a {
+        text-decoration: underline;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.skip-navi {
+  z-index: 99999;
+  a {
+    display: block;
+    position: absolute;
+    top: -9999px;
+    width: 100%;
+    line-height: 4.5rem;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #fff;
+    text-decoration: underline;
+    background-color: #333;
+    z-index: 3000;
+    &:focus,
+    &:active {
+      top: 0;
+    }
+  }
+}
 .page {
   position: relative;
   min-width: var(--page-width);
@@ -28,7 +143,7 @@
     padding: 0 3.1rem;
     border-radius: 3.1rem;
     background-color: #fff;
-    color: var(--strong-txt-color);
+    color: var(--base-txt-color);
   }
   .head-info {
     position: absolute;
@@ -41,29 +156,63 @@
   a,
   span {
     display: block;
-    width: 35.9rem;
-    height: 7rem;
+    width: 19.6rem;
+    height: 8.7rem;
     @include text-blind;
     @include bg-etc;
     background-image: url(../images/common/page-logo.png);
   }
 }
 .page-gnb-wrap {
-  border-top: 1px solid #427fca;
+  border-top: 0.1rem solid #427fca;
 }
 .page-gnb {
+  position: relative;
   display: flex;
   padding: 0 8rem;
   justify-content: center;
-  a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 25rem;
-    height: 8.1rem;
-    font-weight: 500;
-    font-size: 2rem;
-    text-align: center;
+  z-index: 10;
+  > li {
+    position: relative;
+    top: -0.1rem;
+    padding-bottom: 0.3rem;
+    > a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24rem;
+      height: 7.9rem;
+      font-weight: 500;
+      font-size: 2rem;
+      text-align: center;
+    }
+    &:hover > a,
+    & > a:focus {
+      background-color: #fff;
+      color: var(--primary-color);
+    }
+    &:hover,
+    &.focus {
+      .depth2 {
+        display: block;
+      }
+    }
+  }
+  .depth2 {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    padding: 0 1.2rem 3rem;
+    background: #fff;
+    color: var(--base-txt-color);
+    border: 0.1rem solid var(--gnb-line-color);
+    border-radius: 0 0 var(--gnb-radius) var(--gnb-radius);
+    @include depth2;
+  }
+  .depth3 {
+    @include depth3;
   }
 }
 .page-gnb-btn {
@@ -102,112 +251,109 @@
 }
 .page-body {
   position: relative;
-  padding-top: 0.1rem;
+  padding-top: var(--page-body-padding-top);
   .page-inner {
-    padding-left: 34rem;
-    padding-right: 18rem;
+    padding-left: calc(var(--page-body-padding-side) + var(--lnb-width));
+    padding-right: calc(var(--page-body-padding-side) + var(--quick-width));
   }
 }
 .page-contents {
   position: relative;
-  min-height: calc(100vh - 40.3rem);
+  //min-height: -vh(100, 42.3rem, true);
+  //min-height: calc(100vh - 42.3rem);
+  min-height: calc(100vh - 42.9rem);
 }
 .page-lnb-wrap {
   position: absolute;
   top: 0;
   left: 0;
-  width: 28rem;
+  width: var(--lnb-width);
   height: 100%;
-  border: 1px solid #e5e5e5;
-  border-width: 0 1px;
 }
 .page-lnb {
   position: sticky;
-  top: 0.1rem;
+  top: var(--page-body-padding-top);
+  border-top-width: 0;
   .page-lnb-title {
     position: relative;
-    margin: 0 -1px;
+    margin: 0 -0.1rem;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     background-color: var(--primary-color);
-    height: 12rem;
-    background-color: #4fe6af;
+    height: var(--page-title-height);
+    background-color: var(--primary-color);
     color: #fff;
+    border-radius: var(--lnb-radius) var(--lnb-radius) 0 0;
     h2 {
       font-size: 3rem;
+      font-weight: normal;
     }
   }
 
   .page-lnb-menu {
-    > li {
-      + li {
-        border-top: 1px solid #e5e5e5;
-      }
-      > a {
-        display: block;
-        font-size: 1.7rem;
-        color: var(--strong-txt-color);
-        padding: 1.8rem 6rem 1.8rem 2.8rem;
-        &:hover,
-        &:focus {
-          background-color: #f9f9f9;
-        }
-      }
-      &.active {
-        a {
-          color: var(--primary-color);
-        }
-      }
-    }
+    border: 0.1rem solid var(--lnb-line-color);
+    padding: 0 1.9rem 5rem;
+    border-radius: 0 0 var(--lnb-radius) var(--lnb-radius);
+    @include depth2('lnb');
+  }
+  .depth3 {
+    @include depth3('lnb');
   }
 }
 .page-quick-wrap {
   position: absolute;
   top: 0;
   right: 0;
-  width: 12rem;
-  padding-top: 12rem;
+  width: var(--quick-width);
   height: 100%;
 }
 .page-quick {
   position: sticky;
-  top: 0.1rem;
-  border: 1px solid #dcdcdc;
+  top: var(--page-body-padding-top);
+  border: 0.1rem solid var(--quick-line-color);
+  border-radius: var(--quick-radius);
+  text-align: center;
   h2 {
     text-align: center;
     font-size: 2rem;
+    line-height: 2.9rem;
     font-weight: 900;
     color: #464ba5;
-    padding: 2.5rem 0;
+    padding: 2.2rem 0;
   }
-}
-.page-title-wrap {
-  display: flex;
-  align-items: center;
-  height: 12rem;
-  .page-title {
-    h2 {
-      font-size: 3rem;
-      font-weight: 500;
+  .quick-used-info {
+    margin: 0 -0.1rem;
+    background: #cdeffe;
+    padding: 1.4rem 1.5rem 1.7rem;
+  }
+  .quick-list {
+    a {
+      display: block;
     }
   }
-  .breadcrumb {
-    margin-left: auto;
+}
+@include class-begins('i-quick-') {
+  @include icon-default(6rem, 5.4rem);
+}
+$quickIcon: (use, dev, conf, wat, map);
+@each $icon in $quickIcon {
+  .i-quick-#{$icon} {
+    background-image: url(../images/common/ico-quick-#{$icon}.png);
   }
 }
+
 .page-footer {
-  background-color: #555759;
+  background-color: #f9f9f9;
   font-size: 1.7rem;
-  color: #fff;
   .foot-inner {
     display: flex;
     align-items: center;
-    padding: 5rem;
+    padding: 5rem calc(var(--page-body-padding-side) + var(--quick-width)) 5rem 0;
   }
   .nh-logo {
-    background-image: url(../images/common/nh-logo-white.png);
+    margin-left: 1.1rem;
   }
   .foot-info {
     flex: 1 1 auto;
@@ -215,20 +361,29 @@
     margin-left: 4.8rem;
     li {
       + li {
-        margin-left: 2.6rem;
+        margin-left: 2.5rem;
       }
     }
   }
   .foot-link {
-    width: 24rem;
+    width: 38rem;
+    display: flex;
+  }
+  .foot-link-select {
+    flex: 1 1 auto;
+    height: 6rem;
+    border-color: #ccced0;
+    border-radius: 0;
   }
   .foot-link-btn {
-    width: 100%;
+    display: block;
+    width: 8rem;
+    text-align: center;
     height: 6rem;
-    padding: 0 5rem 0 3rem;
-    font-size: 1.7rem;
+    border: 1px solid #ccced0;
+    border-left-width: 0;
     background-color: #fff;
-    color: #000;
+    font-size: 1.8rem;
   }
 }
 
@@ -238,4 +393,20 @@
   @include text-blind;
   @include bg-etc;
   background-image: url(../images/common/nh-logo.png);
+}
+
+.page-title-wrap {
+  display: flex;
+  align-items: center;
+  height: var(--page-title-height);
+  margin-bottom: 6rem;
+  border-bottom: 0.1rem solid var(--lnb-line-color);
+  .page-title {
+    h2 {
+      font-size: 2.8rem;
+    }
+  }
+  .breadcrumb {
+    margin-left: auto;
+  }
 }

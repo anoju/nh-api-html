@@ -10,7 +10,8 @@
       position: absolute;
       top: 0.6rem;
       left: 1.3rem;
-      background-color: #000;
+      @include bg-etc(0.7rem auto);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='7px' height='10px'%3E%3Cpath fill-rule='evenodd' fill='rgb(161, 167, 166)' d='M6.561,5.121 L5.147,6.535 L5.026,6.414 L1.904,9.535 L0.490,8.121 L3.612,4.1000 L0.490,1.878 L1.904,0.464 L5.026,3.586 L5.147,3.464 L6.561,4.878 L6.440,4.1000 L6.561,5.121 Z'/%3E%3C/svg%3E");
     }
   }
   .home {

@@ -10,6 +10,7 @@
     <script class="__include" src="./include/head.js"></script>
   </head>
   <body>
+    <p id="skipNavi" class="skip-navi"><a href="#contents">본문 바로가기</a></p>
     <article id="#wrap" class="page">
       <!-- 헤더 -->
       <header id="header" class="page-head">
@@ -21,7 +22,21 @@
         <nav id="gnb" class="page-gnb-wrap">
           <div class="page-inner">
             <ul class="page-gnb">
-              <li><a href="#">공공데이터</a></li>
+              <li>
+                <a href="#">공공데이터</a>
+                <ul class="depth2">
+                  <li><a href="#">데이터목록</a></li>
+                  <li><a href="#">API서비스</a></li>
+                  <li class="active">
+                    <a href="#" class="toggle open">공공데이터가이드</a>
+                    <ul class="depth3">
+                      <li class="active"><a href="#">데이터가이드1</a></li>
+                      <li><a href="#">데이터가이드2</a></li>
+                      <li><a href="#">데이터가이드3</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
               <li><a href="#">정보공유</a></li>
               <li><a href="#">이용안내</a></li>
               <li><a href="#">마이페이지</a></li>
@@ -45,9 +60,16 @@
                 <h2>공공데이터</h2>
               </div>
               <ul class="page-lnb-menu">
-                <li class="active"><a href="#">데이터목록</a></li>
+                <li><a href="#">데이터목록</a></li>
                 <li><a href="#">API서비스</a></li>
-                <li><a href="#">공공데이터가이드</a></li>
+                <li class="active">
+                  <a href="#" class="toggle open">공공데이터가이드</a>
+                  <ul class="depth3">
+                    <li class="active"><a href="#">데이터가이드1</a></li>
+                    <li><a href="#">데이터가이드2</a></li>
+                    <li><a href="#">데이터가이드3</a></li>
+                  </ul>
+                </li>
               </ul>
             </nav>
           </aside>
@@ -76,6 +98,47 @@
           <aside id="quickMenu" class="page-quick-wrap">
             <div class="page-quick">
               <h2>QUICK</h2>
+              <dl class="quick-used-info">
+                <dd><strong>115</strong></dd>
+                <dt>이용중</dt>
+              </dl>
+              <ul class="quick-list">
+                <li>
+                  <a href="#">
+                    <i class="i-quick-use"></i>
+                    <p class="tit">이용신청함</p>
+                    <p class="count">112</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="i-quick-dev"></i>
+                    <p class="tit">개발요청함</p>
+                    <p class="count">2</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="i-quick-conf"></i>
+                    <p class="tit">결재요청함</p>
+                    <p class="count">0</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="i-quick-wat"></i>
+                    <p class="tit">결재대기함</p>
+                    <p class="count">0</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="i-quick-map"></i>
+                    <p class="tit">지도</p>
+                    <p class="count">0</p>
+                  </a>
+                </li>
+              </ul>
             </div>
           </aside>
         </div>
@@ -92,7 +155,10 @@
             <li>문의시간 : 09:00~18:00(월~금)</li>
           </ul>
           <div class="foot-link">
-            <button class="foot-link-btn">관련시스템</button>
+            <select class="foot-link-select">
+              <option value="">관련시스템</option>
+            </select>
+            <button class="foot-link-btn">이동</button>
           </div>
         </div>
       </footer>
