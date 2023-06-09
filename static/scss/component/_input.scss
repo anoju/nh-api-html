@@ -1,22 +1,21 @@
 // input
 .input {
+  width: 15rem;
   position: relative;
-  display: flex;
-  width: 100%;
+  display: inline-flex;
+  vertical-align: middle;
   background: #fff;
-  border: 0.1rem solid var(--line-color);
-  border-radius: 1rem;
+  border: 0.1rem solid var(--input-line-color);
+  border-radius: var(--input-radius);
   align-items: center;
   transition: border 0.3s;
   &.show-select-list {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
-  &:not(.line) {
-    &.disabled,
-    input:disabled {
-      background-color: var(--input-disabled-bg-color);
-    }
+  &.disabled,
+  input:disabled {
+    background-color: var(--input-disabled-bg-color);
   }
   &.focus {
     border-color: var(--primary-color);
@@ -25,8 +24,6 @@
     border-color: var(--alert-txt-color);
     input:not(:focus) {
       color: var(--alert-txt-color);
-      // @include bg-etc(1.6rem auto, right 1.2rem center);
-      // background-image: url(../images/icon/ico-error@3x.png);
     }
   }
 
@@ -41,17 +38,13 @@
   input {
     width: 100%;
     flex: 1 1 auto;
-    height: 4.6rem;
+    height: calc(var(--input-height) - 0.2rem);
     padding: 0 0.8rem;
     border: 0 none;
     color: inherit;
     background: none;
-    border-radius: 1rem;
     margin: 0;
-    outline: none;
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: var(--strong-txt-color);
+    font-size: var(--input-font-size);
     appearance: none;
     &[type='file'] {
       font-size: 1.4rem;
@@ -60,10 +53,10 @@
       padding-bottom: 1.1rem;
     }
     &:first-child {
-      padding-left: 1.6rem;
+      padding-left: 2rem;
     }
     &:last-child {
-      padding-right: 1.6rem;
+      padding-right: 2rem;
     }
     &[readonly] {
       color: var(--base-txt-color);
@@ -71,46 +64,8 @@
     &:disabled {
       color: var(--input-disabled-color);
     }
-    // &.t-right {
-    //   &::placeholder {
-    //     text-align: left;
-    //   }
-    // }
-    &.date {
-      @include bg-etc(2.4rem auto, right 1.6rem center);
-      @include ico-calendar;
-      &::-webkit-calendar-picker-indicator {
-        width: 2.2rem;
-        opacity: 0;
-      }
-      // &:before {
-      //   content: attr(placeholder);
-      //   color: var(--placeholder-txt-color);
-      // }
-      &::-webkit-date-and-time-value {
-        text-align: left;
-      }
-    }
-  }
-  &.h56 {
-    border-radius: 1.2rem;
-    input {
-      height: 5.4rem;
-    }
   }
 
-  &.small {
-    input {
-      height: 3rem;
-      font-size: 1.4rem;
-      &:first-child {
-        padding-left: 0.8rem;
-      }
-      &:last-child {
-        padding-right: 0.8rem;
-      }
-    }
-  }
   > div:last-child {
     margin-right: 1.2rem;
   }
@@ -153,11 +108,6 @@
   input[type='text'] ~ .btn-inp-pwd {
     @include bg-etc;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16.667' height='16'%3E%3Cdefs%3E%3Cstyle%3E .cls-2%7Bfill:none;stroke:%23000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px%7D %3C/style%3E%3C/defs%3E%3Cg id='Icon-eye' transform='translate(.333)'%3E%3Cpath id='패스_109' data-name='패스 109' class='cls-2' d='M1 9.333S3.667 4 8.333 4s7.333 5.333 7.333 5.333S13 14.667 8.333 14.667 1 9.333 1 9.333z' transform='translate(-.333 -1.333)'/%3E%3Ccircle id='타원_23' data-name='타원 23' class='cls-2' cx='2' cy='2' r='2' transform='translate(6 6)'/%3E%3C/g%3E%3C/svg%3E");
-  }
-  &:not(.form-box) {
-    & + :is(.flex, .input, .select, .textarea) {
-      margin-top: var(--item-margin-y);
-    }
   }
   .unit {
     flex-shrink: 0;

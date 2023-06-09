@@ -1,6 +1,6 @@
-select {
-  height: 5.2rem;
-  padding: 0 4.1rem 0 1.6rem;
+.select {
+  height: var(--input-height);
+  padding: 0 2.8rem 0 2rem;
   border-radius: var(--input-radius);
   background-color: #fff;
   @include ico-select;

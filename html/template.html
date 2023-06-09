@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+    <meta name="viewport" content="width=1800" />
     <title>농협 공공데이터 포털</title>
 
     <!-- 퍼블용 include: 개발팀에서 재include 하길 바랍니다. -->
@@ -16,8 +16,28 @@
       <header id="header" class="page-head">
         <div class="page-inner head-inner">
           <h1 class="page-logo"><a href="#">농협 공공데이터 포털</a></h1>
-          <div class="head-search">검색창</div>
-          <div class="head-info">유저 정보 유틸</div>
+          <form action="">
+            <div class="head-search">
+              <select class="select head-search-select">
+                <option value="">전체</option>
+              </select>
+              <div class="input head-search-input">
+                <input type="text" />
+              </div>
+              <select class="select head-search-select2">
+                <option value="">AND</option>
+                <option value="">OR</option>
+              </select>
+              <button type="button" class="button head-search-btn">검색</button>
+              <button type="button" class="button head-search-btn2">상세검색</button>
+            </div>
+          </form>
+          <div class="head-info-wrap">
+            <div class="head-info">
+              <button class="button head-info-btn">김농협님</button>
+            </div>
+            반갑습니다.
+          </div>
         </div>
         <nav id="gnb" class="page-gnb-wrap">
           <div class="page-inner">
@@ -98,44 +118,46 @@
           <aside id="quickMenu" class="page-quick-wrap">
             <div class="page-quick">
               <h2>QUICK</h2>
-              <dl class="quick-used-info">
-                <dd><strong>115</strong></dd>
-                <dt>이용중</dt>
-              </dl>
+              <div class="quick-used-info">
+                <dl>
+                  <dd><strong>115</strong></dd>
+                  <dt>이용중</dt>
+                </dl>
+              </div>
               <ul class="quick-list">
                 <li>
-                  <a href="#">
+                  <a href="#" class="item">
                     <i class="i-quick-use"></i>
                     <p class="tit">이용신청함</p>
-                    <p class="count">112</p>
+                    <strong class="count red">112</strong>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="#" class="item">
                     <i class="i-quick-dev"></i>
                     <p class="tit">개발요청함</p>
-                    <p class="count">2</p>
+                    <strong class="count blue">2</strong>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="#" class="item">
                     <i class="i-quick-conf"></i>
                     <p class="tit">결재요청함</p>
-                    <p class="count">0</p>
+                    <strong class="count">0</strong>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="#" class="item">
                     <i class="i-quick-wat"></i>
                     <p class="tit">결재대기함</p>
-                    <p class="count">0</p>
+                    <strong class="count">0</strong>
                   </a>
                 </li>
                 <li>
-                  <a href="#">
+                  <a href="#" class="item">
                     <i class="i-quick-map"></i>
                     <p class="tit">지도</p>
-                    <p class="count">0</p>
+                    <strong class="count">0</strong>
                   </a>
                 </li>
               </ul>
@@ -155,7 +177,7 @@
             <li>문의시간 : 09:00~18:00(월~금)</li>
           </ul>
           <div class="foot-link">
-            <select class="foot-link-select">
+            <select class="select foot-link-select">
               <option value="">관련시스템</option>
             </select>
             <button class="foot-link-btn">이동</button>

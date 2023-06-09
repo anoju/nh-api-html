@@ -6,7 +6,7 @@
   vertical-align: middle;
   &:not(.not) {
     display: inline-flex;
-    height: 4.8rem;
+    height: var(--input-height);
     line-height: inherit;
     padding: 0 1.2rem;
     border: 0 solid transparent;
