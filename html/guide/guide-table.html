@@ -10,231 +10,236 @@
     <script class="__include" src="../include/head.js"></script>
   </head>
   <body>
-    <article class="page">
-      <!-- 헤더 -->
-      <header class="page-head">
-        <div class="head-inner">
-          <div class="head-left">
-            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
-          </div>
-          <div class="head-title">
-            <h1>가이드</h1>
-          </div>
-        </div>
-      </header>
-      <!-- //헤더 -->
+    <div data-include-html="../include/skipnavi.html"></div>
+
+    <article id="wrap" class="page">
+      <div data-include-html="../include/header.html"></div>
 
       <!-- 컨테이너(컨텐츠) -->
-      <main class="page-body">
-        <div class="tab-line-menu tab-fixed">
-          <div class="tab-inner">
-            <i class="tab-line" aria-hidden="true"></i>
-            <ul class="tab-list">
-              <li class="tab">
-                <a href="guide-dev.html"><span>개발자참고</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-txt.html"><span>텍스트</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-btn.html"><span>버튼</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-form.html"><span>폼요소</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-form-ui.html"><span>입력 UI</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-list.html"><span>리스트</span></a>
-              </li>
-              <li class="tab active">
-                <a href="guide-table.html"><span>테이블</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-popup.html"><span>팝업</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-animate.html"><span>애니메이션</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-swiper.html"><span>swiper</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-etc.html"><span>기타</span></a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="section">
-          <!--텍스트-->
-          <div>
-            <h1 class="gd__h1">테이블</h1>
-            <h2 class="gd__h2">가로</h2>
-            <div class="table">
-              <table>
-                <caption>
-                  테이블제목
-                </caption>
-                <colgroup>
-                  <col style="width: 135px" />
-                  <col style="width: auto" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th scope="col">thead th1</th>
-                    <th scope="col">thead th2</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>내용 내용 내용 내용 내용 내용</td>
-                    <td><strong>3,000,000</strong> 원</td>
-                  </tr>
-                  <tr>
-                    <td>내용 내용 내용 내용 내용 내용</td>
-                    <td><strong>3,000,000</strong> 원</td>
-                  </tr>
-                  <tr>
-                    <td>내용 내용 내용 내용 내용 내용</td>
-                    <td><strong>3,000,000</strong> 원</td>
-                  </tr>
-                </tbody>
-              </table>
+      <div id="container" class="page-body">
+        <article class="page-inner">
+          <div data-include-html="../include/lnb.html"></div>
+
+          <!-- contents -->
+          <main id="contents" class="page-contents" data-menu-active="3, 0">
+            <div class="page-title-wrap">
+              <div class="page-title-inner">
+                <div class="page-title">
+                  <h2>퍼블 가이드</h2>
+                </div>
+                <ol class="breadcrumb">
+                  <li><span class="home">Home</span></li>
+                  <!-- <li><a href="#">퍼블 가이드</a></li> -->
+                </ol>
+              </div>
             </div>
-            <h2 class="gd__h2">세로</h2>
-            <div class="table">
-              <table>
-                <caption>
-                  테이블제목1
-                </caption>
-                <colgroup>
-                  <col style="width: 120px" />
-                  <col style="width: auto" />
-                </colgroup>
-                <tbody>
-                  <tr>
-                    <th scope="row">tbody th1</th>
-                    <td><strong>3,000,000</strong> 원</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">tbody th1</th>
-                    <td><strong>3,000,000</strong> 원</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">tbody th1</th>
-                    <td><strong>3,000,000</strong> 원</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <h2 class="gd__h2">가로+세로</h2>
-            <div class="table">
-              <table>
-                <caption>
-                  테이블제목2
-                </caption>
-                <colgroup>
-                  <col style="width: 80px" />
-                  <col style="width: 135px" />
-                  <col style="width: 205px" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th scope="row">구분</th>
-                    <th scope="col">thead th1</th>
-                    <th scope="col">thead th2</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">tbody th1</th>
-                    <td>내용 내용 내용 내용 내용 내용</td>
-                    <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">tbody th1</th>
-                    <td>내용 내용 내용 내용 내용 내용</td>
-                    <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">tbody th1</th>
-                    <td>내용 내용 내용 내용 내용 내용</td>
-                    <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <h2 class="gd__h2">테이블 스크롤</h2>
-            <!-- <h4 class="gd__h3">기본형</h4> -->
-            <div class="tbl-scroll">
-              <div class="tbl-scroll-in">
-                <div class="table">
-                  <table>
-                    <caption>
-                      테이블제목3
-                    </caption>
-                    <colgroup>
-                      <col style="width: 60px" />
-                      <col style="width: 135px" />
-                      <col style="width: 205px" />
-                      <col style="width: 135px" />
-                      <col style="width: 205px" />
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th scope="row">구분</th>
-                        <th scope="col">thead th1</th>
-                        <th scope="col">thead th2</th>
-                        <th scope="col">thead th3</th>
-                        <th scope="col">thead th4</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">th</th>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">th</th>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">th</th>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">th</th>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용</td>
-                        <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
-                      </tr>
-                    </tbody>
-                  </table>
+            <!-- 컨텐츠 시작 -->
+            <div>
+              <div class="tab-navi-menu tab-fixed">
+                <div class="tab-inner">
+                  <ul class="tab-list">
+                    <li class="tab">
+                      <a href="guide-dev.html"><span>개발자참고</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-txt.html"><span>텍스트</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-btn.html"><span>버튼</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-form.html"><span>폼요소</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-form-ui.html"><span>입력 UI</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-list.html"><span>리스트</span></a>
+                    </li>
+                    <li class="tab active">
+                      <a href="guide-table.html"><span>테이블</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-popup.html"><span>팝업</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-animate.html"><span>애니메이션</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-etc.html"><span>기타</span></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!--테이블-->
+              <h1 class="gd__h1">테이블</h1>
+              <h2 class="gd__h2">가로</h2>
+              <div class="table">
+                <table>
+                  <caption>
+                    테이블제목
+                  </caption>
+                  <colgroup>
+                    <col style="width: 135px" />
+                    <col style="width: auto" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th scope="col">thead th1</th>
+                      <th scope="col">thead th2</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>내용 내용 내용 내용 내용 내용</td>
+                      <td><strong>3,000,000</strong> 원</td>
+                    </tr>
+                    <tr>
+                      <td>내용 내용 내용 내용 내용 내용</td>
+                      <td><strong>3,000,000</strong> 원</td>
+                    </tr>
+                    <tr>
+                      <td>내용 내용 내용 내용 내용 내용</td>
+                      <td><strong>3,000,000</strong> 원</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <h2 class="gd__h2">세로</h2>
+              <div class="table">
+                <table>
+                  <caption>
+                    테이블제목1
+                  </caption>
+                  <colgroup>
+                    <col style="width: 120px" />
+                    <col style="width: auto" />
+                  </colgroup>
+                  <tbody>
+                    <tr>
+                      <th scope="row">tbody th1</th>
+                      <td><strong>3,000,000</strong> 원</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">tbody th1</th>
+                      <td><strong>3,000,000</strong> 원</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">tbody th1</th>
+                      <td><strong>3,000,000</strong> 원</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <h2 class="gd__h2">가로+세로</h2>
+              <div class="table">
+                <table>
+                  <caption>
+                    테이블제목2
+                  </caption>
+                  <colgroup>
+                    <col style="width: 80px" />
+                    <col style="width: 135px" />
+                    <col style="width: 205px" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th scope="row">구분</th>
+                      <th scope="col">thead th1</th>
+                      <th scope="col">thead th2</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">tbody th1</th>
+                      <td>내용 내용 내용 내용 내용 내용</td>
+                      <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">tbody th1</th>
+                      <td>내용 내용 내용 내용 내용 내용</td>
+                      <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">tbody th1</th>
+                      <td>내용 내용 내용 내용 내용 내용</td>
+                      <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <h2 class="gd__h2">테이블 스크롤</h2>
+              <!-- <h4 class="gd__h3">기본형</h4> -->
+              <div class="tbl-scroll">
+                <div class="tbl-scroll-in">
+                  <div class="table">
+                    <table>
+                      <caption>
+                        테이블제목3
+                      </caption>
+                      <colgroup>
+                        <col style="width: 60px" />
+                        <col style="width: 135px" />
+                        <col style="width: 205px" />
+                        <col style="width: 135px" />
+                        <col style="width: 205px" />
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th scope="row">구분</th>
+                          <th scope="col">thead th1</th>
+                          <th scope="col">thead th2</th>
+                          <th scope="col">thead th3</th>
+                          <th scope="col">thead th4</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row">th</th>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">th</th>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">th</th>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">th</th>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용</td>
+                          <td>내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용 내용</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
-            <br />
-            <br />
-            <br />
-            <br />
-          </div>
-        </div>
-      </main>
+
+            <!-- //컨텐츠 끝 -->
+          </main>
+          <!-- //contents -->
+
+          <div data-include-html="../include/quick.html"></div>
+        </article>
+      </div>
       <!-- 컨테이너(컨텐츠) -->
 
-      <!-- 팝업 -->
-      <!-- //팝업 -->
+      <div data-include-html="../include/footer.html"></div>
     </article>
   </body>
 </html>

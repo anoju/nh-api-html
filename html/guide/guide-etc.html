@@ -10,128 +10,145 @@
     <script class="__include" src="../include/head.js"></script>
   </head>
   <body>
-    <article class="page">
-      <!-- 헤더 -->
-      <header class="page-head">
-        <div class="head-inner">
-          <div class="head-left">
-            <button type="button" class="head-back head-btn" aria-label="이전으로"></button>
-          </div>
-          <div class="head-title">
-            <h1>가이드</h1>
-          </div>
-        </div>
-      </header>
-      <!-- //헤더 -->
+    <div data-include-html="../include/skipnavi.html"></div>
+
+    <article id="wrap" class="page">
+      <div data-include-html="../include/header.html"></div>
 
       <!-- 컨테이너(컨텐츠) -->
-      <main class="page-body">
-        <div class="tab-line-menu tab-fixed">
-          <div class="tab-inner">
-            <i class="tab-line" aria-hidden="true"></i>
-            <ul class="tab-list">
-              <li class="tab">
-                <a href="guide-dev.html"><span>개발자참고</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-txt.html"><span>텍스트</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-btn.html"><span>버튼</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-form.html"><span>폼요소</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-form2.html"><span>입력 UI</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-list.html"><span>리스트</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-table.html"><span>테이블</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-popup.html"><span>팝업</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-animate.html"><span>애니메이션</span></a>
-              </li>
-              <li class="tab">
-                <a href="guide-swiper.html"><span>swiper</span></a>
-              </li>
-              <li class="tab active">
-                <a href="guide-etc.html"><span>기타</span></a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="section">
-          <h2 class="gd__h1">유튜브 테스트</h2>
-          <div class="youtube-box">
-            <iframe src="https://www.youtube.com/embed/js1CtxSY38I?modestbranding=1&amp;enablejsapi=1&amp;showinfo=0&amp;rel=0&amp;playsinline=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
+      <div id="container" class="page-body">
+        <article class="page-inner">
+          <div data-include-html="../include/lnb.html"></div>
 
-          <h2 class="gd__h1">btn loading</h2>
-          <div class="btn-wrap">
-            <div class="flex">
-              <a href="#" class="button gray" onclick="ui.button.loading('#btnLoading', false);">로딩취소</a>
-              <a href="#" id="btnLoading" class="button primary" onclick="ui.button.loading(this);">버튼 속 로딩</a>
-            </div>
-          </div>
-
-          <h2 class="gd__h1">모핑(morphing)팝업(풀팝업만 가능)</h2>
-          <div>
-            <a href="#fullPopup" class="button primary ui-pop-open">모핑팝업</a>
-            <a href="#fullPopup" class="button line ui-pop-open">모핑팝업</a>
-          </div>
-
-          <h2 class="gd__h1">page-fade-title</h2>
-          <h1 class="tit-h1 page-fade-title">
-            스크롤을 내려서 <br />
-            해당글자가 안보이면 <br />
-            헤더에 타이틀이 보입니다.
-          </h1>
-          <h2 class="gd__h1">ui-touch-rotate</h2>
-          <div style="overflow: hidden">
-            <div class="ui-touch-rotate mg-40">
-              <div class="rotate-items">
-                <div class="rotate-item">
-                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+          <!-- contents -->
+          <main id="contents" class="page-contents" data-menu-active="3, 0">
+            <div class="page-title-wrap">
+              <div class="page-title-inner">
+                <div class="page-title">
+                  <h2>퍼블 가이드</h2>
                 </div>
-                <div class="rotate-item">
-                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
-                </div>
-                <div class="rotate-item">
-                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
-                </div>
-                <div class="rotate-item">
-                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
-                </div>
-                <div class="rotate-item">
-                  <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
-                </div>
+                <ol class="breadcrumb">
+                  <li><span class="home">Home</span></li>
+                  <!-- <li><a href="#">퍼블 가이드</a></li> -->
+                </ol>
               </div>
             </div>
-          </div>
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-          <br />
-        </div>
-      </main>
+            <!-- 컨텐츠 시작 -->
+            <div>
+              <div class="tab-navi-menu tab-fixed">
+                <div class="tab-inner">
+                  <ul class="tab-list">
+                    <li class="tab">
+                      <a href="guide-dev.html"><span>개발자참고</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-txt.html"><span>텍스트</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-btn.html"><span>버튼</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-form.html"><span>폼요소</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-form-ui.html"><span>입력 UI</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-list.html"><span>리스트</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-table.html"><span>테이블</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-popup.html"><span>팝업</span></a>
+                    </li>
+                    <li class="tab">
+                      <a href="guide-animate.html"><span>애니메이션</span></a>
+                    </li>
+                    <li class="tab active">
+                      <a href="guide-etc.html"><span>기타</span></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- etc -->
+              <div class="section">
+                <h2 class="gd__h1">유튜브 테스트</h2>
+                <div class="youtube-box">
+                  <iframe src="https://www.youtube.com/embed/js1CtxSY38I?modestbranding=1&amp;enablejsapi=1&amp;showinfo=0&amp;rel=0&amp;playsinline=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+
+                <h2 class="gd__h1">btn loading</h2>
+                <div class="btn-wrap">
+                  <div class="flex">
+                    <a href="#" class="button gray" onclick="ui.button.loading('#btnLoading', false);">로딩취소</a>
+                    <a href="#" id="btnLoading" class="button primary" onclick="ui.button.loading(this);">버튼 속 로딩</a>
+                  </div>
+                </div>
+
+                <h2 class="gd__h1">모핑(morphing)팝업(풀팝업만 가능)</h2>
+                <div>
+                  <a href="#fullPopup" class="button primary ui-pop-open">모핑팝업</a>
+                  <a href="#fullPopup" class="button line ui-pop-open">모핑팝업</a>
+                </div>
+
+                <h2 class="gd__h1">page-fade-title</h2>
+                <h1 class="tit-h1 page-fade-title">
+                  스크롤을 내려서 <br />
+                  해당글자가 안보이면 <br />
+                  헤더에 타이틀이 보입니다.
+                </h1>
+                <h2 class="gd__h1">ui-touch-rotate</h2>
+                <div style="overflow: hidden">
+                  <div class="ui-touch-rotate mg-40">
+                    <div class="rotate-items">
+                      <div class="rotate-item">
+                        <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                      </div>
+                      <div class="rotate-item">
+                        <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                      </div>
+                      <div class="rotate-item">
+                        <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                      </div>
+                      <div class="rotate-item">
+                        <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                      </div>
+                      <div class="rotate-item">
+                        <div class="img-box"><img src="../../static/images/temp/thumb-temp.jpg" alt="" /></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+              </div>
+            </div>
+
+            <!-- //컨텐츠 끝 -->
+          </main>
+          <!-- //contents -->
+
+          <div data-include-html="../include/quick.html"></div>
+        </article>
+      </div>
       <!-- 컨테이너(컨텐츠) -->
+
+      <div data-include-html="../include/footer.html"></div>
     </article>
 
     <!-- 팝업 -->
