@@ -43,7 +43,7 @@ const ui = {
   basePath: function () {
     let rtnVal = '/static';
     if (location.pathname.indexOf('/public/') > -1) rtnVal = '/src/main/resources' + rtnVal;
-    else rtnVal = '/portal' + rtnVal;
+    // else rtnVal = '/portal' + rtnVal;
     return rtnVal;
   },
   isInit: false,
