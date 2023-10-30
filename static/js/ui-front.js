@@ -3769,9 +3769,7 @@ const Loading = {
   speed: 200,
   length: 0,
   ready: function () {
-    console.log($(Loading.className.wrap).length);
     if ($(Loading.className.wrap).length) return;
-    console.log('aaa');
     let $html = '<div class="' + Loading.className.wrap.slice(1) + '" class="hide">';
     $html += '<div class="tl">';
     $html += '<div>';
