@@ -42,7 +42,7 @@ const ui = {
   },
   basePath: function () {
     let rtnVal = '/static';
-    if (location.pathname.indexOf('/public/') > -1) rtnVal = '/src/main/resources' + rtnVal;
+    if (location.pathname.indexOf('/nh-api-html/') > -1) rtnVal = '/nh-api-html' + rtnVal;
     // else rtnVal = '/portal' + rtnVal;
     return rtnVal;
   },
