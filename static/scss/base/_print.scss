@@ -1,0 +1,17 @@
+@page {
+  size: A4 landscape;
+}
+@media print {
+  * {
+    print-color-adjust: exact;
+  }
+  body {
+    > .pop-wrap {
+      .pop-head {
+        .pop-close {
+          display: none;
+        }
+      }
+    }
+  }
+}

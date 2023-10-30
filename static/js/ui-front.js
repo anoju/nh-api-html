@@ -1,38 +1,58 @@
 /********************************
- * 클럽메타 UI 스크립트 *
+ * UI 스크립트 *
  * 작성자 : 안효주 *
  ********************************/
+/** polyfill **/
+if (!Array.prototype.forEach) {
+  Array.prototype.forEach = function (callback, thisArg) {
+    if (this === null) throw new TypeError('this is null or not defined');
+    if (typeof callback !== 'function') throw new TypeError(callback + ' is not a function');
+    var array = Object(this);
+    var length = array.length >>> 0;
+    for (var i = 0; i < length; i++) {
+      if (i in array) callback.call(thisArg, array[i], i, array);
+    }
+  };
+}
+if (window.NodeList && !NodeList.prototype.forEach) {
+  NodeList.prototype.forEach = Array.prototype.forEach;
+}
+if (window.HTMLCollection && !HTMLCollection.prototype.forEach) {
+  HTMLCollection.prototype.forEach = Array.prototype.forEach;
+}
 
 /** init **/
 const ui = {
+  pageWidth: 1800,
   className: {
     lock: '.lock',
     wrap: '.page',
-    mainWrap: '.main-page',
+    mainWrap: '.page',
     header: '.page-head',
     headerInner: '.head-inner',
     headerLeft: '.head-left',
     headerRight: '.head-right',
     title: '.head-title',
     body: '.page-body',
+    contents: '.page-contents',
     btnTop: '.btn-page-top',
     floatingBtn: '.floating-btn',
     popup: '.popup',
-    topFixed: '.top-fixed',
-    bottomFixed: '.bottom-fixed',
-    bottomFixedSpace: '.bottom-fixed-space'
+    topFixed: '.top-fixed'
   },
   basePath: function () {
     let rtnVal = '/static';
-    if (location.hostname.indexOf('github') > -1) rtnVal = '/nh-api-html' + rtnVal;
+    if (location.pathname.indexOf('/public/') > -1) rtnVal = '/src/main/resources' + rtnVal;
+    else rtnVal = '/portal' + rtnVal;
     return rtnVal;
   },
   isInit: false,
   init: function () {
-    if (this.isInit) {
+    if (ui.isInit) {
       ui.reInit();
     } else {
       ui.isInit = true;
+      Loading.ready();
       ui.common.init();
       ui.util.init();
       ui.button.init();
@@ -42,10 +62,6 @@ const ui = {
       ui.scroll.init();
       ui.animation.init();
       ui.animation.splitting();
-      ui.chart.init();
-
-      ui.etc.guide();
-
       Layer.init();
     }
   },
@@ -57,27 +73,22 @@ const ui = {
     ui.tooltip.reInit();
     ui.form.reInit();
     ui.list.reInit();
-    ui.swiper.reInit();
     ui.animation.init();
     ui.animation.splitting();
-    ui.chart.init();
+    Layer.reInit();
   },
   isLoadInit: false,
   loadInit: function () {
     if (ui.isLoadInit) return;
     ui.isLoadInit = true;
     ui.common.loadInit();
-    ui.common.scrollEvt();
     ui.button.loadInit();
     ui.form.loadInit();
     ui.list.loadInit();
-    ui.swiper.init();
   }
 };
 
 $(function () {
-  ui.common.vhChk();
-  ui.common.dark();
   ui.device.check();
 
   const $elements = $.find('*[data-include-html]');
@@ -90,33 +101,26 @@ $(function () {
 
 $(window).on('load', function () {
   ui.loadInit();
+
+  $(window).resize();
 });
 $(window).on('scroll resize', function () {
-  ui.common.scrollEvt();
   ui.common.fixedInit();
-  ui.common.bottomSpace();
+  ui.common.fixedResize();
 });
 $(window).on('resize', function () {
-  ui.common.vhChk();
   ui.tab.resize();
-  ui.tooltip.resize();
-  ui.table.guideResize();
-  ui.touch.rotateItem();
+  ui.form.selectResize();
+  // ui.tooltip.resize();
+  Layer.resizeUI();
 });
-$(window).on('scroll', function () {});
-$(window).on(
-  'scroll',
-  _.debounce(function () {
-    ui.common.scrollEndEvt();
-  }, 1500)
-);
 
 //Html include
 ui.html = {
   include: function () {
+    const dfd = $.Deferred();
     const $elements = $.find('*[data-include-html]');
     if ($elements.length) {
-      const dfd = $.Deferred();
       if (location.host) {
         $.each($elements, function (i) {
           const $this = $(this);
@@ -136,28 +140,26 @@ ui.html = {
             }
             if (i === $elements.length - 1) {
               dfd.resolve();
+              $(window).trigger('includHtml');
             }
           });
         });
       } else {
         dfd.resolve();
+        $(window).trigger('includHtml');
       }
-      return dfd.promise();
+    } else {
+      dfd.resolve();
+      $(window).trigger('includHtml');
     }
+    return dfd.promise();
   }
 };
 
 /** 디바이스 확인 **/
 ui.device = {
-  iPhone8PlusH: 736,
   screenH: window.screen.height,
   screenW: window.screen.width,
-  isIPhoneX: function () {
-    $('html').addClass('iPhone-X');
-  },
-  notIPhoneX: function () {
-    $('html').removeClass('iPhone-X');
-  },
   check: function () {
     ui.mobile.check();
     ui.pc.check();
@@ -165,40 +167,24 @@ ui.device = {
       const $pixelRatio = Math.round(window.devicePixelRatio);
       if (!!$pixelRatio) $('html').addClass('pixel-ratio-' + $pixelRatio);
 
-      const $isIPhoneX = ui.mobile.iPhone() && ui.device.screenH > ui.device.iPhone8PlusH ? true : false;
-      if ($isIPhoneX) {
-        if ($(window).width() < $(window).height()) ui.device.isIPhoneX();
-        else ui.device.notIPhoneX();
-      }
-
       //가로, 세로 회전시
       if (window.screen.orientation.angle == 0) $('html').removeClass('landscape');
       else $('html').addClass('landscape');
       $(window).on('orientationchange', function () {
         if (window.screen.orientation.angle == 0) {
           $('html').removeClass('landscape');
-          if ($isIPhoneX) ui.device.isIPhoneX();
         } else {
           $('html').addClass('landscape');
-          if ($isIPhoneX) ui.device.notIPhoneX();
         }
       });
-    }
 
-    // 최소기준 디바이스(가로)크기보다 작으면 meta[name="viewport"] 수정
-    const deviceMinWidth = 320;
-    if ($(window).width() < deviceMinWidth) {
-      const $viewport = $('meta[name="viewport"]');
-      const $newContent = 'width=' + deviceMinWidth + ',user-scalable=no,viewport-fit=cover';
-      $viewport.attr('content', $newContent);
-    }
-  },
-  app: function () {
-    // isWebView() -앱확인., goOutLink() -새창. 는 개발팀 공통함수
-    if (typeof isWebView === 'function' && isWebView()) {
-      return true;
-    } else {
-      return false;
+      // 최소기준 디바이스(가로)크기보다 작으면 meta[name="viewport"] 수정
+      const deviceMinWidth = 320;
+      if ($(window).width() < deviceMinWidth) {
+        const $viewport = $('meta[name="viewport"]');
+        const $newContent = 'width=' + deviceMinWidth + ',user-scalable=no,viewport-fit=cover';
+        $viewport.attr('content', $newContent);
+      }
     }
   }
 };
@@ -222,8 +208,11 @@ ui.pc = {
   safari: function () {
     return navigator.userAgent.match(/safari/i) == null ? false : true;
   },
-  edge: function () {
+  oldedge: function () {
     return navigator.userAgent.match(/edge/i) == null ? false : true;
+  },
+  edge: function () {
+    return navigator.userAgent.match(/edg/i) == null ? false : true;
   },
   msie: function () {
     return navigator.userAgent.match(/rv:11.0|msie/i) == null ? false : true;
@@ -253,7 +242,9 @@ ui.pc = {
       if (ui.pc.ie10()) $('html').addClass('ie10');
       if (ui.pc.ie9()) $('html').addClass('ie9');
       if (ui.pc.ie8()) $('html').addClass('ie8');
-      if (ui.pc.edge()) {
+      if (ui.pc.oldedge()) {
+        $('html').addClass('old-edge');
+      } else if (ui.pc.edge()) {
         $('html').addClass('edge');
       } else if (ui.pc.opera()) {
         $('html').addClass('opera');
@@ -317,76 +308,37 @@ ui.mobile = {
     if (ui.mobile.iOS()) $('html').addClass('ios');
     if (ui.mobile.Android()) $('html').addClass('android');
     //if(ui.mobile.iPhoneVersion() >= 12)$('html').addClass('ios12');
-
-    // 앱인지 구분
-    if (ui.device.app()) $('html').addClass('is-app');
   }
 };
 
 /** common **/
 ui.common = {
   init: function () {
-    ui.common.page();
-    ui.btnTop.init();
-    ui.common.header();
-    ui.common.bottomSpaceAppend();
-    ui.common.bottomSpaceRepeat();
+    ui.common.imgSrc();
     ui.common.fixedInit();
     ui.common.UI();
-    // ui.common.landscape();
+    ui.common.menu();
+    ui.common.menuActive();
   },
   reInit: function () {
-    ui.common.page();
-    ui.btnTop.append();
-    ui.common.header();
-    ui.common.bottomSpaceAppend();
-    ui.common.bottomSpaceRepeat();
+    ui.common.imgSrc();
     ui.common.fixedInit();
-    ui.common.hr();
     ui.common.lottie();
   },
   loadInit: function () {
-    ui.common.bottomSpace();
-    ui.common.hr();
+    ui.common.menuActive();
     ui.common.lottie();
   },
-  page: function () {
-    $(ui.className.wrap).each(function () {
-      if (!$(this).closest(ui.className.popup).length) $(this).addClass(ui.className.mainWrap.slice(1));
-    });
-
-    const $last = $(ui.className.body + ' > .btn-wrap' + ui.className.bottomFixed + ':last-child');
-    if ($last.length) {
-      $last.each(function () {
-        const $section = $(this).prev('.section');
-        if ($section.length) $section.addClass('last');
-      });
-    }
-  },
-  dark: function () {
-    //다크모드 체크
-    try {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: Dark)').matches;
-      if (prefersDark) $('html').addClass('dark');
-    } catch (e) {}
-  },
-  vhChk: function () {
-    const $vh = window.innerHeight * 0.01;
-    $('html').css('--vh', $vh + 'px');
-  },
-  hr: function () {
-    //hr태그 토크백 제외
-    $('hr').each(function () {
-      const $this = $(this);
-      if (!$this.attr('aria-hidden') !== 'true') $this.attr('aria-hidden', true);
-    });
-  },
   fixedInit: function () {
-    ui.common.fixed(ui.className.mainWrap + ' ' + ui.className.header);
+    ui.common.fixed('.page-title-wrap');
     ui.common.fixed('.tab-fixed');
+    // ui.common.fixed('.page-lnb-inner.active');
+    ui.common.fixed('.page-quick');
+    ui.common.fixedResize();
   },
-  fixed: function (target, isBottom) {
+  fixed: function (target, isBottom, isConfine) {
     if (isBottom === undefined) isBottom = false;
+    if (isConfine === undefined) isConfine = false;
     const $target = $(target);
     if (!$target.length) return;
     $target.each(function () {
@@ -394,219 +346,45 @@ ui.common = {
       if ($('html').hasClass(ui.className.lock.slice(1))) return false;
       const $scrollTop = $(window).scrollTop();
       if ($this.closest(ui.className.popup).length) return;
-      const $topMargin = getTopFixedHeight($this);
+      $this.addClass('__top-fixed');
+      // const $topMargin = getTopFixedHeight($this);
       let $topEl = $this;
       const $offsetTop = $this.data('top') !== undefined ? $this.data('top') : Math.max(0, getOffset(this).top);
       const $thisH = $this.outerHeight();
-      const $isFixed = isBottom ? $scrollTop + $topMargin > $offsetTop + $thisH : $scrollTop + $topMargin > $offsetTop;
+      // const $isFixed = isBottom ? $scrollTop + $topMargin > $offsetTop + $thisH : $scrollTop + $topMargin > $offsetTop;
+      const $isFixed = isBottom ? $scrollTop > $offsetTop + $thisH : $scrollTop > $offsetTop;
       if ($isFixed) {
         $this.data('top', $offsetTop);
         $this.addClass(ui.className.topFixed.slice(1));
         if ($topEl.css('position') !== 'fixed' && $topEl.css('position') !== 'sticky') $topEl = $topEl.children();
-        if ($topMargin !== parseInt($topEl.css('top')) && $topEl.css('position') === 'fixed') $topEl.css('top', $topMargin);
+        //if ($topMargin > parseInt($topEl.css('top')) && $topEl.css('position') === 'fixed') $topEl.css('top', $topMargin);
       } else {
         $this.removeData('top');
         if ($topEl.css('position') !== 'fixed' && $topEl.css('position') !== 'sticky') $topEl = $topEl.children();
-        $topEl.removeCss('top');
+        // $topEl.removeCss('top');
         $this.removeClass(ui.className.topFixed.slice(1));
       }
     });
   },
-  header: function () {
-    const $mainWrap = $(ui.className.mainWrap);
-    if (!$mainWrap.length) return;
-    $mainWrap.each(function () {
-      if (!$(this).is(':visible')) return;
-      const $head = $(this).find(ui.className.header);
-      const $body = $head.siblings(ui.className.body);
-      if ($head.length && $body.length && $head.css('position') === 'fixed') {
-        $body.css('padding-top', $head.outerHeight());
-      }
-      const $titleEl = $head.find(ui.className.title);
-      if (!$titleEl.length) return;
-      if ($head.closest(ui.className.wrap).find('.' + ui.common.scrollShowTitleClass).length) $titleEl.addClass('scl-title-hide');
-
-      const $headLeft = $head.find(ui.className.headerLeft);
-      if ($headLeft.find('h1').length) {
-        $headLeft.addClass('full');
-        return;
-      }
-      const $headLeftW = $headLeft.outerWidth();
-      const $headRight = $head.find(ui.className.headerRight);
-      const $headRightW = $headRight.outerWidth();
-      if (!$headLeft.length && !$titleEl.hasClass('t-left')) {
-        $titleEl.before('<div class="' + ui.className.headerLeft.slice(1) + '" style="width:' + $headRightW + 'px;" aria-hidden="true"></div>');
-      } else if (!$headRight.length) {
-        $titleEl.after('<div class="' + ui.className.headerRight.slice(1) + '" style="width:' + $headLeftW + 'px;" aria-hidden="true"></div>');
-      } else if ($headLeftW > $headRightW) {
-        $headRight.css('width', $headLeftW);
-      } else if ($headRight > $headLeftW) {
-        $headLeft.css('width', $headRightW);
-      }
-    });
-  },
-  bottomSpaceAppend: function () {
-    const $wrap = $(ui.className.mainWrap);
-    if (!$wrap.length) return;
-    $wrap.each(function () {
+  fixedResize: function () {
+    const winWidth = $(window).width();
+    const winScrollLeft = $(window).scrollLeft();
+    const $el = $('.__top-fixed');
+    $el.each(function () {
       const $this = $(this);
-      if (!$this.find(ui.className.bottomFixedSpace).length) {
-        // let target = $this;
-        // if (target.find(ui.className.body).length) target = target.find(ui.className.body);
-        $this.append('<div class="' + ui.className.bottomFixedSpace.slice(1) + '" aria-hidden="true"></div>');
+      if ($this.css('position') === 'sticky') return;
+      let $target = $this.data('target');
+      if ($target === undefined) {
+        $target = $this;
+        if ($this.css('position') !== 'fixed' && $this.children().length === 1) $target = $this.children();
+        $this.data('target', $target);
+      }
+      if (winWidth < ui.pageWidth && $this.hasClass('top-fixed') && winScrollLeft > 0) {
+        $target.css('transform', 'translateX(-' + winScrollLeft + 'px)');
+      } else {
+        $target.removeCss('transform');
       }
     });
-  },
-  bottomSpace: function () {
-    const $wrap = $(ui.className.wrap);
-    if (!$wrap.length) return;
-    $wrap.each(function () {
-      const $space = $(this).find(ui.className.bottomFixedSpace);
-      if (!$space.length) return;
-      const $spaceArryHeight = [];
-      $(this)
-        .find(ui.className.bottomFixed)
-        .not('.none-space')
-        .each(function () {
-          const $this = $(this);
-          const $height = $this.children().outerHeight();
-          if (!$this.hasClass('fixed-none')) $spaceArryHeight.push($height);
-          if ($this.hasClass('is-restore')) $this.css('height', $height);
-        });
-
-      const $maxHeight = $spaceArryHeight.length ? Math.max.apply(null, $spaceArryHeight) : 0;
-      $space.css('height', $maxHeight);
-      const $floatingBtn = $(this).find(ui.className.floatingBtn);
-      if ($floatingBtn.length) $floatingBtn.css('bottom', $maxHeight === 0 ? 24 : $maxHeight + 10);
-    });
-  },
-  bottomSpaceRepeat: function () {
-    let i = 0;
-    const repeatEvt = function () {
-      if (i < 10) {
-        ui.common.bottomSpace();
-        setTimeout(repeatEvt, 100);
-      }
-      i += 1;
-    };
-    repeatEvt();
-  },
-  landscape: function () {
-    //가로모드 막기
-    if (ui.mobile.any()) {
-      const _landscapeDiv = '.landscape-lock';
-      const _text = '이 사이트는 세로 전용입니다.<br />단말기를 세로모드로 변경해주세요.';
-      if (!$(_landscapeDiv).length) {
-        const $landscapeHtml = '<div class="' + _landscapeDiv.substring(1) + '"><div class="tbl"><div class="td">' + _text + '</div></div></div>';
-        $('body').append($landscapeHtml);
-      }
-      $(_landscapeDiv)
-        .unbind('touchmove')
-        .bind('touchmove', function (e) {
-          e.preventDefault();
-        });
-    }
-  },
-  lastSclTop: $(window).scrollTop(),
-  scrollEvt: function () {
-    const $SclTop = $(window).scrollTop();
-    const $wrap = $(ui.className.mainWrap + ':visible');
-    const $header = $wrap.find(ui.className.header);
-    const $headerH = $header.outerHeight();
-    const $spaceH = $wrap.find(ui.className.bottomFixedSpace).outerHeight();
-    const $btnTop = $wrap.find(ui.className.btnTop);
-    const $bottom = parseInt($btnTop.parent().css('bottom'));
-    const $margin = 24;
-    const $Height = window.innerHeight;
-    const $scrollHeight = $('body').get(0).scrollHeight;
-    if ($spaceH > 0 && $spaceH != $bottom - $margin) {
-      $wrap.find(ui.className.floatingBtn).css('bottom', $spaceH === 0 ? $margin : $spaceH + 10);
-    }
-
-    if ($SclTop > ui.btnTop.min && ui.common.lastSclTop !== $SclTop) {
-      if ($('html').hasClass('input-focus') && ui.mobile.any()) return;
-      ui.btnTop.on($btnTop);
-    } else {
-      ui.btnTop.off($btnTop);
-    }
-    const $fadeTitle = $wrap.find('.' + ui.common.scrollShowTitleClass);
-    const $headerTit = $header.find(ui.className.title);
-    if ($fadeTitle.length && $headerTit.length) ui.common.scrollShowTitle($fadeTitle[0], $wrap[0], $header[0], $headerTit[0]);
-
-    const $sclHead = $wrap.find('.ui-header-bg-origin');
-    if ($header.length && $sclHead.length) {
-      if ($sclHead.offset().top - $headerH < $SclTop) {
-        $header.addClass('bg-origin');
-      } else {
-        $header.removeClass('bg-origin');
-      }
-    }
-
-    const $btnFixed = $wrap.find('.btn-wrap' + ui.className.bottomFixed);
-    if ($btnFixed.length) {
-      $btnFixed.each(function () {
-        const $this = $(this);
-        if ($this.hasClass('is-restore')) {
-          const $top = $this.offset().top;
-          const $bottom = $top + $this.children().outerHeight();
-          if ($SclTop + $Height > $bottom) {
-            $this.addClass('fixed-none');
-          } else {
-            $this.removeClass('fixed-none');
-          }
-        }
-        if ($SclTop + $Height > $scrollHeight - 3 || $this.hasClass('fixed-none')) {
-          $this.removeClass('ing-fixed');
-        } else {
-          $this.addClass('ing-fixed');
-        }
-      });
-    }
-
-    setTimeout(function () {
-      ui.common.lastSclTop = $SclTop;
-    }, 50);
-  },
-  scrollEndEvt: function () {
-    const $SclTop = $(window).scrollTop();
-    if ($SclTop > ui.btnTop.min) {
-      const btn = $(ui.className.mainWrap + ':visible ' + ui.className.btnTop);
-      ui.btnTop.off(btn);
-    }
-  },
-  scrollShowTitleClass: 'page-fade-title',
-  scrollShowTitle: function (target, wrap, header, titleEl) {
-    const $fadeTitle = $(target);
-    if (!$fadeTitle.length) return;
-    const $wrap = $(wrap);
-    const $header = $(header);
-    const $headerTit = $(titleEl);
-    const $SclTop = $wrap.hasClass(ui.className.mainWrap.slice(1)) ? window.scrollY : $wrap.scrollTop();
-    const $headerH = $header.outerHeight();
-    if (!$headerTit.hasClass('scl-title-hide')) $headerTit.addClass('scl-title-hide');
-
-    const $fadeTitleTop = getOffset($fadeTitle[0]).top;
-    const $fadeTitleHeight = $fadeTitle.outerHeight();
-    const $fadeTitleEnd = $fadeTitleTop + $fadeTitleHeight;
-    if ($SclTop < $fadeTitleEnd) {
-      const $topMargin = Math.max(getTopFixedHeight($fadeTitle), $headerH);
-      let $opacityVal = Math.max(0, $SclTop + $topMargin - $fadeTitleTop) / $fadeTitleHeight;
-      $opacityVal = Math.max(0, Math.min(1, Math.round(($opacityVal + Number.EPSILON) * 100) / 100));
-      if ($opacityVal === 0) {
-        $headerTit.removeAttr('style');
-      } else {
-        $headerTit.css({
-          opacity: $opacityVal,
-          transform: 'translateY(' + (100 - $opacityVal * 100) + '%)'
-        });
-      }
-    } else {
-      $headerTit.css({
-        opacity: 1,
-        transform: 'translateY(0%)'
-      });
-      // if ($headerTit.hasClass('scl-title-hide')) $headerTit.removeClass('scl-title-hide').removeAttr('style');
-    }
   },
   lottie: function (readyEvt, completeEvt) {
     const $lottie = $('[data-lottie]');
@@ -653,103 +431,241 @@ ui.common = {
       });
     };
     if (typeof lottie === 'undefined') {
-      const $url = ui.basePath() + '/js/lib/lottie.5.11.0.min.js';
+      const $url = '/js/lib/lottie.5.11.0.min.js';
       ui.util.loadScript($url).then($lottieInit);
     } else {
       $lottieInit();
     }
   },
+  menuActive: function () {
+    const $menuHtml = $('[data-menu-active]');
+    const $menuIdHtml = $('[data-menu-id-view]');
+    let $gnb = $('#gnb .page-gnb');
+    let $lnb = $('#lnb');
+    const $activeClassName = 'active';
+    const $breadcrumb = $('.breadcrumb');
+    const $breadcrumbArry = [];
+    let clfMhnm = getUrlParams().clfMhnm;
+    if (!!clfMhnm) clfMhnm = decodeURI(decodeURIComponent(clfMhnm));
+
+    function gnbFindTxt(str) {
+      $findMenu = $('#gnb .page-gnb, #lnb');
+      $findMenu.find('a').each(function () {
+        const $this = $(this);
+        if ($this.text() === str) $this.parent('li').addClass($activeClassName);
+      });
+    }
+
+    if ($menuIdHtml.length) {
+      function menuIdFn() {
+        if (!!clfMhnm) gnbFindTxt(clfMhnm);
+        let menuID = $menuIdHtml.data('menu-id-view');
+        const $meunID = $("[data-menu-id='" + menuID + "']");
+        $meunID.each(function () {
+          const $this = $(this);
+          $this.addClass($activeClassName).parents('li').addClass($activeClassName);
+          const $lnb = $this.closest('.page-lnb-inner');
+          if ($lnb.length) $lnb.removeClass('hide').addClass('active').siblings('.page-lnb-inner').remove();
+        });
+        const $gnbActive = $gnb.find('.' + $activeClassName);
+        if ($gnbActive.length) {
+          $gnbActive.each(function () {
+            const $this = $(this);
+            $breadcrumbArry.push($this.children('a').text());
+          });
+        }
+        const $menuTitEl = $('[data-menu-title]');
+        if ($menuTitEl.length) {
+          const $menuTit = $menuTitEl.data('menu-title');
+          $breadcrumbArry.push($menuTit);
+        }
+        if ($('.page-title h2').length) {
+          let $title = $breadcrumbArry.length ? $breadcrumbArry[$breadcrumbArry.length - 1] : '타이틀';
+          if (menuID.indexOf('API_MGMT') > -1) {
+            const keyNo = getUrlParams().keyNo;
+            const $subTxt = !!keyNo ? ' 상세' : ' 목록';
+            $title = $title + ' - ' + $breadcrumbArry[0] + $subTxt;
+          }
+          $('.page-title h2').html($title);
+        }
+      }
+
+      menuIdFn();
+      makeBreadcrumb();
+      ui.common.menu();
+    } else if ($menuHtml.length) {
+      let menuActive = $menuHtml.data('menu-active');
+      menuActive = menuActive.split(',');
+      const dep1 = menuActive[0] === undefined ? -1 : Number($.trim(menuActive[0]));
+      const dep2 = menuActive[1] === undefined ? -1 : Number($.trim(menuActive[1]));
+      const dep3 = menuActive[2] === undefined ? -1 : Number($.trim(menuActive[2]));
+      function menuActiveFn(type, dep1Selector, dep2Selector, dep3Selector) {
+        $gnb = $('#gnb .page-gnb');
+        $lnb = $('#lnb');
+        let $dep1;
+        let $dep2;
+        let $dep3;
+        if (dep1 >= 0) {
+          if (type === 'gnb') {
+            if (!$gnb.length) return;
+            $dep1 = $gnb.find(dep1Selector).eq(dep1);
+            if ($dep1.length) {
+              $breadcrumbArry.push($dep1.children('a').text());
+              $dep1.addClass($activeClassName);
+            }
+          } else if (type === 'lnb') {
+            if (!$lnb.length) return;
+            const $lnbInner = $lnb.find(dep1Selector);
+            if ($lnbInner.length === 1) {
+              $dep1 = $lnbInner;
+            } else {
+              $dep1 = $lnbInner.eq(dep1);
+              $dep1.removeClass('hide').addClass('active').siblings().remove();
+            }
+          }
+        }
+        if (dep2 >= 0 && $dep1.length) {
+          $dep2 = $dep1.find(dep2Selector).eq(dep2);
+          if ($dep2.length) {
+            if (type === 'gnb') $breadcrumbArry.push($dep2.children('a').text());
+            $dep2.addClass($activeClassName);
+          }
+        }
+        if (dep3 >= 0 && $dep2.length) {
+          $dep3 = $dep2.find(dep3Selector).eq(dep3);
+          if ($dep3.length) {
+            if (type === 'gnb') $breadcrumbArry.push($dep3.children('a').text());
+            $dep3.addClass($activeClassName);
+          }
+        }
+      }
+
+      let menuTimer = 0;
+      if (!$gnb.length || !$lnb.length) menuTimer = ui.pc.msie() ? 300 : 50;
+      setTimeout(function () {
+        if (!!clfMhnm) gnbFindTxt(clfMhnm);
+        menuActiveFn('gnb', '> li', '.depth2 > li', '.depth3 > li');
+        menuActiveFn('lnb', '.page-lnb-inner', '.page-lnb-menu > li', '.depth3 > li');
+        makeBreadcrumb();
+        ui.common.menu();
+      }, menuTimer);
+    }
+
+    function makeBreadcrumb() {
+      if (!$breadcrumb.length || !$breadcrumbArry.length || $breadcrumb.data('init')) return;
+      $breadcrumb.data('init', true);
+      let $etcLi = '';
+      if ($breadcrumb.children('li').length > 1) $etcLi = $breadcrumb.children('li').first().next();
+      $.each($breadcrumbArry, function () {
+        const $appendHtml = '<li>' + this + '</li>';
+        if (!$etcLi) {
+          $breadcrumb.append($appendHtml);
+        } else {
+          $etcLi.before($appendHtml);
+        }
+      });
+    }
+  },
+  menu: function () {
+    //gnb depth3
+    function menuSetToggle(target) {
+      const $target = $(target);
+      if (!$target.length) return;
+      $target.find('li').each(function () {
+        const $this = $(this);
+        if ($this.hasClass('not-toggle')) return;
+        const $btn = $this.children('a');
+        if ($this.children('.depth3').length) {
+          $btn.addClass('toggle');
+          if ($this.hasClass('active')) $btn.addClass('open');
+        }
+      });
+    }
+    menuSetToggle('.page-gnb');
+    menuSetToggle('.page-lnb-menu');
+    if ($('.page-lnb-inner.active').length) $('.page-lnb-wrap').removeClass('hide');
+    else if ($('.page-lnb-inner').length === $('.page-lnb-inner.hide').length) $('.page-lnb-wrap').addClass('hide');
+  },
+  imgSrc: function () {
+    const $img = document.querySelectorAll('img');
+    if ($img.length) {
+      $img.forEach(function (img) {
+        const $src = img.getAttribute('src');
+        if (location.protocol !== 'file:' && $src.indexOf('../') === 0 && $src.indexOf('/static') > 0) {
+          let $newSrc = ui.basePath() + $src.split('/static').pop();
+          img.setAttribute('src', $newSrc);
+        }
+      });
+    }
+  },
   UI: function () {
+    // gnb, lnb, head-info-btn
+    $(document).on('click', '.page-gnb a.toggle, .page-lnb-menu a.toggle, .head-info-btn', function (e) {
+      e.preventDefault();
+      const $this = $(this);
+      $this.toggleClass('open');
+    });
+
+    // 전체메뉴
+    $(document).on('click', '.page-gnb-btn', function (e) {
+      e.preventDefault();
+      const $this = $(this);
+      $this.toggleClass('open');
+      const $wrap = $('.all-menu-inner');
+      const $gnb = $('.page-gnb');
+      if (!$wrap.find('.all-menu').length) {
+        const $clone = $gnb.clone();
+        $clone.removeClass('page-gnb').addClass('all-menu');
+        $wrap.prepend($clone);
+      }
+      if ($this.hasClass('open')) Body.lock();
+      else Body.unlock();
+    });
+    $(document).on('click', '.all-menu-close', function (e) {
+      e.preventDefault();
+      Body.unlock();
+      $('.page-gnb-btn').removeClass('open').focus();
+    });
+
+    // gnb
+    let focusTimer;
+    $(document).on('focusin', '.page-gnb a', function (e) {
+      const $this = $(this);
+      let $li = $this.closest('li');
+      if ($this.closest('.depth3').length) $li = $this.closest('li').closest('li').closest('li');
+      else if ($this.closest('.depth2').length) $li = $this.closest('li').closest('li');
+      clearTimeout(focusTimer);
+      $li.addClass('focus').siblings('li').removeClass('focus');
+    });
+    $(document).on('focusout', '.page-gnb a', function (e) {
+      let $li = $('.page-gnb li');
+
+      focusTimer = setTimeout(function () {
+        $li.removeClass('focus');
+      }, 10);
+    });
+
     $(document).on('click', ui.className.mainWrap, function (e) {
       if (!$('html').hasClass(ui.className.lock.slice(1))) $(window).scroll();
     });
 
-    // 수정 필요
-    let isFirst = false;
-    let isScrollIng = false;
-    let startY = 0;
-    let prevY = null;
-    let scrollDirection = null;
-    let prevMove = 0;
-    let lastMove = 0;
-
-    $(window).on('scroll', function () {
-      if (!isFirst) {
-        startY = window.scrollY;
-        isFirst = true;
-        return;
-      }
-      let currentY = window.scrollY;
-      let distanceY = currentY - startY;
-      if (prevY !== null) {
-        const deltaY = currentY - prevY;
-        if (deltaY > 0 && Math.abs(distanceY) > 3 && scrollDirection !== 'down') {
-          scrollDirection = 'down';
-          startY = currentY;
-        } else if (deltaY < 0 && Math.abs(distanceY) > 3 && scrollDirection !== 'up') {
-          scrollDirection = 'up';
-          startY = currentY;
-        }
-      }
-      const $fixedHead = $(ui.className.mainWrap + ':visible ' + ui.className.header + '.ty-fixed');
-      if ($fixedHead.length) {
-        const headerHeight = $fixedHead.outerHeight();
-        const min = -headerHeight;
-        const max = 0;
-        let move = Math.min(max, Math.max(min, distanceY > 0 ? -distanceY : -(distanceY + headerHeight)));
-        if (window.scrollY <= 3) {
-          $fixedHead.removeCss('transition').css('transform', `translateY(${move}px)`);
-        } else {
-          if (prevMove !== move) $fixedHead.css({ transform: `translateY(${move}px)`, transition: 'none' });
-        }
-        prevMove = move;
-      }
-      prevY = currentY;
+    //footer
+    $(document).on('click', '.foot-link-btn', function (e) {
+      e.preventDefault();
+      const $linkSelect = $('.foot-link-select select');
+      const $linkSelectVal = $linkSelect.val();
+      if (!$linkSelectVal) return;
+      window.open($linkSelectVal);
     });
-
-    $(document).on('touchstart', function () {
-      const $fixedHead = $(ui.className.mainWrap + ':visible ' + ui.className.header + '.ty-fixed');
-      if ($fixedHead.length) {
-        isScrollIng = true;
-      }
-    });
-
-    const fixedEnd = function () {
-      const $fixedHead = $(ui.className.mainWrap + ':visible ' + ui.className.header + '.ty-fixed');
-      if (isScrollIng || !$fixedHead.length) return;
-      const headerHeight = $fixedHead.outerHeight();
-      let move;
-      if (Math.abs(prevMove) > headerHeight / 2) {
-        move = -headerHeight;
-      } else {
-        move = 0;
-      }
-      $fixedHead.removeCss('transition');
-      if (prevMove !== move) $fixedHead.css('transform', `translateY(${move}px)`);
-      prevMove = move;
-      lastMove = move;
-    };
-
-    $(document).on('touchend', function () {
-      if (isScrollIng) {
-        isScrollIng = false;
-        fixedEnd();
-      }
-    });
-
-    $(window).on(
-      'scroll',
-      _.debounce(function () {
-        startY = window.scrollY;
-        fixedEnd();
-        prevY = null;
-        scrollDirection = null;
-        isFirst = false;
-      }, 1000)
-    );
   }
 };
 ui.util = {
+  init: function () {
+    ui.util.lazyImg();
+  },
+  reInit: function () {
+    ui.util.lazyImg();
+  },
   path: function (type) {
     let $path = location.pathname;
     let $returnVal = $path;
@@ -777,79 +693,52 @@ ui.util = {
     }
     return $returnVal;
   },
+  loadCss: function (url) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = ui.basePath() + url;
+    document.getElementsByTagName('head')[0].appendChild(link);
+  },
   loadScript: function (url) {
     const dfd = $.Deferred();
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    if (script.readyState) {
-      //IE
-      script.onreadystatechange = function () {
-        if (script.readyState == 'loaded' || script.readyState == 'complete') {
-          script.onreadystatechange = null;
-          dfd.resolve();
-        }
-      };
-    } else {
-      //Others
-      script.onload = function () {
-        dfd.resolve();
-      };
+    const isString = typeof url === 'string';
+    let i = 0;
+    const $length = isString ? 1 : url.length;
+    function appendTag() {
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      const $url = isString ? url : url[i];
+      if (!$url) return;
+      script.src = ui.basePath() + $url;
+      document.getElementsByTagName('head')[0].appendChild(script);
+      if (script.readyState) {
+        //IE
+        script.onreadystatechange = function () {
+          if (script.readyState == 'loaded' || script.readyState == 'complete') {
+            script.onreadystatechange = null;
+            if (i === $length - 1) {
+              dfd.resolve();
+            } else {
+              i += 1;
+              appendTag();
+            }
+          }
+        };
+      } else {
+        //Others
+        script.onload = function () {
+          if (i === $length - 1) {
+            dfd.resolve();
+          } else {
+            i += 1;
+            appendTag();
+          }
+        };
+      }
     }
-    script.src = url;
-    document.getElementsByTagName('head')[0].appendChild(script);
+
+    appendTag();
     return dfd.promise();
-  },
-  paint: function () {
-    if (!$('.smooth-corners').length) return;
-    const $url = ui.basePath() + '/js/lib/paint.min.js';
-    if (CSS && 'paintWorklet' in CSS) CSS.paintWorklet.addModule($url);
-  },
-  canvasRotateImg: function (target, src, deg) {
-    const image = document.createElement('img');
-    image.onload = function () {
-      drawRotated(deg);
-    };
-    image.src = src;
-
-    const canvas = target;
-
-    const drawRotated = function (degrees) {
-      const ctx = canvas.getContext('2d');
-
-      if (degrees == 90 || degrees == 270) {
-        canvas.width = image.height;
-        canvas.height = image.width;
-      } else {
-        canvas.width = image.width;
-        canvas.height = image.height;
-      }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (degrees == 90 || degrees == 270) {
-        ctx.translate(image.height / 2, image.width / 2);
-      } else {
-        ctx.translate(image.width / 2, image.height / 2);
-      }
-      ctx.rotate((degrees * Math.PI) / 180);
-      ctx.drawImage(image, -image.width / 2, -image.height / 2);
-    };
-  },
-  iframe: function () {
-    if ($('iframe.load-height').length) {
-      const iframeHeight = function () {
-        $('iframe.load-height').each(function () {
-          const $this = $(this);
-          const $thisH = $(this).height();
-          const $bodyH = $this.contents().find('body').height();
-          if (!!$bodyH && $thisH < $bodyH) $this.height($bodyH);
-        });
-      };
-
-      iframeHeight();
-      setTimeout(function () {
-        iframeHeight();
-      }, 1000);
-    }
   },
   lazyImg: function () {
     let lazyloadImages;
@@ -897,15 +786,6 @@ ui.util = {
       window.addEventListener('resize', lazyload);
       window.addEventListener('orientationChange', lazyload);
     }
-  },
-  reInit: function () {
-    ui.util.iframe();
-    ui.util.lazyImg();
-  },
-  init: function () {
-    ui.util.paint();
-    ui.util.iframe();
-    ui.util.lazyImg();
   }
 };
 ui.etc = {
@@ -925,125 +805,6 @@ ui.etc = {
     $last.delay(delay).fadeOut(500, function () {
       $(this).remove();
     });
-  },
-  guide: function () {
-    const themeColorChange = function () {
-      const $path = location.pathname;
-      if ($path.indexOf('/html/guide') > -1) {
-        // if(!$('.gd__theme_color').length){
-        // }
-        let $html = '<div class="gd__theme_color">';
-        $html += '<button type="button" class="gd__theme_btn"><i class="i-ico-arr-right-24" aria-hidden="true"></i></button>';
-        $html += '<dl>';
-        $html += '<dt>메인컬러 변경</dt>';
-        $html += '<dd>';
-        $html += '<input type="color">';
-        $html += '<div>';
-        $html += '<div class="color"></div>';
-        $html += '<div class="reset"><button type="button">리셋</button></div>';
-        $html += '</div>';
-        $html += '</dd>';
-        $html += '</dl>';
-        $html += '</div>';
-        $('body').append($html);
-
-        const $baseThemeColor = '#ff69a0';
-        const $input = $('.gd__theme_color input');
-        const $color = $('.gd__theme_color .color');
-        const $openBtn = $('.gd__theme_btn');
-        const $resetBtn = $('.gd__theme_color .reset button');
-        const $themeColor = uiCookie.get('theme-color') !== '' ? uiCookie.get('theme-color') : $baseThemeColor;
-
-        const setColor = function (colorStr) {
-          $input.val(colorStr);
-          $color.text(colorStr);
-          if ($baseThemeColor !== colorStr) {
-            $('html').css('--primary-color', colorStr);
-            const $rgb = hexToRgb(colorStr.substring(1));
-            $('html').css('--primary-color-rgb', $rgb);
-            uiCookie.set('theme-color', colorStr);
-          } else {
-            $('html').removeCss('--primary-color');
-            $('html').removeCss('--primary-color-rgb');
-            uiCookie.set('theme-color', '');
-          }
-        };
-        setColor($themeColor);
-
-        $openBtn.on('click', function (e) {
-          e.preventDefault();
-          $('.gd__theme_color').toggleClass('open');
-        });
-
-        $input.on('input', function () {
-          const $val = $(this).val();
-          setColor($val);
-        });
-
-        $resetBtn.on('click', function (e) {
-          e.preventDefault();
-          setColor($baseThemeColor);
-        });
-      }
-    };
-    themeColorChange();
-  }
-};
-ui.btnTop = {
-  init: function () {
-    ui.btnTop.append();
-    ui.btnTop.UI();
-  },
-  label: '컨텐츠 상단으로 이동',
-  text: 'TOP',
-  min: 100,
-  onClass: 'on',
-  hoverClass: 'hover',
-  scrollSpeed: 200,
-  append: function () {
-    const $wrap = $(ui.className.wrap);
-    if (!$wrap.length) return;
-    $wrap.each(function () {
-      if ($(this).find(ui.className.btnTop).length || $(this).find(ui.className.body).hasClass('not-top-btn')) return;
-      let btnHtml = '<a href="#" class="btn ' + ui.className.btnTop.slice(1) + '" title="' + ui.btnTop.label + '" role="button" aria-label="' + ui.btnTop.label + '">' + ui.btnTop.text + '</a>';
-      if ($(this).find(ui.className.floatingBtn).length) {
-        $(this).find(ui.className.floatingBtn).append(btnHtml);
-      } else {
-        btnHtml = '<div class="' + ui.className.floatingBtn.slice(1) + '">' + btnHtml + '</div>';
-        $(this).append(btnHtml);
-      }
-    });
-  },
-  on: function (btn) {
-    $(btn).attr('aria-hidden', 'false').addClass(ui.btnTop.onClass);
-    $(btn).closest(ui.className.floatingBtn).addClass('top-on');
-  },
-  off: function (btn) {
-    $(btn).attr('aria-hidden', 'true').removeClass(ui.btnTop.onClass);
-    $(btn).closest(ui.className.floatingBtn).removeClass('top-on');
-  },
-  UI: function () {
-    $(document)
-      .on('click', ui.className.btnTop, function (e) {
-        e.preventDefault();
-        const $page = $(this).closest(ui.className.wrap);
-        if ($page.closest(ui.className.popup).length) {
-          ui.scroll.wrapTop($page, 0, ui.btnTop.scrollSpeed).then(function () {
-            console.log('팝업 스크롤');
-          });
-        } else {
-          ui.scroll.top(0, ui.btnTop.scrollSpeed).then(function () {
-            console.log('페이지 스크롤');
-          });
-          $page.find($focusableEl).first().focus();
-        }
-      })
-      .on('mouseenter', ui.className.btnTop, function () {
-        $(this).addClass(ui.btnTop.hoverclass);
-      })
-      .on('mouseleave', ui.className.btnTop, function () {
-        $(this).removeClass(ui.btnTop.hoverClass);
-      });
   }
 };
 
@@ -1051,18 +812,13 @@ ui.btnTop = {
 ui.button = {
   init: function () {
     ui.button.default();
-    ui.button.disabledChk();
     ui.button.reset();
     ui.button.effect();
-    ui.button.star();
-    ui.button.imgBox();
     ui.tab.init();
-
-    ui.touch.init();
+    ui.button.UI();
   },
   reInit: function () {
     ui.button.loadInit();
-    ui.button.disabled();
   },
   loadInit: function () {
     ui.tab.loadInit();
@@ -1077,13 +833,15 @@ ui.button = {
           $(this).removeAttr('target');
           if ($role == undefined) $(this).attr('role', 'button');
         } else {
-          if (($href.startsWith('#') || $href.startsWith('javascript')) && $role == undefined) $(this).attr('role', 'button');
+          // if (($href.startsWith('#') || $href.startsWith('javascript')) && $role == undefined) $(this).attr('role', 'button');
+          if (($href.indexOf('#') === 0 || $href.indexOf('javascript') === 0) && $role == undefined) $(this).attr('role', 'button');
         }
       }
 
       if ($(this).attr('title') === undefined) {
         if ($(this).attr('target') === '_blank') $(this).attr('title', '새창열림');
-        if ($(this).hasClass('tel') || ($href != undefined && $href.startsWith('tel'))) $(this).attr('title', '전화걸기');
+        // if ($(this).hasClass('tel') || ($href != undefined && $href.startsWith('tel'))) $(this).attr('title', '전화걸기');
+        if ($(this).hasClass('tel') || ($href != undefined && $href.indexOf('tel') === 0)) $(this).attr('title', '전화걸기');
       }
     });
 
@@ -1099,44 +857,11 @@ ui.button = {
       const $href = $(this).attr('href');
       if (!$(this).hasClass('no-button') && $href != undefined) {
         //기본속성 살리는 클래스(스킵네비 등)
-        if ($href.startsWith('#')) {
+        // if ($href.startsWith('#')) {
+        if ($href === '#' || $href.indexOf('#') === 0) {
           e.preventDefault();
         }
       }
-
-      // 앱에서 새창열기
-      /*
-      const $target = $(this).attr('target');
-      if (ui.device.app()) {
-        if ($target === '_blank' && typeof webviewInterface === 'object' && typeof webviewInterface.goOutLink === 'function') {
-          e.preventDefault();
-          webviewInterface.goOutLink($href);
-        }
-      }
-      */
-    });
-  },
-  disabled: function () {
-    $('a[aria-disabled]').each(function () {
-      if (!$(this).hasClass('disabled')) $(this).removeAttr('aria-disabled');
-    });
-    $('a.disabled').each(function () {
-      $(this).attr('aria-disabled', 'true');
-    });
-  },
-  disabledChk: function () {
-    const checking = function () {
-      setTimeout(function () {
-        ui.button.disabled();
-        ui.form.input();
-        ui.form.select();
-      }, 100);
-    };
-    $(document).on('click', 'a, button', function () {
-      checking();
-    });
-    $(document).on('change', 'input', function () {
-      checking();
     });
   },
   reset: function () {
@@ -1149,22 +874,13 @@ ui.button = {
       const $this = $(this);
       let $btnEl = $this;
       if (!$btnEl.is('a') && !$btnEl.is('button') && !$btnEl.is('input')) return;
+      if ($btnEl.hasClass('not-click-ef')) return;
       if ($btnEl.is('input')) $btnEl = $btnEl.siblings('.lbl');
       if ($btnEl.hasClass('btn-click-outer')) $btnEl = $btnEl.offsetParent();
       const $delay = 650;
-      if ($btnEl.is('.disabled') || $btnEl.is('.btn-heart') || $btnEl.is('.btn-click-not')) return;
-      let $bgColor = $btnEl.css('background-color') ? rgba2hex($btnEl.css('background-color')) : '#ffffff';
-      let $bgAlpha = 0;
-      if ($bgColor.length > 7) {
-        const $tempColor = $bgColor;
-        $bgColor = $tempColor.substr(0, 7);
-        $bgAlpha = 255 - parseInt($tempColor.substr(7, 2), 16);
-      }
-      const $bgColorVal = Math.max($bgAlpha, Math.round(getBgBrightValue($bgColor)));
-      const isBalck = $bgColorVal < 50 ? true : false;
+      if ($btnEl.is('.disabled') || $btnEl.is('.btn-heart') || $btnEl.is('.btn-click-not') || $btnEl.css('position') === 'static') return;
       if (!$btnEl.find('.btn-click-in').length) $btnEl.addClass('btn-clicking-active').append('<i class="btn-click-in"></i>');
       const $btnIn = $btnEl.find('.btn-click-in').last();
-      if (isBalck) $btnIn.addClass('white');
       const $btnMax = Math.max($btnEl.outerWidth(), $btnEl.outerHeight());
 
       const $btnX = e.pageX - $btnEl.offset().left - $btnMax / 2;
@@ -1187,33 +903,6 @@ ui.button = {
         });
     });
   },
-  star: function () {
-    // 별점
-    $(document).on('click', '.ico-star-wrap > button', function (e) {
-      e.preventDefault();
-      const $idx = $(this).index();
-      const $title = $(this).attr('title');
-      const $closest = $(this).closest('.ico-star-wrap');
-      $closest.attr('data-on', $idx + 1);
-      $closest.find('.txt').text($title);
-    });
-  },
-  imgBox: function () {
-    $(document).on('click', '.ui-expend .ui-img', function (e) {
-      e.preventDefault();
-      const $this = $(this);
-      let $el = $this;
-      let $idx = $el.index();
-      let $parent = $el.parent();
-      while (!$parent.hasClass('ui-expend')) {
-        $el = $parent;
-        $idx = $el.index();
-        $parent = $el.parent();
-      }
-      const $children = $parent.children();
-      Layer.imgBox($children, $idx);
-    });
-  },
   loading: function (element, show) {
     const loadingElClass = '.loading-svg';
     const activeClass = '.loading';
@@ -1229,32 +918,59 @@ ui.button = {
     $html += '<circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>';
     $html += '</svg>';
     $html += '</div>';
-    let showTimer;
-    let hideTimer;
     if (show) {
-      clearTimeout(hideTimer);
       $element.addClass(activeClass.slice(1));
       $element.append($html);
-      showTimer = setTimeout(function () {
-        $element.css('clip-path', 'circle(' + $min + 'px at 50% 50%)');
-      }, 1);
     } else {
-      clearTimeout(showTimer);
-      $element.removeCss('clip-path');
-      hideTimer = setTimeout(function () {
-        $element.find(loadingElClass).remove();
-        $element.removeClass(activeClass.slice(1));
-      }, 500);
+      console.log('loading false', $element);
+      $element.find(loadingElClass).remove();
+      $element.removeClass(activeClass.slice(1));
     }
+  },
+  UI: function () {
+    $(document).on('click', ui.className.btnTop, function (e) {
+      e.preventDefault();
+      const $page = $(this).closest(ui.className.wrap);
+      ui.scroll.top(0, 200).then(function () {
+        // console.log('페이지 스크롤');
+      });
+      $page.find($focusableEl).first().focus();
+    });
+
+    $(document).on('click', 'a[data-pop-size]', function (e) {
+      e.preventDefault();
+      const $this = $(this);
+      const $href = $this.attr('href');
+      let $popsize = $this.data('pop-size');
+
+      if ($popsize && $popsize.indexOf(',') > 0) {
+        $popsize = $popsize.split(',');
+        const $popWidth = parseInt($.trim($popsize[0]));
+        const $popHeight = parseInt($.trim($popsize[1]));
+        winPop($href, $popWidth, $popHeight);
+      } else {
+        winPop($href);
+      }
+    });
+
+    $(document).on('click', '.ui-pop-print', function (e) {
+      e.preventDefault();
+      const $this = $(this);
+      const $popWrap = $this.closest('.' + Layer.className.wrap);
+      $popWrap.printThis({
+        debug: true
+      });
+    });
   }
 };
+
 // 탭
 ui.tab = {
   init: function () {
     ui.tab.tabInfo();
     ui.tab.ariaSet();
-    // ui.tab.ready();
     ui.tab.UI();
+    ui.tab.ready();
   },
   reInit: function () {
     ui.tab.ariaSet();
@@ -1271,8 +987,7 @@ ui.tab = {
     lineIng: '.tab-line-moving',
     active: '.active',
     panels: '.tab-panels',
-    panel: '.tab-panel',
-    swiperPanels: '.tab-swipe-panels'
+    panel: '.tab-panel'
   },
   aria: function (element) {
     if ($(element).length) {
@@ -1337,8 +1052,13 @@ ui.tab = {
       // const $tabWidth = $tabBtn.get(0).offsetWidth;
       // const $tabLeft = $active.get(0).offsetLeft + $tabBtn.get(0).offsetLeft;
       const $tabWidth = $tabBtn.outerWidth();
-      const $tabLeft = $listLeft + $active.position().left + $tabBtn.position().left;
+      const $tabLeft = $listLeft + $active.position().left + parseInt($active.css('margin-left')) + $tabBtn.position().left;
       const $tabRight = $innerSclWidth - $tabLeft - $tabWidth - $innerSclGap;
+
+      const $activeColor = $active.data('color');
+      if (!!$activeColor) $line.attr('data-color', $activeColor);
+      else $line.removeAttr('data-color');
+
       if ($LastLeft === $tabLeft && $LastWidth === $tabWidth) return;
       if ($isTy2) {
         if (isAni) {
@@ -1521,57 +1241,45 @@ ui.tab = {
   panelActive: function (panel, siblings, isAni, isScroll) {
     if (isAni === undefined) isAni = false;
     if (isScroll === undefined) isScroll = false;
-    if (panel === '#' || !panel) return;
+    if (panel === '#') return;
     const $panel = $(panel);
     const $siblings = $(siblings);
-    if (!$panel.length && !$siblings.length) return;
-    const $isPanel = $panel.hasClass(ui.tab.className.panel.slice(1)) || $siblings.hasClass(ui.tab.className.panel.slice(1));
-    let $panelWrap = null;
-    if ($panel.length) $panelWrap = $panel.closest(ui.tab.className.panels);
-    if ($panelWrap === null) {
-      const $siblingsSpl = siblings.split(',');
-      if ($($siblingsSpl[0]).length) $panelWrap = $($siblingsSpl[0]).closest(ui.tab.className.panels);
-    }
-    if ($panelWrap.hasClass(ui.tab.className.swiperPanels.slice(1))) {
-      const $swiper = $panelWrap.data('swiper');
-      if ($swiper !== undefined && isAni) {
-        // $swiper.slideTo($panel.index(), isAni ? 500 : 0);
-        $swiper.slideTo($panel.index(), 300);
+    const $target = $panel.length ? $panel : $siblings;
+    if (!$target.length) return;
+    const $isPanel = $target.hasClass(ui.tab.className.panel.slice(1));
+    let $panelWrap = $target.closest(ui.tab.className.panels);
+    const $panelWrapH = $panelWrap === null ? 0 : $panelWrap.outerHeight();
+    const $panelWrapGap = $panelWrap === null ? 0 : $panelWrapH - $panelWrap.height();
+    if ((siblings === undefined || siblings === false || siblings === '') && $panel.length) {
+      if ($isPanel) {
+        $panel.siblings(ui.tab.className.panel).attr('aria-expanded', false).removeClass(ui.tab.className.active.slice(1));
+        $panel.addClass(ui.tab.className.active.slice(1)).attr('aria-expanded', true);
+      } else {
+        $panel.show();
       }
     } else {
-      const $panelWrapH = $panelWrap === null ? 0 : $panelWrap.outerHeight();
-      const $panelWrapGap = $panelWrap === null ? 0 : $panelWrapH - $panelWrap.height();
-      if (siblings === undefined || siblings === false || siblings === '') {
-        if ($isPanel) {
-          $panel.siblings(ui.tab.className.panel).attr('aria-expanded', false).removeClass(ui.tab.className.active.slice(1));
-          $panel.addClass(ui.tab.className.active.slice(1)).attr('aria-expanded', true);
-        } else {
-          $panel.show();
-        }
+      if ($isPanel) {
+        if ($siblings.length) $siblings.attr('aria-expanded', false).removeClass(ui.tab.className.active.slice(1));
+        if ($panel.length) $panel.addClass(ui.tab.className.active.slice(1)).attr('aria-expanded', true);
       } else {
-        if ($isPanel) {
-          $siblings.attr('aria-expanded', false).removeClass(ui.tab.className.active.slice(1));
-          $panel.addClass(ui.tab.className.active.slice(1)).attr('aria-expanded', true);
-        } else {
-          $siblings.hide();
-          $panel.show();
-        }
+        if ($siblings.length) $siblings.hide();
+        if ($panel.length) $panel.show();
       }
-      if ($isPanel && isAni && $panelWrap.length) {
-        let $setHeight = $panelWrapGap;
-        $panelWrap.find(ui.tab.className.panel + ui.tab.className.active).each(function () {
-          $setHeight += $(this).outerHeight();
+    }
+    if ($isPanel && isAni && $panelWrap.length) {
+      let $setHeight = $panelWrapGap;
+      $panelWrap.find(ui.tab.className.panel + ui.tab.className.active).each(function () {
+        $setHeight += $(this).outerHeight();
+      });
+      if ($panelWrapH !== $setHeight) {
+        $panelWrap.css('height', $panelWrapH).animate({ height: $setHeight }, 300, function () {
+          $panelWrap.removeCss('height');
+          if ($panel.length && isScroll) {
+            const $tabBtn = $('[href="#' + panel + '"]');
+            const $tab = $tabBtn.length ? $tabBtn.closest(ui.tab.className.inner) : panel;
+            ui.scroll.inScreen($tab, panel);
+          }
         });
-        if ($panelWrapH !== $setHeight) {
-          $panelWrap.css('height', $panelWrapH).animate({ height: $setHeight }, 300, function () {
-            $panelWrap.removeCss('height');
-            if ($panel.length && isScroll) {
-              const $tabBtn = $('[href="#' + panel + '"]');
-              const $tab = $tabBtn.length ? $tabBtn.closest(ui.tab.className.inner) : panel;
-              ui.scroll.inScreen($tab, panel);
-            }
-          });
-        }
       }
     }
   },
@@ -1616,8 +1324,8 @@ ui.tab = {
     }
   },
   checkbox: function () {
-    if ($('.ui-tab-check').length) {
-      $('.ui-tab-check').each(function () {
+    if ($('.ui-tab-checkbox').length) {
+      $('.ui-tab-checkbox').each(function () {
         const $tarAry = [];
         const $showAry = [];
         $(this)
@@ -1638,44 +1346,10 @@ ui.tab = {
       });
     }
   },
-  swipe: function (element) {
-    const $element = $(element);
-    $element.each(function () {
-      const $this = $(this);
-      $this.addClass('_autoHeight');
-      $this.attr('data-view', 1);
-      ui.swiper.ready($this);
-
-      const $tabChageEvt = function (e) {
-        const $index = e.realIndex;
-        const $activePanel = $(e.slides[$index]);
-        const $activePanelId = $activePanel.attr('id');
-        const $activeBtn = $('[href="#' + $activePanelId + '"]');
-
-        $this.find('.swiper-slide').attr({
-          'aria-expanded': false,
-          'aria-hidden': true
-        });
-        $activePanel.attr('aria-expanded', true).removeAttr('aria-hidden');
-        if ($activeBtn.length) ui.tab.tabActive($activeBtn);
-      };
-      ui.swiper.base($this, $tabChageEvt);
-
-      $this.find('.swiper-slide').attr({
-        'aria-expanded': false,
-        'aria-hidden': true
-      });
-      $this.find('.swiper-slide.swiper-slide-active').attr('aria-expanded', true).removeAttr('aria-hidden');
-    });
-  },
   isTabInit: false,
   ready: function () {
-    if ($('.tab-navi-menu').length) ui.tab.scrolledCheck('.tab-navi-menu');
+    // if ($('.tab-navi-menu').length) ui.tab.scrolledCheck('.tab-navi-menu');
     ui.tab.activeCenter();
-
-    if ($(ui.tab.className.swiperPanels).length) {
-      ui.tab.swipe(ui.tab.className.swiperPanels);
-    }
 
     const $uiTab = $('.ui-tab');
     const $hash = location.hash;
@@ -1698,14 +1372,14 @@ ui.tab = {
             });
             if (_href !== '' && _href !== '#') {
               $tarAry.push(_href);
+              if (_href === $hash || $(_href).find($hash).length) {
+                $hashActive = _a;
+              }
               if ($(_href).length) {
                 $(_href).attr({
                   role: 'tabpanel',
                   'aria-labelledby': _aId
                 });
-                if (_href === $hash || $(_href).find($hash).length) {
-                  $hashActive = _a;
-                }
               }
             }
           }
@@ -1731,7 +1405,7 @@ ui.tab = {
     ui.tab.checkbox();
   },
   resize: function () {
-    if ($('.tab-navi-menu').length) ui.tab.scrolledCheck('.tab-navi-menu');
+    //if ($('.tab-navi-menu').length) ui.tab.scrolledCheck('.tab-navi-menu');
     if ($(ui.tab.className.line).length && ui.tab.isTabInit) {
       $(ui.tab.className.line).each(function () {
         const $this = $(this);
@@ -1797,10 +1471,6 @@ ui.tab = {
               });
             });
         }
-
-        if ($($href).find('.ui-swiper').length) {
-          ui.swiper.update($($href).find('.ui-swiper'));
-        }
       }
     });
 
@@ -1834,15 +1504,15 @@ ui.tab = {
     });
 
     //radio tab
-    $(document).on('change', '.ui-tab-radio input', function (e) {
+    $(document).on('change click', '.ui-tab-radio input', function (e) {
       const $show = $(this).data('show');
       const $hide = $(this).closest('.ui-tab-radio').data('hide');
       ui.tab.panelActive($show, $hide, true, true);
     });
 
     //checkbox tab
-    $(document).on('change', '.ui-tab-check input', function (e) {
-      const $closest = $(this).closest('.ui-tab-check');
+    $(document).on('change', '.ui-tab-checkbox input', function (e) {
+      const $closest = $(this).closest('.ui-tab-checkbox');
       const $hide = $closest.data('hide');
       const $showAry = [];
       $closest.find('input[type=checkbox]').each(function () {
@@ -1888,87 +1558,104 @@ ui.tooltip = {
     $(ui.tooltip.className.btn + ui.tooltip.className.active).each(function () {
       const $btn = $(this);
       const $wrap = $btn.closest(ui.tooltip.className.wrap);
-      const $cont = $wrap.find(ui.tooltip.className.body);
-      const $winW = $(window).width() - 40;
-      const $btnW = $btn.outerWidth();
-      const $btnX = Math.min($winW + $btnW / 2 - 2, $btn.offset().left) - 20;
-      let $scrollEnd = $(window).height() + $(window).scrollTop();
-      if ($(ui.className.bottomFixed + ':visible').length) $scrollEnd = $scrollEnd - $(ui.className.bottomFixed).children().outerHeight();
-      const $left = Math.max(-4, $btnX);
-      $cont.children(ui.tooltip.className.arrow).css({
-        left: $left + $btnW / 2
-      });
-      $cont.css({
-        width: $winW,
-        left: -$left
-      });
-      const $contY = $wrap.offset().top + $wrap.outerHeight() + parseInt($cont.css('margin-top')) + parseInt($cont.css('margin-bottom')) + $cont.outerHeight();
-      if ($cont.hasClass('is-bottom')) {
-        $cont.addClass('bottom');
-      } else {
-        if ($scrollEnd - 10 < $contY) {
-          $cont.addClass('bottom');
-        } else {
-          $cont.removeClass('bottom');
-        }
-      }
+      const $body = $wrap.find(ui.tooltip.className.body);
     });
   },
-  position: function (tar) {
-    const $tar = $(tar);
+  position: function (btn, wrap) {
+    const $btn = $(btn);
+    const $wrap = $(wrap);
+    const $body = $wrap.find(ui.tooltip.className.body);
+    let $inner = $body.find(ui.tooltip.className.inner);
+    let $arrow = $body.find(ui.tooltip.className.arrow);
+    let $closeBtn = $body.find(ui.tooltip.className.closeBtn);
+    if (!$inner.length) $body.wrapInner('<div class="' + ui.tooltip.className.inner.slice(1) + '"></div>');
+    $inner = $body.find(ui.tooltip.className.inner);
+    if (!$arrow.length) $body.prepend('<i class="' + ui.tooltip.className.arrow.slice(1) + '" aria-hidden="true"></i>');
+    $arrow = $body.find(ui.tooltip.className.arrow);
+    if (!$closeBtn.length) $inner.append('<a href="#" class="' + ui.tooltip.className.closeBtn.slice(1) + '" role="button" aria-label="툴팁닫기"></a>');
+    $closeBtn = $body.find(ui.tooltip.className.closeBtn);
 
-    if (!$tar.find(ui.tooltip.className.inner).length) $tar.wrapInner('<div class="' + ui.tooltip.className.inner.slice(1) + '"></div>');
-    if (!$tar.find(ui.tooltip.className.arrow).length) $tar.prepend('<i class="' + ui.tooltip.className.arrow.slice(1) + '" aria-hidden="true"></i>');
-    if (!$tar.find(ui.tooltip.className.closeBtn).length) $tar.find(ui.tooltip.className.inner).append('<a href="#" class="' + ui.tooltip.className.closeBtn.slice(1) + '" role="button" aria-label="툴팁닫기"></a>');
-    ui.tooltip.resize();
+    const $contents = $(ui.className.contents);
+    const $contentsL = $contents.offset().left;
+    const $contentsW = $contents.outerWidth();
+    const $btnL = $btn.offset().left;
+    const $btnW = $btn.outerWidth();
+    const $bodyL = $body.offset().left;
+    const $bodyW = $body.outerWidth();
+    let $left = $bodyW / 2 - $btnW / 2;
+    const $left2 = $btnL - $contentsL;
+    if ($btnL - $left < $contentsL) $left = $left2;
+    const $left3 = $btnL - $contentsL - $contentsW + $bodyW;
+    console.log($contentsW, $bodyW, $left3);
+    if ($btnL - $left + $bodyW > $contentsL + $contentsW) $left = $left3;
+    $body.children(ui.tooltip.className.arrow).css({
+      left: $left + $btnW / 2
+    });
+    $body.css({
+      left: -$left
+    });
   },
   aria: function (element) {
     $(element).each(function (e) {
       const $btn = $(this).find(ui.tooltip.className.btn);
-      const $cont = $(this).find(ui.tooltip.className.body);
-      let $contId = $cont.attr('id');
+      const $body = $(this).find(ui.tooltip.className.body);
+      let $bodyId = $body.attr('id');
       const $closeBtn = $(this).find(ui.tooltip.className.closeBtn);
-      if (!$contId) $contId = 'ttCont-' + e;
+      if (!$bodyId) $bodyId = 'ttCont-' + e;
       $btn.attr({
         role: 'button'
-        // 'aria-describedby': $contId
+        // 'aria-describedby': $bodyId
       });
-      $cont.attr({
-        // id: $contId,
+      $body.attr({
+        // id: $bodyId,
         role: 'tooltip'
       });
       $closeBtn.attr('role', 'button');
     });
   },
+  jqTooltip: function () {
+    if ($('.jq-tooltip').length) {
+      $('.jq-tooltip').tooltip({
+        position: {
+          my: 'left-50% bottom-5',
+          at: 'center top'
+        }
+      });
+    }
+  },
   reInit: function () {
     ui.tooltip.aria(ui.tooltip.className.wrap);
+    ui.tooltip.jqTooltip();
   },
   init: function () {
     ui.tooltip.aria(ui.tooltip.className.wrap);
+    ui.tooltip.jqTooltip();
 
     //열기
     $(document).on('click', ui.tooltip.className.wrap + ' ' + ui.tooltip.className.btn, function (e) {
       e.preventDefault();
-      const $cont = $(this).closest(ui.tooltip.className.wrap).find(ui.tooltip.className.body);
-      if ($(this).hasClass('is-pop')) {
-        const $popContent = $cont.html();
-        const $popTitle = $cont.attr('title');
+      const $this = $(this);
+      const $wrap = $this.closest(ui.tooltip.className.wrap);
+      const $body = $wrap.find(ui.tooltip.className.body);
+      if ($this.hasClass('is-pop')) {
+        const $popContent = $body.html();
+        const $popTitle = $body.attr('title');
         if ($popTitle !== undefined) {
           Layer.tooltip($popContent, $popTitle);
         } else {
           Layer.tooltip($popContent);
         }
       } else {
-        if ($(this).hasClass(ui.tooltip.className.active.slice(1))) {
-          $cont.stop(true, false).fadeOut();
-          $(this).removeClass(ui.tooltip.className.active.slice(1));
+        if ($this.hasClass(ui.tooltip.className.active.slice(1))) {
+          $body.stop(true, false).fadeOut();
+          $this.removeClass(ui.tooltip.className.active.slice(1));
         } else {
           $(ui.tooltip.className.btn).removeClass(ui.tooltip.className.active.slice(1));
           $(ui.tooltip.className.body).fadeOut();
-          $(this).addClass(ui.tooltip.className.active.slice(1));
-          $cont.stop(true, false).fadeIn();
+          $this.addClass(ui.tooltip.className.active.slice(1));
+          $body.stop(true, false).fadeIn();
           setTimeout(function () {
-            ui.tooltip.position($cont);
+            ui.tooltip.position($this, $wrap);
           }, 30);
         }
       }
@@ -1976,10 +1663,10 @@ ui.tooltip = {
     //닫기
     $(document).on('click', ui.tooltip.className.closeBtn, function (e) {
       e.preventDefault();
-      const $cont = $(this).closest(ui.tooltip.className.body);
-      const $btn = $cont.siblings(ui.tooltip.className.btn);
+      const $body = $(this).closest(ui.tooltip.className.body);
+      const $btn = $body.siblings(ui.tooltip.className.btn);
       $btn.removeClass(ui.tooltip.className.active.slice(1));
-      $cont.stop(true, false).fadeOut(500, function () {
+      $body.stop(true, false).fadeOut(500, function () {
         $btn.focus();
       });
     });
@@ -1993,288 +1680,69 @@ ui.tooltip = {
       });
   }
 };
-// touch UI
-ui.touch = {
-  wrapClass: '.ui-touch-rotate',
-  itemsClass: '.rotate-items',
-  itemClass: '.rotate-item',
-  rotateItem: function () {
-    if (!$(ui.touch.wrapClass + ' ' + ui.touch.itemsClass).length) return;
-    const $wrap = $(ui.touch.wrapClass + ' ' + ui.touch.itemsClass);
-    const $items = $wrap.find(ui.touch.itemClass);
-    const $radius = $wrap.outerWidth() / 2;
-    const $total = $items.length;
-    const $theta = [];
-    const $rotate = 360;
-    const $frags = $rotate / $total;
-    for (let i = 0; i < $total; i++) {
-      $theta.push(($frags / 180) * i * Math.PI);
-    }
-    const $wrapH = $wrap.height();
-    $items.each(function (j) {
-      const $this = $(this);
-      const $thisW = $this.outerWidth();
-      const $thisH = $this.outerHeight();
-      const $posX = Math.round($radius * Math.sin($theta[j]));
-      const $posY = Math.round($radius * Math.cos($theta[j]));
-      const $left = $wrapH / 2 + $posX - $thisW / 2;
-      const $top = $wrapH / 2 - $posY - $thisH / 2;
-      $(this).css({
-        left: $left,
-        top: $top
-      });
-    });
-  },
-  rotate: function (element) {
-    let ang = 0; // All angles are expressed in radians
-    let angStart = 0;
-    let isStart = false;
-    let isTouch = false;
-
-    const _angXY = (ev) => {
-      const bcr = element.getBoundingClientRect();
-      const radius = bcr.width / 2;
-      const clientX = ev.touches ? ev.touches[0].clientX : ev.clientX;
-      const clientY = ev.touches ? ev.touches[0].clientY : ev.clientY;
-      const y = clientY - bcr.top - radius; // y from center
-      const x = clientX - bcr.left - radius; // x from center
-      return Math.atan2(y, x);
-    };
-
-    const _start = (ev) => {
-      if (ev.touches !== undefined) {
-        isTouch = true;
-        Body.lock();
-      }
-      isStart = true;
-      angStart = _angXY(ev) - ang;
-      setTimeout(function () {
-        element.classList.add('rotating');
-      }, 10);
-    };
-
-    const _move = (ev) => {
-      if (!isStart) return;
-      if (!isTouch) ev.preventDefault();
-      ang = _angXY(ev) - angStart;
-      const deg = radToDeg(ang);
-      element.style.transform = 'rotate(' + deg + 'deg)';
-      const $items = element.querySelectorAll(ui.touch.itemClass);
-      $items.forEach(function (item) {
-        item.style.transform = 'rotate(' + deg * -1 + 'deg)';
-      });
-    };
-
-    const _end = () => {
-      isStart = false;
-      if (isTouch) {
-        isTouch = false;
-        Body.unlock();
-      }
-      element.classList.remove('rotating');
-    };
-
-    element.addEventListener('mousedown', _start, false);
-    document.addEventListener('mousemove', _move, false);
-    document.addEventListener('mouseup', _end, false);
-    element.addEventListener('touchstart', _start, false);
-    document.addEventListener('touchmove', _move, false);
-    document.addEventListener('touchend', _end, false);
-  },
-  focus: function () {
-    let $isFocus = false;
-    let $isFocusEl = null;
-    $(document).on('focus', 'input, textarea', function (e) {
-      const $target = e.target;
-      let $el;
-      // if ($target.tagName === 'TEXTAREA') $el = $($target);
-      if ($target.tagName === 'INPUT') {
-        const $type = $target.getAttribute('type');
-        // if($type === 'checkbox' || $type === 'radio' || $type === 'button' || $type === 'submit') return;
-        if ($type !== 'text' && $type !== 'tel' && $type !== 'number' && $type !== 'password' && $type !== 'email' && $type !== 'search' && $type !== 'url') return;
-      }
-      $el = $($target);
-      if ($el.prop('disabled') || $el.prop('readonly')) return;
-      $isFocus = true;
-      $isFocusEl = $target;
-      $('html').addClass('input-focus');
-    });
-    const $reset = function () {
-      $isFocus = false;
-      $isFocusEl = null;
-      $('html').removeClass('input-focus');
-      $startY = null;
-    };
-    $(document).on('blur', 'input, textarea', function (e) {
-      if ($isFocus) $reset();
-    });
-
-    // bottom fixed focus
-    /*
-    let $startY = null;
-    let isParent = false;
-    const $bottomInp = $(ui.className.bottomFixed).find('input, textarea');
-    $(document).on('touchstart', function (e) {
-      const $target = $(e.target);
-      if ($target.closest(ui.className.bottomFixed).length) {
-        isParent = true;
-      } else {
-        if ($isFocus && $bottomInp.is(':focus')) {
-          const $target = e.target;
-          const $clientY = e.touches[0].clientY;
-          if ($target !== $isFocusEl) {
-            $($isFocusEl).blur();
-            $reset();
-          } else {
-            $startY = $clientY;
-          }
-        }
-      }
-    });
-
-    $(document).on('touchmove', function (e) {
-      if ($isFocus && $bottomInp.is(':focus') && isParent) {
-        const $target = $(e.target);
-        const $clientY = e.touches[0].clientY;
-        let $closest;
-        if ($target.closest(ui.className.bottomFixed).length) $closest = $target.closest(ui.className.bottomFixed).children();
-        if (!$closest) return;
-        const $closestTop = $target.closest(ui.className.popup).length ? $closest.offset().top : $closest.offset().top - $(window).scrollTop();
-        if ($closestTop > $clientY || $(window).height() < $clientY) {
-          $($isFocusEl).blur();
-          $reset();
-        }
-      }
-    });
-    */
-  },
-  init: function () {
-    if ($(ui.touch.wrapClass).length) {
-      ui.touch.rotateItem();
-      document.querySelectorAll(ui.touch.wrapClass + ' ' + ui.touch.itemsClass).forEach(ui.touch.rotate);
-    }
-
-    ui.touch.focus();
-  }
-};
 
 /** form **/
 ui.form = {
   init: function () {
-    ui.form.focus();
-    ui.form.select();
-    // ui.form.select2();
+    ui.form.focusUI();
     ui.form.selectUI();
     ui.form.inputUI();
     ui.form.input();
+    ui.form.select();
     ui.form.textarea();
     ui.form.textareaUI();
     ui.form.textCountInit();
     ui.form.textCountUI();
+    ui.form.byteCountInit();
+    ui.form.byteCountUI();
+    ui.form.fileDrag();
 
     ui.form.spinnerUI();
     ui.form.spinner();
-    ui.form.range();
     ui.form.jqRange();
-    ui.form.jqCalendar('.datepicker');
+    ui.form.jqCalendar('input.datepicker');
+    ui.form.jqTimepicker('input.timepicker');
   },
   reInit: function () {
     ui.form.loadInit();
+    ui.form.input();
     ui.form.select();
-    // ui.form.select2();
     ui.form.textarea();
     ui.form.textCountInit();
 
     ui.form.spinner();
-    ui.form.range();
     ui.form.jqRange();
-    ui.form.jqCalendar('.datepicker');
+    ui.form.jqCalendar('input.datepicker');
+    ui.form.jqTimepicker('input.timepicker');
   },
   loadInit: function () {
-    //select off효과
-    $('select').each(function () {
-      const $val = $(this).val();
-      if ($val == '' || $val == null) $(this).addClass('off');
-      else $(this).removeClass('off');
-    });
-    if ($('.input-date input').length) {
-      $('.input-date input').each(function () {
-        ui.form.selectDate(this);
-      });
-    }
+    ui.form.inputStateCheck();
   },
-  focus: function () {
-    const $inpEls = 'input:not(:checkbox):not(:radio):not(:hidden), select, textarea, .btn-select';
-    const $appFocusElScroll = function (tar) {
-      const $this = $(tar);
-      if (!ui.device.app() || !ui.mobile.Android()) return;
-      if ($this.is('a') || $this.prop('readonly') || $this.prop('disabled')) return;
-      let $isFixedParent = false;
-      const $parents = $this.parents();
-      $parents.each(function () {
-        if ($(this).css('position') === 'fixed' || $(this).css('position') === 'sticky') {
-          $isFixedParent = true;
-        }
-      });
-      if ($isFixedParent) return;
-      setTimeout(function () {
-        const $el = $this.offsetParent();
-        let $elTop = $el.offset().top;
-        let isPop = false;
-        let $wrap = $(window);
-        let $wrapClass;
-        if ($this.closest('.' + Layer.className.popup).length) {
-          isPop = true;
-          $wrapClass = Layer.className.wrap;
-          $wrap = $this.closest('.' + $wrapClass);
-        }
-        const $wrapH = $wrap.height();
-        const $scrollTop = $wrap.scrollTop();
-        $elTop = isPop ? $elTop - $wrap.offset().top : $elTop - $scrollTop;
-        const $elHeight = $el.outerHeight();
-        const $elEnd = $elTop + $elHeight;
-        const $topGap = isPop ? getTopFixedHeight($this) : getTopFixedHeight($this);
-        const $bottomGap = $wrap.find(ui.className.bottomFixedSpace).length ? $wrap.find(ui.className.bottomFixedSpace).outerHeight() : $wrap.find('.' + Layer.footClass).outerHeight();
-        let $move;
-        const $start = ($topGap ? $topGap : 0) + 10;
-        const $end = $wrapH - ($bottomGap ? $bottomGap : 0) - 10;
-        if ($start > $elTop) {
-          $move = $scrollTop - ($start - $elTop);
-        } else if ($end < $elEnd) {
-          $move = $scrollTop + ($elEnd - $end);
-        }
-        if ($move) {
-          if (isPop) {
-            $wrap.stop(true, false).animate({ scrollTop: $move }, 200);
-          } else {
-            ui.scroll.top($move, 200);
-          }
-        }
-      }, 300);
-    };
-    let $dimTimer;
+  focusUI: function () {
+    const $inpEls = 'input:not(:checkbox):not(:radio):not(:hidden), select, textarea';
     $(document).on('focusin', $inpEls, function (e) {
       const $this = $(this);
-      if ($this.prop('readonly') || $this.prop('disabled')) return;
-      // if (!$this.prop('readonly') && !$this.prop('disabled')) $('html').addClass('inp-focus');
-      if ($this.closest('.form-item').length) $this.closest('.form-item').addClass('focus');
-      if ($this.is('input') && $this.closest('.input').length) $this.closest('.input').addClass('focus');
-      if ($this.is('select') && $this.closest('.select').length) $this.closest('.select').addClass('focus');
-      if ($this.hasClass('btn-select') && $this.closest('.select').length) $this.closest('.select').addClass('focus');
-      if ($this.is('textarea') && $this.closest('.textarea').length) $this.closest('.textarea').addClass('focus');
-
-      //app focus scroll: 안드로이드
-      // $appFocusElScroll(this);
+      if ($this.closest('.inp-focus').length) $this.closest('.inp-focus').addClass('focus');
+      if ($this.closest('.input').length) $this.closest('.input').addClass('focus');
+      if ($this.closest('.textarea').length) $this.closest('.textarea').addClass('focus');
     });
     $(document).on('focusout', $inpEls, function (e) {
       const $this = $(this);
-      // $('html').removeClass('inp-focus');
-      if ($this.closest('.form-item').length) $this.closest('.form-item').removeClass('focus');
-      if ($this.is('input') && $this.closest('.input').length) $this.closest('.input').removeClass('focus');
-      if ($this.is('select') && $this.closest('.select').length) $this.closest('.select').removeClass('focus');
-      if ($this.hasClass('btn-select') && $this.closest('.select').length) $this.closest('.select').removeClass('focus');
-      if ($this.is('textarea') && $this.closest('.textarea').length) $this.closest('.textarea').removeClass('focus');
+      if ($this.closest('.inp-focus').length) $this.closest('.inp-focus').removeClass('focus');
+      if ($this.closest('.input').length) $this.closest('.input').removeClass('focus');
+      if ($this.closest('.textarea').length) $this.closest('.textarea').removeClass('focus');
     });
+  },
+  stateChk: function (element) {
+    const $el = $(element);
+    const $closestName = $el[0].tagName === 'INPUT' ? '.input' : $el[0].tagName === 'SELECT' ? '.select' : $el[0].tagName === 'TEXTAREA' ? '.textarea' : null;
+    if (!$closestName) return;
+    const $closest = $el.closest($closestName);
+    if (!$closest.length) return;
+    if ($el.prop('readonly')) $closest.addClass('readonly');
+    else $closest.removeClass('readonly');
+    if ($el.prop('disabled')) $closest.addClass('disabled');
+    else $closest.removeClass('disabled');
   },
   selectSetVal: function (target, value) {
     const val = value === 0 ? '0' : value;
@@ -2287,156 +1755,284 @@ ui.form = {
       $val = val;
     }
     let $selectTxt = $target.find(':selected').text();
-    if ($selectTxt == '') $selectTxt = '선택';
+    if (!$target.children().length) $selectTxt = '항목 없음';
+    else if ($selectTxt === '') $selectTxt = '선택';
     const $btnVal = $target.siblings('.btn-select').find('.btn-select-val');
     if ($selectTxt === $btnVal.text()) return;
     $btnVal.html($selectTxt);
-    if ($val == '') $target.siblings('.btn-select').addClass('off');
-    else $target.siblings('.btn-select').removeClass('off');
+    ui.form.selectOff(target);
+  },
+  selectOff: function (select) {
+    const $select = $(select);
+    const $val = $select.val();
+    if ($select.data('reset') !== undefined || $select.data('off') !== undefined) return;
+    if ($val === '' || $val === null) $select.closest('.select').addClass('off');
+    else $select.closest('.select').removeClass('off');
   },
   select: function () {
-    const $select = $('.select').not('.btn, .not');
+    const $select = $('.select').not('.not');
     if ($select.length) {
       $select.each(function (e) {
         const $this = $(this);
         const $sel = $this.find('select');
-        const $val = $sel.val();
-        if ($val == '' || $val == null) $sel.addClass('off');
-        else $sel.removeClass('off');
-        if ($sel.prop('readonly')) $this.addClass('readonly');
-        else $this.removeClass('readonly');
-        if ($sel.prop('disabled')) $this.addClass('disabled');
-        else $this.removeClass('disabled');
 
+        ui.form.stateChk($sel);
+
+        // if ($this.hasClass('ui-select')) return;
         if (!$sel.siblings('.btn-select').length) {
           let $selId = $sel.attr('id');
           let $title = $sel.attr('title');
 
           if ($selId == undefined) $selId = 'none';
           if ($title == undefined) $title = '선택';
-          const $btnTitle = '팝업으로 ' + $title;
+          const $btnTitle = $title;
           const $btnHtml = '<a href="#' + $selId + '" class="btn-select ui-select-open" title="' + $btnTitle + '" role="button"><span class="btn-select-val"></span></a>';
 
           $sel.hide().after($btnHtml);
-
           const $forLbl = $('label[for="' + $selId + '"]');
           if ($forLbl.length) $forLbl.addClass('ui-select-lbl').attr('title', $btnTitle);
-
-          ui.form.selectSetVal($sel);
         }
+        if (!$this.hasClass('ui-select')) $this.addClass('ui-select');
+        ui.form.selectSetVal($sel);
       });
     }
   },
-  /*
-  select2: function () {
-    const $select = $('.select.inline');
-    if ($select.length) {
-      $select.each(function () {
-        const $this = $(this);
-        const $select = $this.find('select');
-        let $selId = $select.attr('id');
-        let $title = $select.attr('title');
+  selectOpen: function (el) {
+    const $el = $(el);
+    const $sel = $el.siblings('select');
+    const $closest = $el.closest('.select');
+    const $elTxt = $.trim($el.text());
+    const $class = $closest.data('class');
 
-        if ($select.length && !$select.siblings('.btn-select').length) {
-          if ($selId == undefined) $selId = 'none';
-          if ($title == undefined) $title = '선택';
-          const $btnHtml = '<a href="#' + $selId + '" class="btn-select" title="' + $title + '" role="button"><span class="val"></span></a>';
-          let $optionHtml = '<div class="option-wrap">';
-          $select.children().each(function () {
-            const $val = $(this).attr('value');
-            const $text = $(this).text();
-            $optionHtml += '<a href="#" class="option" data-val="' + $val + '">' + $text + '</a>';
-          });
-          $optionHtml += '</div>';
-          $select.hide().after($btnHtml);
-          $this.append($optionHtml);
-          $select.off('change').on('change', function () {
-            const $val = $(this).val();
-            let $selectTxt = $(this).find(':selected').text();
-            if ($selectTxt == '') $selectTxt = '선택';
-            $(this).siblings('.btn-select').find('.val').html($selectTxt);
-            if ($val == '') {
-              $(this).siblings('.btn-select').addClass('off');
-            } else {
-              $(this).siblings('.btn-select').removeClass('off');
-            }
-          });
-          $select.change();
+    // console.log('click', $openSelect.length, $openSelect.not(this).length);
+    if (!$sel.length) return;
+    if ($sel.prop('disabled')) return;
+    function optionHtml(target) {
+      let itemLength = 0;
+      let rtnHtml = '<div class="select-option-wrap">';
+      rtnHtml += '<div class="select-option-inner">';
+      target.children().each(function () {
+        const $val = $(this).attr('value');
+        const $text = $(this).text();
+        const $selected = $elTxt === $text ? ' selected' : '';
+        if ($val !== '' || target.data('reset') !== undefined) {
+          itemLength += 1;
+          rtnHtml += '<button type="button" class="option ui-select-option' + $selected + '" data-val="' + $val + '">' + $text + '</button>';
         }
+      });
+      if (itemLength === 0) {
+        rtnHtml += '<div class="option-none">선택 가능한 옵션이 없습니다.</div>';
+      }
+      rtnHtml += '</div>';
+      rtnHtml += '</div>';
+      // return itemLength ? rtnHtml : null;
+      return rtnHtml;
+    }
+
+    let $wrap = $('.select-option-wrap');
+    if ($wrap.length) $wrap.remove();
+
+    if ($el.hasClass('open')) {
+      $el.removeClass('open');
+    } else {
+      const $openSelect = $('.ui-select .btn-select.open');
+      if ($openSelect.length) $openSelect.removeClass('open');
+
+      const $optionHtml = optionHtml($sel);
+      /*
+      if (!$optionHtml) {
+        const $msg = '<strong>선택 할 정보가 없습니다.</strong><p class="fz-14 mt-10">관련 문의가 필요하신 경우 <br />중앙회 IT기획부 담당자(031-727-3454, 3455)로 문의해주시기 바랍니다</p>';
+        Layer.alert($msg);
+        return;
+      }
+      */
+      $el.addClass('open');
+      const $popBody = $el.closest('.' + Layer.className.body);
+      const $popup = $el.closest('.' + Layer.className.popup);
+      let $body = $popBody.length && $popup.length ? $popBody : $('body');
+      $body.append($optionHtml);
+      $wrap = $('.select-option-wrap');
+      if ($class) $wrap.addClass($class);
+      $wrap.data('select', $closest);
+      ui.form.selectPosition($wrap);
+
+      const $selected = $wrap.find('.selected');
+      let $sclTop = 0;
+      if ($selected.length) $sclTop = $selected.position().top;
+      const $inner = $wrap.find('.select-option-inner');
+      if ($sclTop && $inner[0].scrollHeight > $inner.outerHeight()) {
+        $inner.scrollTop($sclTop - $selected.outerHeight());
+      }
+    }
+  },
+  selectPosition: function (el) {
+    const $el = $(el);
+    const $elH = $el.outerHeight();
+    const $bodyH = $('body').height();
+    const $popup = $el.closest('.' + Layer.className.popup);
+    const $popBody = $el.closest('.' + Layer.className.body);
+    const $isPop = $popBody.length && $popup.length ? true : false;
+    const $select = $el.data('select');
+    if (!$select) return;
+    const $btn = $select.find('.btn-select');
+    const $fontSize = $btn.css('font-size');
+    const $width = $btn.outerWidth();
+    const $btnH = $btn.outerHeight();
+    const $btnTop = $btn.offset().top;
+    let $left = 0;
+    let $top = 0;
+    if ($isPop) {
+      const $popBodyLeft = $popBody.offset().left;
+      const $popBodyTop = $popBody.offset().top;
+      const $popBodySclTop = $popBody.scrollTop();
+      const $popBodyH = $popBody.outerHeight();
+      $left = $btn.offset().left - $popBodyLeft;
+      $top = $btnTop + $btnH - $popBodyTop + $popBodySclTop;
+      if ($top + $elH > $popBodySclTop + $popBodyH - 20) {
+        $top = $top - $btnH - $elH;
+        $el.addClass('to-up');
+      }
+    } else {
+      $left = $btn.offset().left;
+      $top = $btnTop + $btnH;
+      if ($top + $elH > $bodyH - 20) {
+        $top = $top - $btnH - $elH;
+        $el.addClass('to-up');
+      }
+    }
+    $el.css({
+      left: $left,
+      top: $top,
+      minWidth: $width,
+      fontSize: $fontSize
+    });
+    const $inner = $el.find('.select-option-inner');
+    const $option = $inner.find('.ui-select-option').first();
+    const $showOptionLength = 8;
+    if ($option.length) {
+      const $optionH = $option.outerHeight();
+      const $innerPaddig = parseInt($inner.css('padding-top')) + parseInt($inner.css('padding-bottom'));
+      const $maxHeight = $optionH * $showOptionLength;
+      $inner.css({
+        maxHeight: $maxHeight + $innerPaddig
       });
     }
   },
-  */
+  selectReset: function () {
+    let $wrap = $('.select-option-wrap');
+    if ($wrap.length) $wrap.remove();
+    const $openSelect = $('.ui-select .btn-select.open');
+    if ($openSelect.length) $openSelect.removeClass('open');
+  },
+  selectResize: function () {
+    const $option = $('.select-option-wrap');
+    if ($option.length) {
+      $option.each(function () {
+        ui.form.selectPosition(this);
+      });
+    }
+  },
   selectUI: function () {
     $(document).on('change', 'select', function () {
-      const $val = $(this).val();
-      if ($val == '') {
-        $(this).addClass('off');
+      const $this = $(this);
+      if ($this.siblings('.btn-select').length) {
+        ui.form.selectSetVal(this);
       } else {
-        $(this).removeClass('off');
-      }
-      if ($(this).siblings('.btn-select').length) ui.form.selectSetVal(this);
-    });
-
-    /*
-    $(document).on('click', '.select.inline .btn-select', function (e) {
-      e.preventDefault();
-      const $closest = $(this).closest('.select');
-      const $select = $closest.find('select');
-      if (!$select.length) return;
-      const $val = $select.val();
-      const $option = $closest.find('.option[data-val="' + $val + '"]');
-      $option.addClass('selected').siblings().removeClass('selected');
-      $(this).closest('.select').toggleClass('option-open');
-    });
-    $(document).on('click', '.select.inline .option', function (e) {
-      e.preventDefault();
-      const $val = $(this).data('val');
-      const $select = $(this).closest('.select').find('select');
-      $select.val($val).change();
-      $(this).closest('.select').removeClass('option-open');
-    });
-    */
-
-    $(document).on('change', '.datepicker-etc-select', function (e) {
-      const $val = $(this).val();
-      if ($('.datepicker-etc').length) {
-        if ($val === 'etc') {
-          $('.datepicker-etc').slideDown(300);
-        } else {
-          $('.datepicker-etc').slideUp(300);
-        }
+        ui.form.selectOff(this);
       }
     });
+
+    $(document).on('click', '.ui-select-open', function (e) {
+      e.preventDefault();
+      ui.form.selectOpen(this);
+    });
+
+    $(document).on('click', '.ui-select-option', function (e) {
+      e.preventDefault();
+      const $this = $(this);
+      const $val = $this.data('val');
+      const $wrap = $this.closest('.select-option-wrap');
+      const $closest = $wrap.data('select');
+      const $btn = $closest.find('.btn-select');
+      const $sel = $closest.find('select');
+
+      $sel.val($val).change();
+      $btn.removeClass('open');
+      $wrap.remove();
+    });
+
+    $(document)
+      .on('click touchend', function (e) {
+        ui.form.selectReset();
+      })
+      .on('click touchend', '.ui-select, .select-option-wrap', function (e) {
+        e.stopPropagation();
+      });
+  },
+  inputNumber: function (elem) {
+    const $elem = $(elem);
+    let $decimal = $elem.data('number');
+    if (!$decimal) $decimal = 0;
+    const $val = $elem.val();
+    const isPoint = $val.indexOf('.') >= 0;
+    let $newVal;
+    if (isPoint) {
+      const $split = $val.split('.');
+      $newVal = onlyNumber($split[0]) + '.';
+      if ($split[1]) $newVal = $newVal + onlyNumber($split[1]);
+    } else {
+      $newVal = onlyNumber($val);
+    }
+    $newVal = removeComma($newVal);
+    $newVal = addComma($newVal, $decimal);
+    $elem.val($newVal);
+  },
+  inputOnlyNumber: function (elem) {
+    const $elem = $(elem);
+    const $val = $elem.val();
+    let $newVal = onlyNumber($val);
+    $elem.val($newVal);
+  },
+  inputOnlyEngNumber: function (elem) {
+    const $elem = $(elem);
+    const $val = $elem.val();
+    let $newVal = onlyEngNumber($val);
+    $elem.val($newVal);
+  },
+  inputOnlyEngKor: function (elem) {
+    const $elem = $(elem);
+    const $val = $elem.val();
+    let $newVal = onlyEngKor($val);
+    $elem.val($newVal);
+  },
+  inputOnlyKorean: function (elem) {
+    const $elem = $(elem);
+    const $val = $elem.val();
+    let $newVal = onlyKorean($val);
+    console.log($newVal);
+    $elem.val($newVal);
+  },
+  inputCompanyNumber: function (elem) {
+    const $elem = $(elem);
+    const $type = $elem.data('company-number');
+    const $val = $elem.val();
+    let $newVal = onlyNumber($val);
+    $newVal = $type ? autoCompanyNumberFormat($newVal, $type) : autoCompanyNumberFormat($newVal);
+    $elem.val($newVal);
+  },
+  inputDate: function (elem) {
+    const $elem = $(elem);
+    const $val = $elem.val();
+    const $newVal = autoDateFormat($val);
+    $elem.val($newVal);
+  },
+  inputTime: function (elem) {
+    const $elem = $(elem);
+    const $val = $elem.val();
+    const $newVal = autoTimeFormat($val);
+    $elem.val($newVal);
   },
   inputUI: function () {
-    // input[maxlength]
-
-    if (ui.mobile.Android()) {
-      // 안드로이드 중 일부 maxlength 방식이 상이함(무한입력 후 포커스 아웃때 적용됨)
-      $(document).on('input', 'input[maxlength], textarea[maxlength]', function (e) {
-        const $this = $(this);
-        const $val = $this.val();
-        const $max = $this.attr('maxlength');
-        const $length = $val.length;
-        if ($val && $length > $max) this.value = this.value.slice(0, $max);
-      });
-    }
-
-    //form 안에 input이 1개일때 엔터시 새로고침 현상방지
-    /*
-    $(document).on('keydown', 'form input', function (e) {
-      const $keyCode = e.keyCode ? e.keyCode : e.which;
-      const $form = $(this).closest('form');
-      const $length = $form.find('input').not('[type=checkbox],[type=radio]').length;
-
-      //.search-box 검색창은 예외
-      if ($length == 1 && !$(this).closest('.search-box').length) {
-        if ($keyCode == 13) return false;
-      }
-    });
-    */
-
     //list input[type=checkbox]
     $(document).on('change', '.chk-item input', function () {
       const $this = $(this);
@@ -2448,7 +2044,7 @@ ui.form = {
       }
     });
 
-    $(document).on('click', '.btn-inp-del', function () {
+    $(document).on('click', '.ui-inp-del', function () {
       const $inp = $(this).siblings('input');
       $inp.val('').change().focus();
     });
@@ -2461,81 +2057,139 @@ ui.form = {
       }
     });
 
-    $(document).on('keyup focusin change', '.input input, .textarea.del textarea', function () {
+    $(document).on('keyup focusin change', '.input.delete input', function () {
       ui.form.insertDel(this);
     });
-    /*
-    // focusout 시 삭제버튼 숨김
-    $(document).on('focusout', '.input:not(.show-del) input, .textarea.del:not(.show-del) textarea', function () {
+
+    $(document).on('input change', 'input[data-only-number]', function () {
+      ui.form.inputOnlyNumber(this);
+    });
+    $(document).on('input change', 'input[data-only-engnum]', function () {
+      ui.form.inputOnlyEngNumber(this);
+    });
+    $(document).on('input change', 'input[data-only-engkor]', function () {
+      ui.form.inputOnlyEngKor(this);
+    });
+    $(document).on('input change', 'input[data-only-korean]', function () {
+      ui.form.inputOnlyKorean(this);
+    });
+
+    $(document).on('input change', 'input[data-number]', function () {
+      ui.form.inputNumber(this);
+    });
+    $(document).on('input change', 'input[data-date], input.datepicker', function () {
+      ui.form.inputDate(this);
+    });
+    $(document).on('input change', 'input[data-time], input.timepicker', function () {
+      ui.form.inputTime(this);
+    });
+    $(document).on('input change', 'input[data-company-number]', function () {
+      ui.form.inputCompanyNumber(this);
+    });
+
+    $(document).on('input change', '.input.file input[type=file]', function () {
       const $this = $(this);
-      if ($this.siblings('.btn-inp-del').length) {
-        const removeDelBtn = setTimeout(function () {
-          $this.siblings('.btn-inp-del').remove();
-          $this.removeData('removeDelBtn');
-        }, 300);
-        $this.data('removeDelBtn', removeDelBtn);
-      }
-    });
-    */
-
-    //메일
-    $(document).on('input', '.input-mail input', function () {
-      ui.form.selectMail(this);
+      const $val = $this.val();
+      const $input = $this.siblings('input');
+      $input.val($val);
     });
 
-    $(document).on('click', '.input-select-list-btn', function (e) {
-      e.preventDefault();
-      const $text = $(this).text();
-      const $input = $(this).closest('.input-mail').find('input');
-      $input.val($text);
-      ui.form.selectMail($input, true);
+    $(document).on('change', 'select, input[type=checkbox],input[type=radio]', function () {
+      ui.form.inputStateCheck();
     });
-
-    $(document)
-      .on('click touchend', function (e) {
-        if ($('.input-select-list').length) {
-          $('.show-select-list').removeClass('show-select-list');
-          $('.input-select-list').remove();
-        }
-      })
-      .on('click touchend', '.input-mail', function (e) {
-        e.stopPropagation();
-      });
+    $(document).on('click', 'a, button', function () {
+      ui.form.inputStateCheck();
+    });
 
     //핸드폰
-    $(document).on('input', '.input-phone input', function () {
-      $(this).val(fn_getHpVal($(this).val()));
-    });
+    // $(document).on('input', '.inp-phone input', function () {
+    //   $(this).val(getHpFormat($(this).val()));
+    // });
 
-    // 날짜선택기
-    $(document).on('focusin', '.input-date input', function () {
-      $(this).closest('.input-date').addClass('open');
-    });
+    // 조회기간, 기간선택 버튼 UI
+    function calendarBtnSet(el) {
+      const $el = $(el);
+      const $wrap = $el.closest('.dual-calendar');
+      const $firstCal = $wrap.find('.datepicker').first();
+      const $lastCal = $wrap.find('.datepicker').last();
+      const $month = $el.data('month') ? parseInt($el.data('month')) * -1 : 0;
+      const $day = $el.data('day') ? parseInt($el.data('day')) * -1 : 1;
+      const $firstVal = autoDateFormat($addDate($day, $month));
+      const $lastVal = autoDateFormat($nowDateDay);
 
-    $(document)
-      .on('click touchend', function (e) {
-        if ($('.input-date.open').length) $('.input-date.open').removeClass('open');
+      $firstCal.val($firstVal);
+      $lastCal.val($lastVal);
+    }
+
+    $('.dual-calendar.ui-calendar-btn')
+      .on('click', '.button', function () {
+        const $this = $(this);
+        calendarBtnSet(this);
+        $this.addClass('blue').siblings('.button').removeClass('blue');
       })
-      .on('click touchend', '.input-date', function (e) {
-        e.stopPropagation();
+      .on('input change', 'input.datepicker', function () {
+        const $this = $(this);
+        const $wrap = $this.closest('.dual-calendar');
+        const $btn = $wrap.find('.button');
+        $btn.removeClass('blue');
       });
+
+    const $calendarFirst = $('.dual-calendar.ui-calendar-btn ._first');
+    if ($calendarFirst.length) {
+      calendarBtnSet($calendarFirst);
+      $calendarFirst.addClass('blue');
+    }
+  },
+  inputStateCheck: function () {
+    setTimeout(function () {
+      ui.form.input();
+      ui.form.select();
+      ui.form.textarea();
+    }, 10);
   },
   input: function () {
-    $('.input input, .textarea.del textarea').each(function () {
-      ui.form.insertDel(this);
+    $('.input input').each(function () {
+      const $this = $(this);
+      const $closest = $this.closest('.input');
 
-      const $closest = $(this).closest('.input');
+      ui.form.stateChk(this);
+
+      if ($closest.hasClass('delete')) {
+        ui.form.insertDel(this);
+      }
       if ($closest.hasClass('password') && !$closest.find('.btn-inp-pwd').length) {
         $closest.append('<a href="#" class="btn-inp-pwd" role="button" aria-label="비밀번호 입력확인"></a>');
       }
     });
-    $('.input input').each(function () {
+    $('input[data-number]').each(function () {
+      ui.form.inputNumber(this);
+    });
+    $('input[data-date]').each(function () {
+      ui.form.inputDate(this);
+    });
+    $('input[data-company-number]').each(function () {
+      ui.form.inputCompanyNumber(this);
+    });
+    $('input._today').each(function () {
+      // console.log($nowDateDay);
+      const $val = autoDateFormat($nowDateDay);
+      $(this).val($val);
+    });
+    $('input[data-date-set]').each(function () {
       const $this = $(this);
-      const $wrap = $(this).closest('.input');
-      if ($this.prop('readonly')) $wrap.addClass('readonly');
-      else $wrap.removeClass('readonly');
-      if ($this.prop('disabled')) $wrap.addClass('disabled');
-      else $wrap.removeClass('disabled');
+      const $set = $this.data('date-set');
+      if ($set === null || $set === undefined) return;
+      let $val = '';
+      if ($set === 'today' || $set === '0') {
+        $val = $nowDateDay;
+      } else {
+        const $setAry = $set.split(',');
+        if ($setAry.length === 1) $val = $addDate(parseInt($setAry[0]));
+        else if ($setAry.length === 2) $val = $addDate(parseInt($setAry[0]), parseInt($setAry[1]));
+        else $val = $addDate(parseInt($setAry[0]), parseInt($setAry[1]), parseInt($setAry[2]));
+      }
+
+      if ($val) $this.val(autoDateFormat($val));
     });
   },
   insertDel: function (el) {
@@ -2543,200 +2197,32 @@ ui.form = {
     const $this = $(el);
     const $val = $this.val();
     if ($this.data('removeDelBtn') !== undefined) clearTimeout($this.data('removeDelBtn'));
-    // if ($this.data('removePwdBtn') !== undefined) clearTimeout($this.data('removePwdBtn'));
-    // prettier-ignore
+
     if (
-        $this.prop('readonly') ||
-        $this.prop('disabled') ||
-        $this.hasClass('hasDatepicker') ||
-        $this.hasClass('time') ||
-        $this.attr('type') === 'date' ||
-        $this.hasClass('t-right') ||
-        $this.hasClass('t-center') ||
-        $this.hasClass('no-del')
-      ) {
-        return false;
-      }
-    // const $closest = $this.closest('.input');
+      // prettier-ignore
+      $this.prop('readonly') ||
+      $this.prop('disabled') ||
+      $this.hasClass('hasDatepicker') ||
+      $this.hasClass('time') ||
+      $this.attr('type') === 'date' ||
+      $this.hasClass('t-right') ||
+      $this.hasClass('t-center')
+    ) {
+      return false;
+    }
     if ($val != '') {
-      if (!$this.siblings('.btn-inp-del').length && !$this.siblings('.datepicker').length) {
-        $this.after('<a href="#" class="btn-inp-del" role="button" aria-label="입력내용삭제"></a>');
+      if (!$this.siblings('.ui-inp-del').length && !$this.siblings('.datepicker').length) {
+        $this.after('<a href="#" class="btn-inp-del ui-inp-del" role="button" aria-label="입력내용삭제"></a>');
       }
-      /*
-        if ($closest.hasClass('password') && !$closest.find('.btn-inp-pwd').length) {
-          $closest.append('<a href="#" class="btn-inp-pwd" role="button" aria-label="비밀번호 입력확인"></a>');
-        }
-        */
     } else {
-      if ($this.siblings('.btn-inp-del').length) {
+      if ($this.siblings('.ui-inp-del').length) {
         const removeDelBtn = setTimeout(function () {
-          $this.siblings('.btn-inp-del').remove();
+          $this.siblings('.ui-inp-del').remove();
           $this.removeData('removeDelBtn');
         }, 10);
         $this.data('removeDelBtn', removeDelBtn);
       }
-      /*
-        if ($this.siblings('.btn-inp-pwd').length) {
-          const removePwdBtn = setTimeout(function () {
-            $this.siblings('.btn-inp-pwd').remove();
-            $this.removeData('removePwdBtn');
-          }, 10);
-          $this.data('removePwdBtn', removePwdBtn);
-        }
-        */
     }
-  },
-  selectMail: function (el, isRemove) {
-    const mailList = ['gmail.com', 'naver.com', 'kakao.com', 'daum.net', 'nate.net', 'outlook.com'];
-    const $this = $(el);
-    const $val = $this.val();
-    const $input = $this.closest('.input');
-    const $wrap = $this.closest('.input-mail');
-    let $list = $wrap.find('.input-select-list');
-    if ($val === '' || $val.indexOf('@') > -1 || isRemove) {
-      $input.removeClass('show-select-list');
-      $list.remove();
-    } else {
-      $input.addClass('show-select-list');
-      if (!$list.length) {
-        $wrap.append('<ul class="input-select-list" role="listbox"></ul>');
-        $list = $wrap.find('.input-select-list');
-      }
-      let $options = '';
-      $.each(mailList, function () {
-        $options += '<li><a href="#" class="input-select-list-btn" role="option">' + $val + '@' + this + '</a></li>';
-      });
-      $list.html($options);
-    }
-  },
-  selectDateIdx: 0,
-  selectDate: function (el, i = 0) {
-    const $el = $(el);
-    if (!$el.length) return;
-
-    const $wrap = $el.closest('.input-date');
-    if ($wrap.find('.scroll-selector-wrap').length) return;
-    let $scrollHtml = '<div class="scroll-selector-wrap">';
-    $scrollHtml += '<div class="year" id="scrollSelectorYear-' + ui.form.selectDateIdx + '"></div>';
-    $scrollHtml += '<div class="month" id="scrollSelectorMonth-' + ui.form.selectDateIdx + '"></div>';
-    $scrollHtml += '<div class="day" id="scrollSelectorDay-' + ui.form.selectDateIdx + '"></div>';
-    $scrollHtml += '</div>';
-    $wrap.append($scrollHtml);
-
-    var yearSelector;
-    var monthSelector;
-    var dateSelector;
-
-    function fn_initDateSelector() {
-      var now = new Date();
-
-      yearSelector = new scrollSelector({
-        el: '#scrollSelectorYear-' + ui.form.selectDateIdx,
-        option: fn_getDateOption('year'),
-        value: now.getFullYear(),
-        // sensitivity: 5, // 숫자가 낮을수록 돌렸을때 팽그르르 돌며, 초기 select 할때도 느려진다. 기본값은 0.8
-        onChange: (selected) => {
-          fn_dateChanged('year');
-        }
-      });
-      // 			yearSelector.select(now.getFullYear());
-
-      monthSelector = new scrollSelector({
-        el: '#scrollSelectorMonth-' + ui.form.selectDateIdx,
-        loop: true,
-        option: fn_getDateOption('month'),
-        value: now.getMonth() + 1,
-        sensitivity: 5, // 숫자가 낮을수록 돌렸을때 팽그르르 돌며, 초기 select 할때도 느려진다. 기본값은 0.8
-        onChange: (selected) => {
-          fn_dateChanged('month');
-        }
-      });
-
-      dateSelector = new scrollSelector({
-        el: '#scrollSelectorDay-' + ui.form.selectDateIdx,
-        option: fn_getDateOption('date'),
-        value: now.getDate(),
-        sensitivity: 5, // 숫자가 낮을수록 돌렸을때 팽그르르 돌며, 초기 select 할때도 느려진다. 기본값은 0.8
-        onChange: (selected) => {
-          fn_dateChanged('date');
-        }
-      });
-
-      ui.form.selectDateIdx += 1;
-      $(this).data({
-        year: yearSelector,
-        month: monthSelector,
-        date: dateSelector
-      });
-    }
-
-    // 날짜 변경시 처리(type : year/month/date)
-    function fn_dateChanged(type) {
-      if (type == 'year' || type == 'month') {
-        // 연도나 월이 변경 되면 선택된 연/월로 일자 Option 재조회
-        var newDateOption = fn_getDateOption('date');
-        // 일자 목록보다 선택된 날짜가 크면
-        if (dateSelector.value > newDateOption.length) {
-          // 목록의 마지막 날짜로 설정
-          dateSelector.select(newDateOption.length);
-        }
-        // 일자 Selector Option 갱신
-        dateSelector.updateOption(newDateOption);
-      }
-
-      var dateStr = yearSelector.value;
-      dateStr += '-' + (monthSelector.value < 10 ? '0' + monthSelector.value : monthSelector.value);
-      dateStr += '-' + (dateSelector.value < 10 ? '0' + dateSelector.value : dateSelector.value);
-
-      $el.val(dateStr);
-      $el.trigger('input');
-    }
-
-    // 연/월/일 option 조회
-    function fn_getDateOption(type) {
-      var now = new Date();
-      var dataOption = []; // 목록
-
-      if (type == 'year') {
-        var fromYear = now.getFullYear() - 100; // 연도 시작
-        // fromYear부터 현재 연도까지 표시
-        for (var i = fromYear; i <= now.getFullYear(); i++) {
-          dataOption.push({
-            value: i,
-            text: i + '년'
-          });
-        }
-      } else if (type == 'month') {
-        // 1~12월
-        for (var i = 1; i <= 12; i++) {
-          dataOption.push({
-            value: i,
-            text: i + '월'
-          });
-        }
-      } else if (type == 'date') {
-        // 선택된 연/월에 따른 날짜 목록
-        var date = [];
-        var dateCnt = new Date(yearSelector.value, monthSelector.value, 0).getDate();
-        for (var i = 1; i <= dateCnt; i++) {
-          dataOption.push({
-            value: i,
-            text: i + '일'
-          });
-        }
-      }
-
-      return dataOption;
-    }
-
-    fn_initDateSelector();
-  },
-  textareaSpace: function () {
-    $('.textarea.auto-height').each(function () {
-      const $val = $(this).find('textarea').val();
-      const $space = '<div class="textarea-space">' + $val + '<div>';
-      if (!$(this).find('.textarea-space').length) $(this).append($space);
-    });
   },
   textareaHeight: function (elem) {
     const $val = $(elem).val();
@@ -2744,22 +2230,28 @@ ui.form = {
     const $count = $lines.length;
     const $lineH = parseInt($(elem).css('line-height'));
     const $pd = parseInt($(elem).css('padding-top')) + parseInt($(elem).css('padding-bottom'));
-    $(elem).css('height', $count * $lineH + $pd);
+    const $bdw = parseInt($(elem).css('border-top-width')) + parseInt($(elem).css('border-bottom-width'));
+    $(elem).css('height', $count * $lineH + $pd + $bdw);
   },
   textarea: function () {
-    // ui.form.textareaSpace();
-    $('.textarea.auto-height textarea').each(function () {
+    $('.textarea textarea').each(function () {
+      ui.form.stateChk(this);
+    });
+
+    $('.auto-height-textarea textarea').each(function () {
       ui.form.textareaHeight(this);
     });
   },
   textareaUI: function () {
-    $(document).on('keyup keydown keypress change', '.textarea.auto-height textarea', function () {
+    $(document).on('keyup keydown keypress change', '.auto-height-textarea textarea', function () {
       ui.form.textareaHeight(this);
     });
   },
   success: function (element, messege) {
     const $el = $(element);
-    const $closest = $el.closest('.validate-item').length ? $el.closest('.validate-item') : $el.parent();
+    let $closest = $el;
+    if ($el.closest('.validate-item').length) $closest = $el.closest('.validate-item');
+    else if ($el.closest('.inp-flex').length) $closest = $el.closest('.inp-flex');
     $closest.removeClass('is-error').addClass('is-success');
     if ($closest.next('.validate-txt').length) {
       $closest.next('.validate-txt').removeClass('is-error').addClass('is-success').html(messege);
@@ -2771,8 +2263,8 @@ ui.form = {
     if (isFocus === undefined) isFocus = false;
     const $el = $(element);
     let $closest = $el;
-    if ($closest.is('input') || $closest.is('select') || $closest.is('textarea')) $closest = $closest.parent();
     if ($el.closest('.validate-item').length) $closest = $el.closest('.validate-item');
+    else if ($el.closest('.inp-flex').length) $closest = $el.closest('.inp-flex');
 
     if (messege === false) {
       $closest.removeClass('is-error');
@@ -2804,13 +2296,13 @@ ui.form = {
         $val = $el.val();
         $length = $val.length;
         if ($max === undefined) {
-          $target.text($length);
+          $target.text(addComma($length));
         } else {
-          $target.text(Math.min($max, $length));
+          $target.text(addComma(Math.min($max, $length)));
         }
       }, 1);
     } else {
-      if ($val != '') $target.text(Math.min($max, $length));
+      if ($val != '') $target.text(addComma(Math.min($max, $length)));
     }
   },
   textCountEl: '[data-text-count]',
@@ -2826,6 +2318,70 @@ ui.form = {
     $(document).on('paste cut', ui.form.textCountEl, function (e) {
       if (e.originalEvent.clipboardData) {
         ui.form.textCount(this, e);
+      }
+    });
+  },
+  byteCount: function (element, e) {
+    const $el = $(element);
+    let $target = $el.data('byte-count');
+    if ($target == true) {
+      $target = $el.siblings('.byte').find('strong');
+    } else {
+      $target = $('#' + $target);
+    }
+    if (!$target.length) return;
+    const $max = parseInt($el.attr('maxlength'));
+    let $val = $el.val();
+
+    function byteChk() {
+      let $length = $val.length;
+      let _byte = 0;
+      let strLength = 0;
+      if ($length > 0) {
+        const $valArr = $val.split('');
+        for (let i = 0; i < $valArr.length; i += 1) {
+          let txt = $valArr[i];
+          if (ui.pc.msie()) txt = unescape(encodeURIComponent(txt));
+          else txt = new TextEncoder().encode(txt);
+          _byte += txt.length;
+          if (_byte <= $max) {
+            strLength += 1;
+          }
+        }
+      }
+
+      if ($max === undefined) {
+        $target.text(addComma(_byte));
+      } else {
+        $target.text(addComma(Math.min($max, _byte)));
+        if (_byte > $max) {
+          const cutStr = $val.substring(0, strLength);
+          $el.val(cutStr);
+        }
+      }
+    }
+
+    if (!!e && (e.type == 'keyup' || e.type == 'keypress' || e.type == 'paste' || e.type == 'cut')) {
+      setTimeout(function () {
+        byteChk();
+      }, 1);
+    } else {
+      if ($val != '') byteChk();
+    }
+  },
+  byteCountEl: '[data-byte-count]',
+  byteCountInit: function () {
+    $(ui.form.byteCountEl).each(function (e) {
+      ui.form.byteCount(this);
+    });
+  },
+  byteCountUI: function () {
+    $(document).on('keypress keyup', ui.form.byteCountEl, function (e) {
+      ui.form.byteCount(this, e);
+    });
+    $(document).on('paste cut', ui.form.byteCountEl, function (e) {
+      if (e.originalEvent.clipboardData) {
+        ui.form.byteCount(this, e);
       }
     });
   },
@@ -2878,161 +2434,6 @@ ui.form = {
         $btnPlus.prop('disabled', false);
       }
     });
-  },
-  range: function () {
-    const $sliderRange = document.querySelectorAll('.range-slider');
-    if ($sliderRange.length) {
-      $('.range-slider').each(function () {
-        const $slider = $(this).find('.range-wrap');
-        const $list = $(this).find('.list');
-        const $input = $(this).find('input').first();
-        let $first = $(this).find('.first-inp');
-        if (!$first.length && $input.length == 1) {
-          $input.addClass('first-inp');
-          $first = $input;
-        }
-        const $last = $(this).find('.last-inp');
-        const $min = parseInt($input[0].min);
-        const $max = parseInt($input[0].max);
-        const $step = parseInt($input[0].step);
-        const $unit = $list.data('unit') !== undefined ? $list.data('unit').split(',') : '';
-        if (!$slider.find('.range').length) $slider.prepend('<div class="range"></div>');
-        const $range = $slider.find('.range');
-        if ($first.length && $last.length && !$range.find('i').length) $range.append('<i></i>');
-        if ($last.length && !$slider.find('.thumb.last').length) $range.after('<div class="thumb last"></div>');
-        if ($first.length && !$slider.find('.thumb.first').length) $range.after('<div class="thumb first"></div>');
-
-        if ($list.length) {
-          $list.empty();
-          $slider.find('.dot').remove();
-          const $total = ($max - $min) / $step;
-          const $stepLeft = 100 / $total;
-          let $listHtml = '<ul>';
-          let $dotHtml = '<ul class="dot">';
-          for (let i = 0; i <= $total; i++) {
-            const $setLeft = $stepLeft * i;
-            $dotHtml += '<li style="left:' + $setLeft + '%"></li>';
-            $listHtml += '<li style="left:' + $setLeft + '%"><span>' + ($unit.length > 1 ? $unit[i] : i * $step + $min + $unit) + '</span></li>';
-          }
-          $listHtml += '</ul>';
-          $dotHtml += '</ul>';
-          $list.append($listHtml);
-          if ($list.hasClass('append-dot')) {
-            $range.after($dotHtml);
-          }
-        }
-      });
-
-      const $clippath = function (wrap) {
-        // addClass
-        const $wrap = wrap;
-        const $first = $wrap.querySelector('.first-inp');
-        const $last = $wrap.querySelector('.last-inp');
-        const $getIdx = function (el) {
-          const $el = el;
-          const $value = parseInt($el.value);
-          const $min = parseInt($el.min);
-          const $step = parseInt($el.step);
-          return ($value - $min) / $step;
-        };
-        const $firstIdx = $first ? $getIdx($first) : null;
-        const $lastIdx = $last ? $getIdx($last) : null;
-
-        const $list = $wrap.parentNode.querySelector('.list');
-        const $dot = $wrap.querySelector('.dot');
-        const $liAddClass = function (wrap) {
-          const $li = wrap.querySelectorAll('li');
-          $li.forEach(function (item, i) {
-            if (i === $firstIdx || i === $lastIdx) {
-              item.classList.add('on');
-            } else {
-              item.classList.remove('on');
-            }
-          });
-        };
-        if ($list) $liAddClass($list);
-        if ($dot) $liAddClass($dot);
-
-        // clip-path
-        const $range = $wrap.querySelector('.range i');
-        let $rangeLeft = 0;
-        let $rangeRight = 0;
-        if ($range) {
-          $rangeLeft = parseInt($range.style.left);
-          $rangeRight = parseInt($range.style.right);
-        }
-        if ($first && $last) {
-          const _polyVal = (100 - ($rangeLeft + $rangeRight)) / 2 + $rangeLeft;
-          $last.style.clipPath = 'polygon(' + _polyVal + '% 0%, 100% 0%, 100% 100%, ' + _polyVal + '% 100%)';
-        }
-      };
-
-      const $firstRange = function (wrap) {
-        const $el = wrap.querySelector('.first-inp');
-        const $lastEl = wrap.querySelector('.last-inp');
-        const $lastVal = $lastEl ? parseInt($lastEl.value) : parseInt($el.max) + 1;
-        $el.value = Math.min($el.value, $lastVal - 1);
-        const value = (100 / (parseInt($el.max) - parseInt($el.min))) * parseInt($el.value) - (100 / (parseInt($el.max) - parseInt($el.min))) * parseInt($el.min);
-
-        const parent = $el.parentNode;
-        if (parent.querySelector('.range i')) parent.querySelector('.range i').style.left = value + '%';
-        parent.querySelector('.thumb.first').style.left = value + '%';
-        if (parent.querySelector('.thumb.first .value')) parent.querySelector('.thumb.first .value').innerHTML = $el.value;
-        $clippath(parent);
-      };
-
-      const $lastRange = function (wrap) {
-        const $el = wrap.querySelector('.last-inp');
-        const $firstEl = wrap.querySelector('.first-inp');
-        const $firstVal = $firstEl ? parseInt($firstEl.value) : parseInt($el.min) - 1;
-        $el.value = Math.max($el.value, $firstVal + 1);
-        const value = (100 / (parseInt($el.max) - parseInt($el.min))) * parseInt($el.value) - (100 / (parseInt($el.max) - parseInt($el.min))) * parseInt($el.min);
-        const parent = $el.parentNode;
-        if (parent.querySelector('.range i')) parent.querySelector('.range i').style.right = 100 - value + '%';
-        parent.querySelector('.thumb.last').style.left = value + '%';
-        if (parent.querySelector('.thumb.last .value')) parent.querySelector('.thumb.last .value').innerHTML = $el.value;
-        $clippath(parent);
-      };
-
-      $sliderRange.forEach(function (el) {
-        const $el = el;
-        const $first = $el.querySelector('.first-inp');
-        const $last = $el.querySelector('.last-inp');
-        const $isInited = $el.classList.contains('_inited');
-        if ($first && $last) {
-          $el.classList.add('multiple');
-        }
-        if ($first) {
-          $firstRange($el);
-          if (!$isInited) {
-            $first.addEventListener(
-              'input',
-              function () {
-                $firstRange($el);
-              },
-              false
-            );
-          }
-        } else if ($el.querySelector('.thumb.first')) {
-          $el.querySelector('.thumb.first').style.display = 'none';
-        }
-        if ($last) {
-          $lastRange($el);
-          if (!$isInited) {
-            $last.addEventListener(
-              'input',
-              function () {
-                $lastRange($el);
-              },
-              false
-            );
-          }
-        } else if ($el.querySelector('.thumb.last')) {
-          $el.querySelector('.thumb.last').style.display = 'none';
-        }
-        $el.classList.add('_inited');
-      });
-    }
   },
   jqRange: function () {
     if ($('.jq-range-slider').length) {
@@ -3227,12 +2628,7 @@ ui.form = {
     }
   },
   jqCalendar: function (element, defaultDate) {
-    const dfd = $.Deferred();
     //jquery UI datepicker
-    const $dimmedClass = 'datepicker-dimmed';
-    const swipeArr = $('<div class="swipe-arr" aria-hidden="true"><i class="arr top"></i><i class="arr bottom"></i><i class="arr left"></i><i class="arr right"></i></div>');
-    const swipeGuide = $('<div class="datepicker-guide">달력 부분을 상,하,좌,우 드래그하면<br />편리하게 이동할 수 있어요.</div>');
-    let isSwipeGuide = true;
     const prevYrBtn = $('<a href="#" role="button" class="ui-datepicker-prev-y" aria-label="이전년도 보기"><span>이전년도 보기</span></a>');
     const nextYrBtn = $('<a href="#" role="button" class="ui-datepicker-next-y" aria-label="다음년도 보기"><span>다음년도 보기</span></a>');
     const calendarOpen = function (target, ob, delay) {
@@ -3257,14 +2653,6 @@ ui.form = {
           if ($input.length) $input.val($date);
         } else {
           //팝업달력
-          if (!$($calendar).find('.swipe-arr').length) $($calendar).prepend(swipeArr);
-          if (isSwipeGuide) {
-            $($calendar).addClass('add-guide').append(swipeGuide);
-            isSwipeGuide = false;
-          } else {
-            $($calendar).removeClass('add-guide');
-          }
-          if (!$('.' + $dimmedClass).length) $($calendar).before('<div class="' + $dimmedClass + '" aria-hidden="true"></div>');
         }
 
         $header.find('.ui-datepicker-year').attr('title', '년 선택');
@@ -3284,10 +2672,8 @@ ui.form = {
         const $prevYearBtn = $header.find('.ui-datepicker-prev-y');
         if ($selectedYear <= $minY) {
           $prevYearBtn.addClass('ui-state-disabled').attr('aria-disabled', true);
-          $($calendar).find('.swipe-arr .top').addClass('off');
         } else {
           $prevYearBtn.removeClass('ui-state-disabled').removeAttr('aria-disabled');
-          $($calendar).find('.swipe-arr .top').removeClass('off');
         }
         $nextMonthBtn
           .attr({
@@ -3298,27 +2684,20 @@ ui.form = {
         const $nextYearBtn = $header.find('.ui-datepicker-next-y');
         if ($selectedYear >= $maxY) {
           $nextYearBtn.addClass('ui-state-disabled').attr('aria-disabled', true);
-          $($calendar).find('.swipe-arr .bottom').addClass('off');
         } else {
           $nextYearBtn.removeClass('ui-state-disabled').removeAttr('aria-disabled');
-          $($calendar).find('.swipe-arr .bottom').removeClass('off');
         }
         if ($prevMonthBtn.hasClass('ui-state-disabled')) {
           $prevMonthBtn.attr('aria-disabled', true);
-          $($calendar).find('.swipe-arr .left').addClass('off');
         } else {
           $prevMonthBtn.removeAttr('aria-disabled');
-          $($calendar).find('.swipe-arr .left').removeClass('off');
         }
         if ($nextMonthBtn.hasClass('ui-state-disabled')) {
           $nextMonthBtn.attr('aria-disabled', true);
-          $($calendar).find('.swipe-arr .right').addClass('off');
         } else {
           $nextMonthBtn.removeAttr('aria-disabled');
-          $($calendar).find('.swipe-arr .right').removeClass('off');
         }
 
-        //$header.find('.ui-datepicker-title').append('월');
         $header.find('.ui-datepicker-prev, .ui-datepicker-next').attr('href', '#');
         if (!$isInline) {
           if (ui.mobile.any()) {
@@ -3327,44 +2706,6 @@ ui.form = {
           } else {
             $($calendar).attr('tabindex', 0).focus();
             Layer.focusMove($calendar);
-          }
-
-          if (!$container.data('init')) {
-            $container.data('init', true);
-            $container.swipe({
-              swipeStatus: function (event, phase, direction, distance, duration, fingerCount, fingerData, currentDirection) {
-                const $this = $(this);
-                const $max = 30;
-                const $btnPrevMonth = $header.find('.ui-datepicker-prev');
-                const $btnNextMonth = $header.find('.ui-datepicker-next');
-                const $btnPrevYear = $header.find('.ui-datepicker-prev-y');
-                const $btnNextYear = $header.find('.ui-datepicker-next-y');
-                if (direction != null) {
-                  let $distance = Math.min($max, distance);
-                  if (direction == 'left' || direction == 'up') $distance = -$distance;
-                  if (direction == 'left' || direction == 'right') $this.css('left', $distance);
-                  if (direction == 'up' || direction == 'down') $this.css('top', $distance);
-                  if (phase == 'end' || phase == 'cancel') {
-                    $this.animate(
-                      {
-                        left: 0,
-                        top: 0
-                      },
-                      200,
-                      function () {
-                        if (Math.abs($distance) >= $max) {
-                          if (direction == 'right' && !$btnPrevMonth.hasClass('ui-state-disabled')) $btnPrevMonth.click();
-                          if (direction == 'left' && !$btnNextMonth.hasClass('ui-state-disabled')) $btnNextMonth.click();
-                          if (direction == 'down' && !$btnPrevYear.hasClass('ui-state-disabled')) $btnPrevYear.click();
-                          if (direction == 'up' && !$btnNextYear.hasClass('ui-state-disabled')) $btnNextYear.click();
-                        }
-                      }
-                    );
-                  }
-                }
-              },
-              cancleTreshold: 0
-            });
           }
         }
 
@@ -3393,13 +2734,11 @@ ui.form = {
         if ($input.length) $input.val($date);
       } else {
         //팝업달력
-        Body.unlock();
         $(ob.input).change();
         if ($(ui.className.mainWrap + ':visible').length) $(ui.className.mainWrap + ':visible').removeAttr('aria-hidden');
         $cal.find('.title').removeAttr('tabindex');
-        $('.' + $dimmedClass).remove();
         $(target).next('.ui-datepicker-trigger').focus();
-        if ($(target).data('isReadonly') != true) $(target).prop('readonly', false);
+        // if ($(target).data('isReadonly') != true) $(target).prop('readonly', false);
       }
     };
 
@@ -3436,9 +2775,9 @@ ui.form = {
           monthNamesShort: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
           dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
           dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-          dateFormat: 'yy.mm.dd',
+          dateFormat: 'yy-mm-dd',
           yearRange: $range,
-          yearSuffix: '. ',
+          yearSuffix: ' ',
           showMonthAfterYear: true,
           showButtonPanel: true,
           showOn: 'button',
@@ -3448,14 +2787,15 @@ ui.form = {
           selectOtherMonths: true,
           beforeShow: function (el, ob) {
             //열때
+            /*
             if (!$isInline) {
-              Body.lock();
               if ($this.prop('readonly') == true) {
                 $this.data('isReadonly', true);
               } else {
                 $this.prop('readonly', true);
               }
             }
+            */
 
             //기간 선택
             const $closest = $(this).closest('.date_wrap');
@@ -3477,9 +2817,6 @@ ui.form = {
             //선택할때
             calendarClose($this, ob, d);
             if ($isInline) calendarOpen($this, ob);
-
-            //콜백
-            dfd.resolve();
           },
           onClose: function (d, ob) {
             //닫을때
@@ -3491,19 +2828,6 @@ ui.form = {
           const $ob = $.datepicker._getInst($this[0]);
           calendarOpen($this, $ob);
         }
-
-        //달력버튼 카드리더기에서 안읽히게
-        $(this).siblings('.ui-datepicker-trigger').attr({
-          'aria-label': '달력팝업으로 기간조회'
-          //'aria-hidden':true,
-          //'tabindex':-1
-        });
-
-        $('.' + $dimmedClass)
-          .off('touchstart')
-          .on('touchstart', function () {
-            $('.hasDatepicker').datepicker('hide');
-          });
       });
 
       $(element).focusin(function () {
@@ -3515,11 +2839,50 @@ ui.form = {
       $(element).focusout(function () {
         if ($(this).hasClass('ui-date')) {
           const $val = $(this).val();
-          $(this).val(autoDateFormet($val, '.'));
+          $(this).val(autoDateFormat($val, '.'));
         }
       });
     }
-    return dfd.promise();
+  },
+  jqTimepicker: function (el) {
+    const $el = $(el);
+    if (!$el.length) return;
+    $el.each(function () {
+      const $this = $(this);
+      if ($this.hasClass('_inited')) return;
+      $this.addClass('_inited');
+      const $opt = {
+        timeFormat: 'HH:mm',
+        interval: !!$this.data('step') ? parseInt($this.data('step')) : 60,
+        minTime: !!$this.data('min') ? $this.data('min') : '00:00',
+        maxTime: !!$this.data('max') ? $this.data('max') : '23:59',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true
+      };
+      const $default = $this.data('default');
+      if (!!$default) $opt.defaultTime = $default;
+      const $start = $this.data('start');
+      if (!!$start) $opt.startTime = $start;
+
+      $this.timepicker($opt);
+    });
+  },
+  fileDrag: function () {
+    const $fileWrap = document.querySelectorAll('.file-item-wrap .file-btn');
+    if ($fileWrap.length) {
+      $fileWrap.forEach(function (item) {
+        item.addEventListener('dragover', function () {
+          item.classList.add('dragover');
+        });
+        item.addEventListener('dragleave', function () {
+          item.classList.remove('dragover');
+        });
+        item.addEventListener('drop', function () {
+          item.classList.remove('dragover');
+        });
+      });
+    }
   }
 };
 
@@ -3527,8 +2890,11 @@ ui.form = {
 ui.list = {
   init: function () {
     ui.list.allCheck();
+    ui.list.table();
+    ui.list.tableUI();
   },
   reInit: function () {
+    ui.list.table();
     ui.list.loadInit();
   },
   loadInit: function () {
@@ -3536,10 +2902,6 @@ ui.list = {
     ui.folding.list('.ui-folding', '.folding-btn', '.folding-panel');
     ui.folding.btn('.ui-folding-btn');
     ui.folding.close('.ui-folding-close');
-
-    //테이블 스크롤 가이드 실행
-    ui.table.guideScroll();
-    ui.table.guideResize();
   },
   allCheck: function () {
     const $wrapClass = '.ui-chk-wrap';
@@ -3572,6 +2934,63 @@ ui.list = {
         $allchk.prop('checked', false);
       }
     });
+  },
+  table: function () {
+    const $table = $('.table');
+    $table.each(function () {
+      const $this = $(this);
+      if ($this.hasClass('tbl-small') || $this.hasClass('tbl-small2')) return;
+      if ($this.hasClass('tbl-left')) {
+        if ($this.find('.input').length || $this.find('.select').length) {
+          $this.removeClass('tbl-slim');
+        } else {
+          $this.addClass('tbl-slim');
+        }
+      }
+    });
+  },
+  tableUI: function () {
+    $('.table.col-hover').on('mouseover', 'tbody th,tbody td', function () {
+      const $this = $(this);
+      const $index = $this.index();
+      const $table = $this.closest('.table');
+      $table.find('tr').each(function () {
+        $(this).children().eq($index).addClass('hover').siblings().removeClass('hover');
+      });
+    });
+    $('.table.col-hover').on('mouseleave', function () {
+      const $this = $(this);
+      $this.find('.hover').removeClass('hover');
+    });
+    $('.table[data-hover]').on('mouseover', 'tbody th, tbody td', function () {
+      const $this = $(this);
+      const $index = $this.index();
+      const $table = $this.closest('.table');
+      const $hover = $table.data('hover');
+      $table.find('.hover').removeClass('hover');
+      const $tr = $this.closest('tr');
+      let $idx = $tr.index();
+      if ($idx % $hover !== 0) $idx = $idx - ($idx % $hover);
+      $table
+        .find('tbody tr')
+        .slice($idx, $idx + $hover)
+        .addClass('hover');
+    });
+    $('.table[data-hover] tbody').on('mouseleave', function () {
+      const $this = $(this);
+      $this.find('.hover').removeClass('hover');
+    });
+    $('.tr-check table tr')
+      .on('click', function () {
+        const $this = $(this);
+        const $input = $this.find('.radio input, .checkbox input');
+        $input.click();
+        $this.addClass('checked');
+        if ($input[0].type === 'radio') $this.siblings().removeClass('checked');
+      })
+      .on('click', '.radio, .checkbox, .select, .textarea, a, button', function (e) {
+        e.stopPropagation();
+      });
   }
 };
 //아코디언
@@ -3643,9 +3062,7 @@ ui.folding = {
           if ($this.closest('.disabled').length || $this.hasClass('disabled')) return false;
 
           const slideCallback = function () {
-            if ($li.find(panel).find('.ui-swiper').length) {
-              ui.swiper.update($li.find(panel).find('.ui-swiper'));
-            }
+            // 없음
           };
 
           if ($li.hasClass(addClass)) {
@@ -3747,12 +3164,13 @@ ui.folding = {
         if ($this.closest('.disabled').length || $this.hasClass('disabled')) return false;
 
         const slideCallback = function () {
-          if ($($panel).find('.ui-swiper').length) {
-            ui.swiper.update($($panel).find('.ui-swiper'));
-          }
+          // 없음
         };
 
-        if (($panel == '#' || $panel == '#none') && $this.closest('.folding-list').length) $panel = $this.closest('.folding-list').find('.folding-panel');
+        if ($panel == '#' || $panel == '#none') {
+          if ($this.closest('.folding-list').length) $panel = $this.closest('.folding-list').find('.folding-panel');
+          if ($this.closest('.folding-tail').length) $panel = $this.closest('.folding-tail').find('.folding-tail-panel');
+        }
         if ($this.hasClass(className) && !$this.hasClass('_not-folding-hide')) {
           $this.removeClass(className).attr('aria-expanded', false);
           $($panel)
@@ -3796,294 +3214,12 @@ ui.folding = {
     });
   }
 };
-//테이블
-ui.table = {
-  class: '.tbl-scroll-in',
-  guideScroll: function () {
-    const $tbl = $(ui.table.class);
-    if (!$tbl.length) return;
-    $tbl.each(function () {
-      const $this = $(this);
-      $this.data('first', true);
-      $this.data('direction', '좌우');
-      $(this).on('scroll', function () {
-        $this.data('first', false);
-        $this.find('.tbl-guide').remove();
-        //$this.removeAttr('title');
-
-        const $sclInfo = $this.next('.tbl-scroll-ifno');
-        if ($sclInfo.length) {
-          const $sclPercentX = ui.scroll.sclPer($this).x;
-          const $sclPercentY = ui.scroll.sclPer($this).y;
-          const $horizon = $sclInfo.find('.horizon');
-          const $vertical = $sclInfo.find('.vertical');
-          if ($horizon.is(':visible')) $horizon.children().css('width', $sclPercentX + '%');
-          if ($vertical.is(':visible')) $vertical.children().css('height', $sclPercentY + '%');
-        }
-      });
-    });
-  },
-  guideResize: function () {
-    const $tbl = $(ui.table.class);
-    if (!$tbl.length) return;
-    $tbl.each(function () {
-      const $this = $(this);
-      const $direction = $this.data('direction');
-      let $changeDirection = '';
-      const $guide = '<div class="tbl-guide" title="해당영역은 테이블을 스크롤하면 사라집니다."><div><i class="icon" aria-hidden="true"></i>테이블을 ' + $direction + '로 스크롤하세요.</div></div>';
-      const $height = $this.outerHeight();
-
-      const $isScrollX = ui.scroll.is($this).x;
-      const $isScrollY = ui.scroll.is($this).y;
-      const $sclInfoHtml = '<div class="tbl-scroll-ifno" aria-hidden="true"><div class="horizon"><div></div></div><div class="vertical"><div></div></div></div>';
-      let $sclIfno = $this.next('.tbl-scroll-ifno');
-      if ($this.data('first')) {
-        if ($isScrollX && $isScrollY) {
-          $changeDirection = '상하좌우';
-        } else if ($isScrollX) {
-          $changeDirection = '좌우';
-        } else if ($isScrollY) {
-          $changeDirection = '상하';
-        } else {
-          $changeDirection = '';
-        }
-
-        if ($changeDirection == '') {
-          $this.removeAttr('tabindex').find('.tbl-guide').remove();
-          $sclIfno.remove();
-          $this.removeAttr('title');
-        } else {
-          if (!$this.find('.tbl-guide').length) {
-            if (!ui.mobile.any()) {
-              $this.attr('tabindex', 0); //pc일땐 tabindex 사용
-            }
-            $this.prepend($guide);
-          }
-          if (!$sclIfno.length) {
-            $this.after($sclInfoHtml);
-            $sclIfno = $this.next('.tbl_scroll_ifno');
-          }
-          if ($sclIfno.length) {
-            $sclIfno.find('.vertical').css('height', $height);
-            $sclIfno.find('.vertical').show();
-            $sclIfno.find('.horizon').show();
-            if ($changeDirection == '좌우') {
-              $sclIfno.find('.vertical').hide();
-            } else if ($changeDirection == '상하') {
-              $sclIfno.find('.horizon').hide();
-            }
-          }
-
-          $this.attr('title', '터치스크롤하여 숨겨진 테이블영역을 확인하세요');
-        }
-
-        if ($direction != $changeDirection && $this.find('.tbl-guide').length) {
-          $this.find('.tbl-guide').changeTxt($direction, $changeDirection);
-          $this.data('direction', $changeDirection);
-        }
-      }
-    });
-  }
-};
-
-/** Swiper **/
-ui.swiper = {
-  init: function () {
-    if ($('.ui-swiper').length) {
-      ui.swiper.ready('.ui-swiper');
-      ui.swiper.base('.ui-swiper');
-      ui.swiper.UI();
-    }
-  },
-  reInit: function () {
-    ui.swiper.ready('.ui-swiper');
-    ui.swiper.base('.ui-swiper');
-  },
-  base: function (tar, changeEvt) {
-    $(tar).each(function () {
-      const $this = $(this);
-      const $swiper = $this.find('.swiper');
-      const $pagination = $this.find('.swiper-pagination');
-      const $slide = $this.find('.swiper-slide');
-      if (!$slide.length) return;
-
-      let $paginationType = 'bullets';
-      if ($this.hasClass('_fraction')) $paginationType = 'fraction';
-
-      let $navigation = false;
-      if ($this.hasClass('_navi')) {
-        let $btnHtml = '';
-        if (!$swiper.find('.swiper-button-prev').length) $btnHtml += '<button type="button" class="swiper-button-prev swiper-button"></button>';
-        if (!$swiper.find('.swiper-button-next').length) $btnHtml += '<button type="button" class="swiper-button-next swiper-button"></button>';
-        if ($btnHtml !== '') $swiper.append($btnHtml);
-        $navigation = {
-          prevEl: $this.find('.swiper-button-prev')[0],
-          nextEl: $this.find('.swiper-button-next')[0]
-        };
-      }
-
-      let $slidesPerView = 'auto';
-      if ($this.data('view') !== undefined) {
-        $slidesPerView = $this.data('view');
-        $this.removeAttr('data-view');
-      }
-
-      let $loop = $this.hasClass('_loop') ? true : false;
-      let $autoHeight = $this.hasClass('_autoHeight') ? true : false;
-      let $centeredSlides = $this.hasClass('_centeredSlides') ? true : false;
-
-      let $auto = false;
-      if ($this.data('auto') !== undefined) {
-        $auto = {
-          delay: $this.data('auto'),
-          disableOnInteraction: false
-        };
-        $this.removeAttr('data-auto');
-        if (!$this.find('.swiper-auto-ctl').length) {
-          if (!$this.find('.swiper-pagination-wrap').length) $pagination.wrap('<div class="swiper-pagination-wrap"></div>');
-          $pagination.before('<button type="button" class="swiper-auto-ctl" aria-label="슬라이드 자동롤링 중지"></button>');
-        }
-      }
-      let $parallax = false;
-      if (
-        $this.find('[data-swiper-parallax]').length ||
-        $this.find('[data-swiper-parallax-x]').length ||
-        $this.find('[data-swiper-parallax-y]').length ||
-        $this.find('[data-swiper-parallax-scale]').length ||
-        // $this.find('[data-swiper-parallax-duration]').length ||
-        $this.find('[data-swiper-parallax-opacity]').length
-      ) {
-        $parallax = true;
-      }
-
-      let $zoom = false;
-      if ($this.find('.swiper-zoom-container').length) {
-        $zoom = {
-          maxRatio: 2,
-          toggle: true
-        };
-        $this.find('.swiper-zoom-container').each(function () {
-          let $btnHtml = '<div class="swiper-zoom-btn">';
-          $btnHtml += '<button type="button" role="button" class="swiper-zoom-in" aria-label="확대"></button>';
-          $btnHtml += '<button type="button" role="button" class="swiper-zoom-out" aria-label="축소"></button>';
-          $btnHtml += '</div>';
-          $(this).before($btnHtml);
-        });
-      }
-
-      let baseSwiper;
-      if ($swiper.hasClass('swiper-initialized')) {
-        baseSwiper = $this.data('swiper');
-        if (baseSwiper !== undefined) baseSwiper.update();
-      } else {
-        baseSwiper = new Swiper($swiper[0], {
-          pagination: {
-            el: $pagination[0],
-            type: $paginationType,
-            clickable: true,
-            renderBullet: function (index, className) {
-              return '<button type="button" class="' + className + '" aria-label="' + (index + 1) + '번째 슬라이드로 이동"></button>';
-            }
-          },
-          navigation: $navigation,
-          slidesPerView: $slidesPerView,
-          loop: $loop,
-          autoHeight: $autoHeight,
-          centeredSlides: $centeredSlides,
-          autoplay: $auto,
-          parallax: $parallax,
-          zoom: $zoom,
-          on: {
-            init: function (e) {
-              if ($navigation) {
-                setTimeout(function () {
-                  e.navigation.prevEl.ariaLabel = '이전 슬라이드로 이동';
-                  e.navigation.nextEl.ariaLabel = '다음 슬라이드로 이동';
-                }, 1);
-              }
-            },
-            slideChangeTransitionEnd: function (e) {
-              if (!!changeEvt) changeEvt(e);
-            }
-          }
-        });
-        $this.data('swiper', baseSwiper);
-      }
-    });
-  },
-  ready: function (tar) {
-    const $target = $(tar);
-    $target.each(function () {
-      const $this = $(this);
-      if (!$this.find('.swiper-slide').length) {
-        let $children = $this.children();
-        while ($children.hasClass('swiper') || $children.hasClass('swiper-wrapper')) {
-          $children = $children.children();
-        }
-        $children.addClass('swiper-slide');
-      }
-
-      if (!$this.find('.swiper-wrapper').length) {
-        if (!$this.find('.swiper').length) {
-          $this.wrapInner('<div class="swiper-wrapper"></div>');
-          $this.wrapInner('<div class="swiper"></div>');
-        } else {
-          $this.find('.swiper').wrapInner('<div class="swiper-wrapper"></div>');
-        }
-      } else if (!$this.find('.swiper').length) {
-        $this.find('.swiper-wrapper').parent().wrapInner('<div class="swiper"></div>');
-      }
-      if (!$this.find('.swiper-pagination').length) {
-        $this.append('<div class="swiper-pagination"></div>');
-      }
-    });
-  },
-  UI: function () {
-    $(document).on('click', '.ui-swiper .swiper-auto-ctl', function (e) {
-      e.preventDefault();
-      const $this = $(this);
-      const $closest = $this.closest('.ui-swiper');
-      const $swiper = $closest.data('swiper');
-      if ($(this).hasClass('play')) {
-        $swiper.autoplay.start();
-        $(this).removeClass('play').changeAriaLabel('시작', '중지');
-      } else {
-        $swiper.autoplay.stop();
-        $(this).addClass('play').changeAriaLabel('중지', '시작');
-      }
-    });
-
-    $(document).on('click', '.ui-swiper .swiper-zoom-in', function (e) {
-      e.preventDefault();
-      const $this = $(this);
-      const $swiper = $this.closest('.ui-swiper').data('swiper');
-      $swiper.zoom.in();
-    });
-
-    $(document).on('click', '.ui-swiper .swiper-zoom-out', function (e) {
-      e.preventDefault();
-      const $this = $(this);
-      const $swiper = $this.closest('.ui-swiper').data('swiper');
-      $swiper.zoom.out();
-    });
-  },
-  update: function (target) {
-    $(target).each(function () {
-      const $this = $(this);
-      const $swiper = $this.data('swiper');
-      if ($swiper !== undefined) $swiper.update();
-    });
-  }
-};
 
 /** scroll **/
 ui.scroll = {
-  isCSS: function (val) {
-    const $type = ['auto', 'scroll', 'overlay', 'visible'];
-    if ($type.indexOf(val) > -1) {
-      return true;
-    } else {
-      return false;
+  init: function () {
+    if (ui.pc.msie()) {
+      ui.scroll.IEHeight('.address-result-dl > dd');
     }
   },
   is: function (target) {
@@ -4151,108 +3287,6 @@ ui.scroll = {
       if ($isScrollX) $parent.stop(true, false).animate({ scrollLeft: $sclL }, speed);
     }
   },
-  guide: function (element) {
-    const $el = $(element);
-    const $wrapClass = 'ui-scl-guide';
-    const $contClass = 'ui-scl-cont';
-    const $infoClass = 'ui-scl-info';
-    const $barClass = 'ui-scl-bar';
-    $el.each(function () {
-      const $this = $(this);
-      const $isSclGuide = $this.data('sclGuide');
-
-      if (!$this.hasClass($contClass)) $this.addClass($contClass);
-      if (!$this.parent().hasClass($wrapClass)) $this.wrap('<div class="' + $wrapClass + '"></div>');
-      if (!$this.siblings('.' + $infoClass).length) $this.before('<div class="' + $infoClass + '" role="img" aria-label="스크롤하면 아래 숨겨진 컨텐츠를 확인 할 수 있습니다."></div>');
-      if (!$this.siblings('.' + $barClass).length) $this.after('<div class="' + $barClass + '" aria-hidden="true"><div></div></div>');
-      const $info = $this.siblings('.' + $infoClass);
-      const $bar = $this.siblings('.' + $barClass);
-      let $percent = ui.scroll.sclPer(this).x;
-      if ($percent <= 0) {
-        $bar.hide();
-      } else {
-        $bar
-          .show()
-          .children()
-          .css('width', $percent + '%');
-      }
-      const $sclGap = $this.get(0).scrollHeight - $this.outerHeight();
-      if ($sclGap < 1) {
-        $info.hide();
-      } else {
-        $info.show();
-      }
-
-      if (!$isSclGuide) {
-        $this.data('sclGuide', true);
-        $this.on('scroll', function () {
-          $percent = ui.scroll.sclPer(this).x;
-          if ($percent <= 0) {
-            $bar.hide();
-          } else {
-            $bar
-              .show()
-              .children()
-              .css('width', $percent + '%');
-          }
-          if ($percent >= 100) {
-            $info.hide();
-          } else {
-            $info.show();
-          }
-        });
-      }
-    });
-  },
-  sclPer: function (element, type) {
-    const $obj = {
-      x: 0,
-      y: 0
-    };
-    $obj.x = Math.abs($(element).scrollLeft() / ui.scroll.is(element).width) * 100;
-    $obj.y = Math.abs($(element).scrollTop() / ui.scroll.is(element).height) * 100;
-    return $obj;
-  },
-  horizonScl: function () {
-    const $wrap = '.tab-inner, .img-box-wrap';
-    if (!$($wrap).length || ui.mobile.any()) return;
-    $($wrap).each(function () {
-      const $this = $(this);
-      if ($this.data('_ui-init')) return;
-      $this.data('_ui-init', true);
-      $this.on('mousewheel', function (e) {
-        const $wheelDelta = e.originalEvent.wheelDelta;
-        const $this = $(this);
-        const $thisW = $this.outerWidth();
-        const $thisSclW = $this[0].scrollWidth;
-        const $widthGap = $thisSclW - $thisW;
-        const $thisSclL = $this.scrollLeft();
-        let $isMove = false;
-        const $move = function () {
-          if ($isMove) return;
-          $isMove = true;
-          // $this.scrollLeft($thisSclL - $wheelDelta);
-          $this.stop(false, true).animate({ scrollLeft: $thisSclL - $wheelDelta }, 100, function () {
-            $isMove = false;
-          });
-        };
-
-        if ($wheelDelta > 0) {
-          //up
-          if ($thisSclL > 0) {
-            e.preventDefault();
-            $move();
-          }
-        } else {
-          //down
-          if ($thisSclL + $thisW < $thisSclW) {
-            e.preventDefault();
-            $move();
-          }
-        }
-      });
-    });
-  },
   loading: function (el, showCallback, hideCallback) {
     const io = new IntersectionObserver(
       function (entries, observer) {
@@ -4280,16 +3314,14 @@ ui.scroll = {
     const $scrollTop = $(window).scrollTop();
     let $winHeight = $(window).height();
     const $topMargin = getTopFixedHeight(topEl) > 0 ? getTopFixedHeight(topEl) + 10 : 0;
-    const bottomFixedSpace = $(ui.className.mainWrap + ':visible ' + ui.className.bottomFixedSpace);
-    const $bottomMargin = bottomFixedSpace.length ? bottomFixedSpace.outerHeight() + 10 : 0;
-    const $winEnd = $scrollTop + $winHeight - $bottomMargin;
+    const $winEnd = $scrollTop + $winHeight;
     const $topElTop = $(topEl).offset().top - $topMargin;
     const $bototomElTop = $(bototomEl).offset().top;
     const $bototomElHeight = $(bototomEl).outerHeight();
     const $bototomElEnd = $bototomElTop + $bototomElHeight;
     let $scroll = '';
     if ($winEnd < $bototomElEnd) {
-      $scroll = Math.min($topElTop, $bototomElEnd - $winHeight + $bottomMargin);
+      $scroll = Math.min($topElTop, $bototomElEnd - $winHeight);
     } else if ($scrollTop > $topElTop) {
       $scroll = $topElTop;
     }
@@ -4304,8 +3336,19 @@ ui.scroll = {
 
     return dfd.promise();
   },
-  init: function () {
-    ui.scroll.horizonScl();
+  IEHeight: function (el) {
+    const $el = $(el);
+    if (!$el.length) return;
+    $el.each(function () {
+      const $this = $(this);
+      const $thisTop = $this.offset().top;
+      const $thisH = $this.outerHeight();
+      const $docH = $('body').height();
+      const $thisBottom = $docH - $thisTop - $thisH;
+      const $windowH = $(window).height();
+      const $height = $windowH - $thisTop - $thisBottom;
+      $el.css('height', $height);
+    });
   }
 };
 
@@ -4329,24 +3372,10 @@ ui.animation = {
         $(window).on(
           'scroll resize',
           _.throttle(function () {
-            if ($boayEl().length) ui.animation.sclCheckIn($boayEl(), window);
+            ui.animation.sclCheckIn($boayEl(), window);
           }, 300)
         );
       }
-
-      /*
-      if (!'IntersectionObserver' in window && !'IntersectionObserverEntry' in window && !'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-        // IntersectionObserver 지원안할때 
-        $(window).on('scroll resize',function(){
-          ui.animation.sclCheckIn($animations);
-        });
-      }else{
-        // IntersectionObserver 지원될때 
-        $($animations).each(function(){
-          ui.animation.sclAray.push(ui.animation.sclObserver(this))
-        });
-      }
-      */
     }
   },
   sclIdx: 0,
@@ -4408,7 +3437,6 @@ ui.animation = {
     return returnVal;
   },
   sclCheckIn: function (target, wrap) {
-    // const $target = $.find('*[data-animation]');
     const $target = target;
     if (!$target.length) return;
     $.each($target, function () {
@@ -4419,16 +3447,9 @@ ui.animation = {
       const $wHeight = $wrap.height();
       const $scrollTop = $wrap.scrollTop();
       const $topFixedH = getTopFixedHeight($el);
-      let $bottomFixedH = 0;
-      const $bottomFixedSpace = $(ui.className.mainWrap + ':visible ' + ui.className.bottomFixedSpace);
-      if ($isWin && $bottomFixedSpace.length) {
-        $bottomFixedH = $bottomFixedSpace.height();
-      } else if ($wrap.find(ui.className.bottomFixed + ':visible').length) {
-        $bottomFixedH = $wrap.find(ui.className.bottomFixed + ':visible').height();
-      }
       const $wrapTop = $scrollTop + $topFixedH;
-      const $wrapCenter = $scrollTop + ($wHeight - $topFixedH - $bottomFixedH) / 2;
-      const $wrapBottom = $scrollTop + ($wHeight - $bottomFixedH);
+      const $wrapCenter = $scrollTop + ($wHeight - $topFixedH) / 2;
+      const $wrapBottom = $scrollTop + $wHeight - 100;
 
       const $elHeight = $el.outerHeight();
       const $matrix = $el.css('transform');
@@ -4462,22 +3483,6 @@ ui.animation = {
         }
       }
     });
-  },
-  sclObserver: function (el) {
-    const $el = $(el);
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.intersectionRatio > 0)) {
-          ui.animation.sclAction($el);
-        }
-      },
-      {
-        threshold: 0.03
-      }
-    );
-    // io.observe(el);
-    io.unobserve(el);
-    return io;
   },
   sclAction: function (el, top) {
     const $el = $(el);
@@ -4636,85 +3641,86 @@ ui.animation = {
   }
 };
 
-/** 차트 **/
-ui.chart = {
-  init: function () {
-    ui.chart.circle();
-  },
-  circle: function () {
-    $('[data-circle-box]').each(function () {
-      const _this = $(this);
-      let deg = 0;
-      let $firstSize = 0;
-      let $firstBgLineW = 0;
-      let $firstLineW = 0;
-      let strokeWidth = $(this).data('circle-width') ? parseInt($(this).data('circle-width')) : 5;
-      const typeCheck = _this.data('circle-box');
-      _this.addClass(typeCheck);
-      _this.find('[data-circle-val]').each(function (e) {
-        $(this).empty();
-        const idx = $(this).data('circle-val');
-        const color = $(this).data('circle-color');
-        const size = $(this).data('circle-size');
-        const dasharray = 2 * Math.PI * (18 - strokeWidth / 2);
+ui.swiper = {
+  pop: function (target) {
+    let uiSwiper;
 
-        let html = '';
-        html += '<svg viewBox="0 0 36 36" class="circular-chart"';
-        if (size) html += ' style="width:' + size + 'px;height:' + size + 'px;"';
-        html += ' aria-hidden="true">';
-        if (!e || typeCheck !== 'type2') {
-          // html += '<path';
-          // html += ' class="circle-bg"';
-          // html += ' d="M18 2.0845';
-          // html += ' a 15.9155 15.9155 0 0 1 0 31.831';
-          // html += ' a 15.9155 15.9155 0 0 1 0 -31.831"';
-          // html += ' />';
-          html += '<circle class="circle-bg" fill="none" stroke-width="' + strokeWidth + '" cx="18" cy="18" r="' + (18 - strokeWidth / 2) + '"></circle>';
-        }
-        html += '<circle';
-        html += ' class="circle"';
-        if (typeCheck === 'type1') {
-          html += ' style="';
-          html += '-webkit-animation-delay: ' + e * 0.3 + 's;';
-          html += 'animation-delay: ' + e * 0.3 + 's;';
-          html += '" ';
-        }
-        if (color) html += ' stroke="' + color + '"';
-        html += ' stroke-dasharray="' + dasharray * (idx / 100) + ', ' + dasharray + '"';
-        // html += ' d="M18 2.0845';
-        // html += ' a 15.9155 15.9155 0 0 1 0 31.831';
-        // html += ' a 15.9155 15.9155 0 0 1 0 -31.831"';
-        html += ' stroke-width="' + strokeWidth + '" cx="18" cy="18" r="' + (18 - strokeWidth / 2) + '"';
-        html += ' />';
-        html += '</svg>';
-        $(this).append(html);
-        if (typeCheck == 'type2') {
-          if (e) {
-            $(this)
-              .find('.circular-chart')
-              .css({ transform: 'rotate(' + 360 * (deg / 100) + 'deg)' });
+    function init() {
+      const $target = $(target);
+      if (!$target.length) return;
+      const $container = $target.find('.swiper-container');
+      const prevSwiper = $container.data('swiper');
+      if (prevSwiper) prevSwiper.destroy(true, true);
+      const $slide = $container.find('.swiper-slide');
+      if ($slide.length < 2) return;
+      let $paginationEl = $container.find('.swiper-pagination');
+      let $prevBtn = $container.find('.swiper-button.prev');
+      let $nextBtn = $container.find('.swiper-button.next');
+      const $popSwiper = $container.parent().closest('.pop-swiper-body');
+      if ($popSwiper.length) {
+        $paginationEl = $popSwiper.find('.swiper-pagination');
+        $prevBtn = $popSwiper.find('.swiper-button.prev');
+        $nextBtn = $popSwiper.find('.swiper-button.next');
+      }
+      let $paginationType = 'bullets';
+      if ($paginationEl.hasClass('_fraction')) $paginationType = 'fraction';
+      const $pagination = {
+        el: $paginationEl,
+        type: $paginationType,
+        clickable: true
+      };
+
+      uiSwiper = new Swiper($container, {
+        loop: true,
+        autoHeight: true,
+        pagination: $pagination
+        /* 좌우버튼 비활성화
+          on: {
+          init: function () {
+            if ($prevBtn.length) $prevBtn.prop('disabled', true);
+            if ($nextBtn.length) $nextBtn.prop('disabled', false);
+          },
+          slideChange: function () {
+            const $idx = uiSwiper.realIndex;
+            if ($prevBtn.length) {
+              if ($idx === 0) $prevBtn.prop('disabled', true);
+              else $prevBtn.prop('disabled', false);
+            }
+            if ($nextBtn.length) {
+              if ($idx === $slide.length - 1) $nextBtn.prop('disabled', true);
+              else $nextBtn.prop('disabled', false);
+            }
           }
-          deg += idx;
-        }
-        $(this).role('img');
-        // $(this).children().unwrap();
-        if (size) {
-          const $thisLineBg = $(this).find('.circle-bg');
-          const $thisLineBgW = parseInt($thisLineBg.css('stroke-width'));
-          const $thisLine = $(this).find('.circle');
-          const $thisLineW = parseInt($thisLine.css('stroke-width'));
-          if (!e) {
-            $firstSize = size;
-            $firstBgLineW = $thisLineBgW;
-            $firstLineW = $thisLineW;
-          } else {
-            const $ratio = $firstSize / size;
-            $thisLineBg.css('stroke-width', $firstBgLineW * $ratio);
-            $thisLine.css('stroke-width', $firstLineW * $ratio);
-          }
-        }
+        }*/
       });
-    });
+      $container.data('swiper', uiSwiper);
+
+      if ($prevBtn.length) {
+        $prevBtn.off('click').on('click', function (e) {
+          e.preventDefault();
+          if (uiSwiper) {
+            uiSwiper.slidePrev();
+          }
+        });
+      }
+      if ($nextBtn.length) {
+        $nextBtn.off('click').on('click', function (e) {
+          e.preventDefault();
+          if (uiSwiper) {
+            uiSwiper.slideNext();
+          }
+        });
+      }
+    }
+
+    if (typeof Swiper === 'function') {
+      init();
+    } else {
+      const $swiperJS = '/js/lib/swiper_4.5.1.min.js'; //IE 지원때문에 낮은버전 사용
+      ui.util.loadScript($swiperJS).then(function () {
+        init();
+      });
+    }
   }
 };
 
@@ -4722,24 +3728,6 @@ ui.chart = {
  * front 사용함수 *
  ********************************/
 const $focusableEl = '[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]';
-//Focus.disabled();
-const Focus = {
-  disabled: function (el) {
-    const $number = -10;
-    const $tabIdx = $(el).attr('tabindex');
-    const $dataIdx = $(el).data('tabindex');
-    if ($dataIdx == undefined && $tabIdx > $number) $(el).data('tabindex', $tabIdx);
-    $(el).attr('tabindex', $number);
-  },
-  abled: function (el) {
-    const $tabIdx = $(el).data('tabindex');
-    if ($tabIdx != undefined) {
-      $(el).attr('tabindex', $tabIdx);
-    } else {
-      $(el).removeAttr('tabindex');
-    }
-  }
-};
 
 //body scroll lock
 const Body = {
@@ -4747,12 +3735,14 @@ const Body = {
   lock: function () {
     if ($('html').hasClass('lock')) return;
 
-    Body.scrollTop = window.scrollY;
-    const $wrap = $(ui.className.mainWrap + ':visible');
-    if ($wrap.length) {
-      const $wrapTop = $wrap.offset().top;
-      const $setTop = Body.scrollTop * -1 + $wrapTop;
-      $wrap.addClass('lock-wrap').css('top', $setTop);
+    if (ui.mobile.any()) {
+      Body.scrollTop = window.scrollY;
+      const $wrap = $(ui.className.mainWrap + ':visible');
+      if ($wrap.length) {
+        const $wrapTop = $wrap.offset().top;
+        const $setTop = Body.scrollTop * -1 + $wrapTop;
+        $wrap.addClass('lock-wrap').css('top', $setTop);
+      }
     }
     $('html').addClass('lock');
   },
@@ -4760,11 +3750,13 @@ const Body = {
     if (!$('html').hasClass('lock')) return;
 
     $('html').removeClass('lock');
-    $('.lock-wrap').removeClass('lock-wrap').removeAttr('style');
-    window.scrollTo(0, Body.scrollTop);
-    window.setTimeout(function () {
-      Body.scrollTop = '';
-    }, 0);
+    if (ui.mobile.any()) {
+      $('.lock-wrap').removeClass('lock-wrap').removeAttr('style');
+      window.scrollTo(0, Body.scrollTop);
+      window.setTimeout(function () {
+        Body.scrollTop = '';
+      }, 0);
+    }
   }
 };
 
@@ -4775,12 +3767,16 @@ const Loading = {
     box: '.loading-lottie'
   },
   speed: 200,
-  open: function (txt) {
+  length: 0,
+  ready: function () {
+    console.log($(Loading.className.wrap).length);
+    if ($(Loading.className.wrap).length) return;
+    console.log('aaa');
     let $html = '<div class="' + Loading.className.wrap.slice(1) + '" class="hide">';
     $html += '<div class="tl">';
     $html += '<div>';
     /* // img 타입
-    $html += '<div class="loading-icon" role="img"';
+    $h$('body').prepend($html);tml += '<div class="loading-icon" role="img"';
     if (!txt) {
       $html += ' aria-label="화면을 불러오는중입니다."';
     }
@@ -4802,66 +3798,88 @@ const Loading = {
 
     // lottie 타입
     const $file = ui.basePath() + '/lottie/loading.json';
-    $html += '<div class="' + Loading.className.box.slice(1) + '" role="img"';
-    if (!txt) {
-      $html += ' aria-label="화면을 불러오는중입니다."';
-    }
-    $html += '>';
+    $html += '<div class="' + Loading.className.box.slice(1) + '" role="img" aria-label="화면을 불러오는중입니다.">';
+    $html += '';
     $html += '<div class="lottie _loop" data-lottie="' + $file + '" aria-hidden="true"></div>';
     $html += '</div>';
     $html += '</div>';
     $html += '</div>';
     $html += '</div>';
 
-    if (!$(Loading.className.wrap).length) {
-      $('body').prepend($html);
-      setTimeout(function () {
-        if ($(Loading.className.wrap + ' .lottie').length) {
-          ui.common.lottie(function (target) {
-            if ($(target).closest(Loading.className.wrap).length) {
-              $(Loading.className.wrap).stop(true, false).fadeIn(Loading.speed);
-            }
-          });
-        }
-      }, 5);
-    } else {
-      $(Loading.className.wrap).stop(true, false).fadeIn(Loading.speed);
-    }
-    if (!!txt) {
-      $(Loading.className.wrap + ' ' + Loading.className.box).after('<div class="txt">' + txt + '</div>');
-    } else {
-      $(Loading.className.wrap + ' .txt').remove();
+    $('body').append($html);
+    if ($(Loading.className.wrap + ' .lottie').length) {
+      ui.common.lottie();
     }
   },
-  close: function () {
-    $(Loading.className.wrap).stop(true, false).fadeOut(Loading.speed);
+  open: function (txt) {
+    let $loading = $(Loading.className.wrap);
+
+    Loading.length += 1;
+    if (Loading.length > 0) {
+      if (!$loading.hasClass('show')) $loading.addClass('show');
+    } else {
+      Loading.length = 0;
+    }
+
+    if ($(Loading.className.wrap + ' .txt').length) $(Loading.className.wrap + ' .txt').remove();
+    if (!!txt) $(Loading.className.wrap + ' ' + Loading.className.box).after('<div class="txt">' + txt + '</div>');
+  },
+  isClose: false,
+  close: function (closeTye) {
+    const $loading = $(Loading.className.wrap);
+    if ($loading.length) {
+      if (closeTye === true) Loading.length = 0;
+      else Loading.length -= 1;
+      if (Loading.length <= 0) $loading.removeClass('show');
+    }
   }
 };
 
-//레이어팝업(Layer): 레이어 팝업은 body 바로 아래 위치해야함
 const Layer = {
   id: 'uiLayer',
   className: {
-    popup: ui.className.popup.slice(1),
-    wrap: ui.className.wrap.slice(1),
-    header: ui.className.header.slice(1),
-    headerInner: ui.className.headerInner.slice(1),
-    headerLeft: ui.className.headerLeft.slice(1),
-    headerRight: ui.className.headerRight.slice(1),
-    close: 'head-close',
-    body: ui.className.body.slice(1),
-    inner: 'section',
+    popup: 'popup',
+    page: 'pop-page',
+    wrap: 'pop-wrap',
+    header: 'pop-head',
+    headerInner: 'pop-head-inner',
+    headerLeft: 'pop-head-left',
+    headerRight: 'pop-head-right',
+    close: 'pop-close',
+    body: 'pop-body',
+    bodyInner: 'pop-body-inner',
+    footer: 'pop-foot',
+    footerInner: 'pop-foot-inner',
     active: 'show',
-    etcCont: ui.className.mainWrap + ':visible',
     focused: 'pop__focused',
     focusIn: 'ui-focus-in',
     removePopup: 'ui-pop-remove',
     closeRemove: 'ui-pop-close-remove',
     alert: 'ui-pop-alert',
     lastPopup: 'ui-pop-last',
-    bgNoClose: 'bg-no-click'
+    bgNoClose: 'bg-no-click',
+    bgClose: 'pop-bg-close',
+    openUI: 'ui-pop-open',
+    closeUI: 'ui-pop-close'
   },
-  closeBtn: '<button type="button" class="head-close head-btn ui-pop-close" aria-label="팝업창 닫기"></button>',
+  closeHtml: function () {
+    return '<button type="button" class="' + Layer.className.close + ' ' + Layer.className.closeUI + '" aria-label="팝업창 닫기"></button>';
+  },
+  bgCloseHtml: function () {
+    return '<div class="' + Layer.className.bgClose + ' ' + Layer.className.closeUI + '" role="button" aria-label="팝업창 닫기"></div>';
+  },
+  init: function () {
+    Layer.ready();
+    Layer.UI();
+  },
+  reInit: function () {
+    Layer.ready();
+  },
+  ready: function () {
+    if ($('.' + Layer.className.popup + '.' + Layer.className.active + '[aria-hidden="true"]').length) {
+      Layer.open('.' + Layer.className.popup + '.' + Layer.className.active + '[aria-hidden="true"]');
+    }
+  },
   reOpen: false,
   openEl: '',
   openPop: [],
@@ -4870,6 +3888,8 @@ const Layer = {
     const dfd = $.Deferred();
     const $popup = $(tar);
     const $popWrap = $popup.find('.' + Layer.className.wrap);
+    const $popHead = $popup.find('.' + Layer.className.header);
+    const $popFoot = $popup.find('.' + Layer.className.footer);
 
     //만약 팝업 없을때
     if (!$popup.length || !$popWrap.length) {
@@ -4885,18 +3905,22 @@ const Layer = {
         dfd.reject();
       }
       return;
+    } else if ($popup.hasClass('op-0')) {
+      if (!Layer.reOpen) {
+        Layer.reOpen = true;
+        console.log(tar, '팝업 투명처리');
+        setTimeout(function () {
+          Layer.open(tar);
+        }, 500);
+      } else {
+        Layer.reOpen = false;
+        console.log(tar, '재시도해도 팝업 투명상태');
+        dfd.reject();
+      }
+      return;
     }
 
-    Layer.opening++;
-
-    //z-index
-    const $showLength = $('.' + Layer.className.popup + '.' + Layer.className.active).not('.' + Layer.className.alert).length;
-    const $alertShowLength = $('.' + Layer.className.popup + '.' + Layer.className.active + '.' + Layer.className.alert).length;
-    if ($popup.hasClass(Layer.className.alert && !$alertShowLength)) {
-      $popup.css('z-index', '+=' + $alertShowLength);
-    } else if ($showLength) {
-      $popup.css('z-index', '+=' + $showLength);
-    }
+    Layer.opening += 1;
 
     //id없을때
     let $id = $popup.attr('id');
@@ -4906,36 +3930,37 @@ const Layer = {
       $popup.attr('id', $id);
     }
 
-    //last 체크
+    //last 체크, z-index
     let $lastPop = '';
     if (Layer.openPop.length) $lastPop = Layer.openPop[Layer.openPop.length - 1];
     if (!$popup.hasClass(Layer.className.alert)) {
-      if (Layer.openPop.length) {
-        let $last;
-        $.each(Layer.openPop, function () {
-          const $this = '' + this;
-          if (!$($this).hasClass(Layer.className.alert)) $last = $this;
-        });
-        $($last).removeClass(Layer.className.lastPopup);
-      }
-      $popup.addClass(Layer.className.lastPopup);
+      if (Layer.openPop.indexOf($popup[0]) < 0) Layer.openPop.push($popup[0]);
+      Layer.setOrder();
+    } else {
+      const $alertShowLength = $('.' + Layer.className.popup + '.' + Layer.className.active + '.' + Layer.className.alert).length;
+      if ($popup.hasClass(Layer.className.alert) && !$alertShowLength) $popup.css('z-index', '+=' + $alertShowLength);
     }
-    if (Layer.openPop.indexOf('#' + $id) < 0) Layer.openPop.push('#' + $id);
 
     // bg close
-    //  && !$popup.hasClass('full')
-    if (!$popup.hasClass(Layer.className.alert) && !$popup.hasClass(Layer.className.bgNoClose) && !$popup.find('.pop-bg-close').length) {
-      const $bgClick = '<div class="pop-bg-close ui-pop-close" role="button" aria-label="팝업창 닫기"></div>';
-      $popup.prepend($bgClick);
+    /*
+    if (!$popup.hasClass(Layer.className.alert) && !$popup.hasClass(Layer.className.bgNoClose) && !$popup.find('.' + Layer.className.bgClose).length) {
+      $popup.prepend(Layer.bgCloseHtml());
     }
+    */
 
     // delay time
     const $openDelay = 20 * Layer.opening;
 
     //show
     $popup.attr('aria-hidden', false);
-    $popup.css('display', 'flex');
-    // console.log(event.currentTarget, Event.currentTarget, 'currentTarget');
+    if (ui.pc.msie()) {
+      $popup.show();
+    } else {
+      $popup.css('display', 'flex');
+    }
+
+    Layer.position($popup);
+
     const $FocusEvt = function () {
       //리턴 포커스
       let $focusEl = '';
@@ -4960,7 +3985,10 @@ const Layer = {
       if (!ui.mobile.any()) {
         //PC
         if ($popup.hasClass(Layer.className.alert)) {
-          $popup.find('.bottem-fixed .button').last().focus();
+          const $firstBtn = $popFoot.find('.button').first();
+          setTimeout(function () {
+            $firstBtn.focus();
+          }, 200);
         } else {
           $popup.attr({ tabindex: 0 }).focus();
         }
@@ -4970,10 +3998,10 @@ const Layer = {
         let $thisTxt = '';
         let $childrenTxt = '';
         //모바일
-        if ($popup.find('.' + Layer.className.header + ' h1').length) {
-          $popup.attr({ tabindex: 0 }).focus();
-        } else if ($popup.find('.' + Layer.className.header + ' .' + Layer.className.close).length) {
-          $popup.find('.' + Layer.className.header + ' .' + Layer.className.close).focus();
+        if ($popHead.find('h1').length) {
+          $popHead.find('h1').attr({ tabindex: 0 }).focus();
+        } else if ($popHead.find('.' + Layer.className.close).length) {
+          $popHead.find('.' + Layer.className.close).focus();
         } else {
           if (!$focusInEl.length) {
             $focusInEl = $popup.find('.' + Layer.className.body);
@@ -4995,12 +4023,15 @@ const Layer = {
         }
       }
     };
+    $FocusEvt();
+
+    if ($popup.find('.' + Layer.className.footer).length) $popup.find('.' + Layer.className.body).addClass('next-foot');
 
     setTimeout(function () {
       //웹접근성
-      $(Layer.className.etc).attr('aria-hidden', true);
+      //$(Layer.className.etc).attr('aria-hidden', true);
       if (Layer.openPop.length && $lastPop) $($lastPop).attr('aria-hidden', true);
-      const $tit = $popup.find('.' + Layer.className.header + ' h1');
+      const $tit = $popHead.find('h1');
       if ($tit.length) {
         if ($tit.attr('id') == undefined) {
           $tit.attr('id', $id + 'Label');
@@ -5010,60 +4041,45 @@ const Layer = {
         }
       }
 
-      //팝업안 swiper
-      // if ($popup.find('.ui-swiper').length) ui.Swiper.update($popup.find('.ui-swiper'));
-
       //열기
       Body.lock();
       $popup.addClass(Layer.className.active);
-      $popWrap.scrollTop(0);
-      /*
-      const $animation = $popWrap.find('[data-animation]');
-      if ($animation.length) {
-        $animation.each(function () {
-          $(this).removeClass($(this).data('animation'));
-        });
-      }
-      */
-
-      //iframe
-      if ($popup.find('iframe.load-height').length) ui.util.iframe();
 
       //focus
       if (!ui.mobile.any()) Layer.focusMove(tar);
-
-      //position
-      Layer.position(tar);
-      let fixedChkIdx = 0;
-      const fixedChk = function () {
-        if (fixedChkIdx > 5) return;
-        Layer.fixed($popWrap);
-        fixedChkIdx += 1;
-        setTimeout(function () {
-          fixedChk();
-        }, 100);
-      };
-      fixedChk();
-
-      //resize
-      setTimeout(function () {
-        Layer.resize();
-        ui.tab.resize();
-      }, 10);
 
       //callback
       const transitionEndEvt = function () {
         setTimeout(function () {
           $popup.addClass(Layer.className.active + '-end');
         }, 100);
-        $FocusEvt();
+
+        if ($popup.hasClass('drag') && $popHead.length && !$popWrap.hasClass('ui-draggable')) {
+          $popWrap.draggable({
+            // containment: 'window',
+            handle: $popHead,
+            scroll: false,
+            drag: function (event, ui) {
+              const $top = ui.position.top;
+              const $minTop = ($popup.height() - $popWrap.height()) / 2 + $popHead.outerHeight();
+              const $maxTop = $popup.height() - ($popup.height() - $popWrap.height()) / 2;
+              ui.position.top = Math.min(Math.max($top, -$minTop), $maxTop);
+              const $left = ui.position.left;
+              const $minLeft = ($popup.width() - $popWrap.width()) / 2 + $popWrap.width();
+              ui.position.left = Math.min(Math.max($left, -$minLeft), $minLeft);
+            }
+          });
+        }
+
         $popup.trigger('Layer.show');
         dfd.resolve();
         $popup.off('transitionend', transitionEndEvt);
       };
       $popup.on('transitionend', transitionEndEvt);
 
-      Layer.opening--;
+      Layer.opening -= 1;
+      const $showLength = $('.' + Layer.className.popup + '.' + Layer.className.active);
+      if (!$showLength) Layer.opening = 0;
     }, $openDelay);
 
     return dfd.promise();
@@ -5071,42 +4087,30 @@ const Layer = {
   close: function (tar) {
     const dfd = $.Deferred();
     const $popup = $(tar);
-    if ($popup.hasClass('morphing') && !$popup.hasClass('morphing-close')) {
-      Layer.morphing.close(tar).then(function () {
-        dfd.resolve();
-      });
-      return;
-    }
+    const $popWrap = $popup.find('.' + Layer.className.wrap);
     if (!$popup.hasClass(Layer.className.active)) {
       dfd.reject();
       return console.log(tar, '해당팝업 안열려있음');
     }
-    const $id = $popup.attr('id');
-    let $lastPop = '';
-    const $visible = $('.' + Layer.className.popup + '.' + Layer.className.active).length;
 
-    Layer.openPop.splice(Layer.openPop.indexOf('#' + $id), 1);
-    if (Layer.openPop.length) $lastPop = Layer.openPop[Layer.openPop.length - 1];
     if (!$popup.hasClass(Layer.className.alert)) {
-      if (Layer.openPop.length) {
-        let $last;
-        $.each(Layer.openPop, function () {
-          const $this = '' + this;
-          if (!$($this).hasClass(Layer.className.alert)) $last = $this;
-        });
-        $($last).addClass(Layer.className.lastPopup);
-      }
-      $popup.removeClass(Layer.className.lastPopup);
+      Layer.openPop.splice(Layer.openPop.indexOf($popup[0]), 1);
+      Layer.setOrder();
     }
+
+    const $visible = $('.' + Layer.className.popup + '.' + Layer.className.active).length;
     if ($visible == 1) {
       Body.unlock();
-      $(Layer.className.etc).removeAttr('aria-hidden');
+      //$(Layer.className.etc).removeAttr('aria-hidden');
     }
-    if ($lastPop != '') $($lastPop).attr('aria-hidden', false);
+
+    let $lastPop = '';
+    if (Layer.openPop.length) $lastPop = Layer.openPop[Layer.openPop.length - 1];
+    if (!!$lastPop) $($lastPop).attr('aria-hidden', false);
 
     //포커스
+    const $returnFocus = $popup.data('returnFocus');
     const $focusEvt = function () {
-      const $returnFocus = $popup.data('returnFocus');
       if ($returnFocus != undefined) {
         $returnFocus.removeClass(Layer.className.focused).focus();
         if ($returnFocus.hasClass('btn-select')) $returnFocus.closest('.select').removeClass('focused');
@@ -5119,16 +4123,9 @@ const Layer = {
         const mainWrap = $(ui.className.mainWrap + ':visible');
         const mainWrapHeader = mainWrap.find(ui.className.header);
         if (mainWrapHeader.length) {
-          if (mainWrapHeader.find('.head-back').length) {
-            mainWrapHeader.find('.head-back').focus();
-          } else if (mainWrapHeader.find('h1').length) {
-            mainWrapHeader.find('h1').attr({ tabindex: 0 }).focus();
-          } else {
-            mainWrapHeader.attr({ tabindex: 0 }).focus();
-          }
+          mainWrapHeader.find('h1 a').focus();
         } else {
-          // $popup.find(':focus').blur();
-          mainWrap.find(ui.className.body).find($focusableEl).first().focus();
+          mainWrap.find('.page-title').attr({ tabindex: 0 }).focus();
         }
       }
     };
@@ -5138,24 +4135,20 @@ const Layer = {
 
     //닫기
     $popup.removeClass(Layer.className.active + '-end');
-    /*
-    if ($popup.find('.next-foot-fixed').length) {
-      const $popWrap = $popup.find('.' + Layer.className.wrap);
-      $popWrap.scrollTop(0);
-    }
-    */
+
     $popup.removeClass(Layer.className.active).data('focusMove', false).data('popPosition', false);
     $popup.attr('aria-hidden', 'true').removeAttr('tabindex aria-labelledby');
 
     const $closeAfter = function () {
-      $popup.removeAttr('style');
+      $popup.removeAttr('style data-index');
       $popup
         .find('.' + Layer.className.header)
         .removeAttr('style')
         .find('h1')
         .removeAttr('tabindex');
-      $popup.find('.' + Layer.className.body).removeAttr('tabindex style');
+      $popup.find('.' + Layer.className.body).removeAttr('style');
       $popup.find('.' + Layer.className.focusIn).removeAttr('tabindex');
+      if ($popup.hasClass('drag')) $popWrap.removeCss(['left', 'top']);
 
       // 닫을 때 없어져야하는 요소
       if ($popup.find('.' + Layer.className.closeRemove).length) $popup.find('.' + Layer.className.closeRemove).remove();
@@ -5163,9 +4156,6 @@ const Layer = {
       // 닫기 후 팝업 자체가 없어지는 케이스
       if ($popup.hasClass(Layer.className.alert) || $popup.hasClass(Layer.selectClass) || $popup.hasClass(Layer.className.removePopup)) {
         if ($popup.hasClass(Layer.selectClass)) Layer.isSelectOpen = false;
-        if ($popup.hasClass(Layer.className.alert)) {
-          const $content = $popup.find('.message>div').html();
-        }
         $popup.remove();
       }
     };
@@ -5173,51 +4163,134 @@ const Layer = {
     const transitionEndEvt = function () {
       $closeAfter();
 
-      // $popup.addClass(Layer.className.active + '-end');
       $popup.trigger('Layer.hide');
       dfd.resolve();
       $popup.off('transitionend', transitionEndEvt);
     };
     $popup.on('transitionend', transitionEndEvt);
 
-    /*
-    const $wrap = $popup.find('.' + Layer.className.wrap);
-    $wrap.on('transitionend', function () {
-      $closeAfter();
-      $wrap.off('transitionend');
-    });
-    */
     return dfd.promise();
   },
+  position: function (tar) {
+    const $popup = $(tar);
+    if (!$popup.length) return;
+    const $popH = $popup.height();
+    const $head = $popup.find('.' + Layer.className.header);
+    const $headH = $head.length ? $head.outerHeight() : 0;
+    const $foot = $popup.find('.' + Layer.className.footer);
+    const $footH = $foot.length ? $foot.outerHeight() : 0;
+    const $body = $popup.find('.' + Layer.className.body);
+    const $wrap = $popup.find('.' + Layer.className.wrap);
+    $body.css('max-height', $popH - $headH - $footH);
 
+    const $wrapH = $wrap.outerHeight();
+    const $wrapMgT = $popH - $wrapH;
+    if (ui.pc.msie()) {
+      if ($wrapMgT > 0) {
+        $wrap.css('margin-top', $wrapMgT / 2);
+      } else {
+        $wrap.removeCss('margin-top');
+      }
+    }
+
+    Layer.bodyScrollChk($body);
+  },
+  bodyScrollChk: function (el) {
+    const $el = $(el);
+    const $elH = $el.outerHeight();
+    const $sclTop = $el.scrollTop();
+    const $sclH = $el[0].scrollHeight;
+    const $foot = $el.siblings('.' + Layer.className.footer);
+    if ($elH === $sclH || !$foot.length) return;
+    if ($sclTop >= $sclH - $elH - 5) {
+      $foot.removeClass('fixed');
+    } else {
+      $foot.addClass('fixed');
+    }
+  },
+  setOrder: function () {
+    if (!Layer.openPop.length) return;
+    $('.' + Layer.className.popup)
+      .removeClass(Layer.className.lastPopup)
+      .removeCss('z-index');
+    $.each(Layer.openPop, function (i) {
+      const $this = $(this);
+      $this.attr('data-index', i);
+      if (i) $this.css('z-index', '+=' + i);
+      if (i === Layer.openPop.length - 1) $this.addClass(Layer.className.lastPopup);
+    });
+  },
+  focusMove: function (tar) {
+    if (!$(tar).hasClass(Layer.className.active)) return false;
+    if ($(tar).data('focusMove') == true) return false;
+    $(tar).data('focusMove', true);
+    const $tar = $(tar);
+    const $focusaEls = $tar.find($focusableEl);
+    // let $isFirstBackTab = false;
+
+    $focusaEls.on('keydown', function (e) {
+      const $keyCode = e.keyCode ? e.keyCode : e.which;
+      const $focusable = $tar.find($focusableEl);
+      const $focusLength = $focusable.length;
+      const $firstFocus = $focusable.first();
+      const $lastFocus = $focusable.last();
+      const $index = $focusable.index(this);
+
+      if ($keyCode === 9) {
+        if ($focusLength === 1) {
+          e.preventDefault();
+        } else if (!e.shiftKey && $index === $focusLength - 1) {
+          e.preventDefault();
+          $firstFocus.focus();
+        } else if (e.shiftKey && $index === 0) {
+          e.preventDefault();
+          $lastFocus.focus();
+        }
+      }
+    });
+
+    $tar.on('keydown', function (e) {
+      const $keyCode = e.keyCode ? e.keyCode : e.which;
+      const $focusable = $tar.find($focusableEl);
+      const $lastFocus = $focusable.last();
+
+      if (e.target == this && $keyCode == 9) {
+        if (e.shiftKey) {
+          $lastFocus.focus();
+          e.preventDefault();
+        }
+      }
+    });
+  },
   alertHtml: function (type, popId, btnActionId, btnCancelId) {
-    let $html = '<div id="' + popId + '" class="' + Layer.className.popup + ' modal alert ' + Layer.className.alert + '" role="dialog" aria-hidden="true">';
+    let $html = '<div id="' + popId + '" class="' + Layer.className.popup + ' small alert ' + Layer.className.alert + '" role="dialog" aria-hidden="true">';
     $html += '<article class="' + Layer.className.wrap + '">';
-    $html += '<header class="' + Layer.className.header + '"><div class="' + Layer.className.headerInner + '"><div class="' + Layer.className.headerLeft + ' full"><h1>안내</h1></div></div></header>';
+    $html += '<header class="' + Layer.className.header + '"><div class="' + Layer.className.headerInner + '"><div class="' + Layer.className.headerLeft + ' full"><i class="i-ico-warning"></i><h1>안내</h1></div></div></header>';
     $html += '<main class="' + Layer.className.body + '">';
-    $html += '<div class="' + Layer.className.inner + '">';
+    $html += '<div class="' + Layer.className.bodyInner + '">';
     if (type === 'prompt') {
-      $html += '<div class="form-lbl mt-0">';
+      $html += '<div class="form-item">';
+      $html += '<div class="form-lbl">';
       $html += '<label for="inpPrompt" role="alert" aria-live="assertive"></label>';
       $html += '</div>';
-      $html += '<div class="form-item">';
       $html += '<div class="input"><input type="text" id="inpPrompt" placeholder="입력해주세요."></div>';
       $html += '</div>';
     } else {
       $html += '<div class="message">';
+      $html += '<i class="i-ico-warning"></i>';
       $html += '<div role="alert" aria-live="assertive"></div>';
       $html += '</div>';
     }
     $html += '</div>';
     $html += '</main>';
-    $html += '<div class="btn-wrap ' + ui.className.bottomFixed.slice(1) + '">';
-    $html += '<div class="flex full">';
+    $html += '<footer class="' + Layer.className.footer + '">';
+    $html += '<div class="' + Layer.className.footerInner + '">';
+    $html += '<button type="button" id="' + btnActionId + '" class="button large action">확인</button>';
     if (type === 'confirm' || type === 'prompt') {
-      $html += '<button type="button" id="' + btnCancelId + '" class="button gray">취소</button>';
+      $html += '<button type="button" id="' + btnCancelId + '" class="button large cancel">취소</button>';
     }
-    $html += '<button type="button" id="' + btnActionId + '" class="button primary">확인</button>';
     $html += '</div>';
-    $html += '</div>';
+    $html += '</footer>';
     $html += '</article>';
     $html += '</div>';
 
@@ -5247,9 +4320,12 @@ const Layer = {
     //팝업그리기
     Layer.alertHtml(type, $popId, $actionId, $cancelId);
     const $pop = $('#' + $popId);
+    const $header = $pop.find('.' + Layer.className.header);
     if (!!option.title || (typeof title === 'string' && title !== '')) {
       const $insertTit = typeof title === 'string' && title !== '' ? title : option.title;
-      $pop.find('.' + Layer.className.wrap + ' h1').html($insertTit);
+      $header.find('h1').html($insertTit);
+    } else {
+      $header.remove();
     }
     let $actionTxt;
     if (!!option.actionTxt) $actionTxt = option.actionTxt;
@@ -5290,6 +4366,7 @@ const Layer = {
         } else {
           dfd.resolve();
         }
+        if (!!option.action && typeof option.action === 'function') option.action();
       };
       Layer.close('#' + $popId).then($actionEvt);
     });
@@ -5297,12 +4374,14 @@ const Layer = {
       const $cancelEvt = function () {
         dfd.reject();
       };
+      if (!!option.cancel && typeof option.cancel === 'function') option.cancel();
       Layer.close('#' + $popId).then($cancelEvt);
     });
 
     return dfd.promise();
   },
   alert: function (option, title, actionTxt, init) {
+    if (option === '' || option === null) return console.log('메세지를 입력해주세요');
     const dfd = $.Deferred();
     Layer.alertEvt('alert', option, title, actionTxt, null, init).then(function () {
       dfd.resolve();
@@ -5310,6 +4389,7 @@ const Layer = {
     return dfd.promise();
   },
   confirm: function (option, title, actionTxt, cancelTxt, init) {
+    if (option === '' || option === null) return console.log('메세지를 입력해주세요');
     const dfd = $.Deferred();
     Layer.alertEvt('confirm', option, title, actionTxt, cancelTxt, init).then(
       function () {
@@ -5321,457 +4401,46 @@ const Layer = {
     );
     return dfd.promise();
   },
-  prompt: function (option, title, actionTxt, cancelTxt, init) {
-    const dfd = $.Deferred();
-    Layer.alertEvt('prompt', option, title, actionTxt, cancelTxt, init).then(function (value) {
-      dfd.resolve(value);
-    });
-    return dfd.promise();
-  },
-  alertKeyEvt: function () {
-    //컨펌팝업 버튼 좌우 방할기로 포커스 이동
-    $(document).on('keydown', '.' + Layer.className.alert + ' ' + ui.className.bottomFixed.slice(1) + ' .button', function (e) {
-      const $keyCode = e.keyCode ? e.keyCode : e.which;
-      let $tar = '';
-      if ($keyCode == 37) $tar = $(this).prev();
-      if ($keyCode == 39) $tar = $(this).next();
-      if (!!$tar) $tar.focus();
-    });
-  },
-  selectId: 'uiSelectLayer',
-  selectIdx: 0,
-  selectClass: 'ui-pop-select',
-  select: function (target, col) {
-    const $target = $(target);
-    const $targetVal = $target.val();
-    const $addClass = $target.data('class');
-    const $type = $target.data('type');
-    let $title = $target.attr('title');
-    const $popId = Layer.selectId + Layer.selectIdx;
-    const $length = $target.children().length;
-    let $option = '';
-    let $opDisabled = '';
-    let $opTxt = '';
-    let $opVal = '';
-    let $popHtml = '';
-    let $isFullPop = false;
-
-    Layer.selectIdx++;
-    if ($title == undefined) $title = '선택';
-    const $monthTxt = function (txt) {
-      let $txt = txt;
-      const $split = $txt.split('.');
-      if ($split.length == 2) {
-        $txt = $split[0] + '년 ' + $split[1] + '월';
-      } else if ($split.length == 3) {
-        $txt = $split[0] + '년 ' + $split[1] + '월 ' + $split[2] + '일';
-      } else {
-        $txt = $split.join('.');
-      }
-      return $txt;
-    };
-    $popHtml += '<div id="' + $popId + '" class="' + Layer.className.popup + ' ' + ($isFullPop ? 'full' : 'bottom') + ' ' + Layer.selectClass + '" role="dialog" aria-hidden="true">';
-    $popHtml += '<article class="' + Layer.className.wrap + '">';
-    $popHtml += '<header class="' + Layer.className.header + '">';
-    $popHtml += '<div class="' + Layer.className.headerInner + '">';
-    $popHtml += '<div class="' + Layer.className.headerLeft + ' full">';
-    $popHtml += '<h1>' + $title + '</h1>';
-    $popHtml += '</div>';
-    $popHtml += '<div class="' + Layer.className.headerRight + '">';
-    $popHtml += Layer.closeBtn;
-    $popHtml += '</div>';
-    $popHtml += '</div>';
-    $popHtml += '</header>';
-    $popHtml += '<main class="' + Layer.className.body + '">';
-
-    $popHtml += '<ul class="select-item-wrap';
-    if (!!col) $popHtml += ' col' + col;
-    if ($addClass) $popHtml += ' ' + $addClass;
-    $popHtml += '">';
-    for (let i = 0; i < $length; i++) {
-      $option = $target.children().eq(i);
-      $opDisabled = $option.prop('disabled');
-      $opTxt = $option.data('txt') ? $option.data('txt') : $option.text();
-      $opSub = $option.data('sub');
-      $opVal = $option.attr('value');
-      if ($opVal != '') {
-        $popHtml += '<li>';
-        $popHtml += '<div class="select-item' + ($targetVal == $opVal ? ' selected' : '') + '">';
-        $popHtml += '<a href="#" class="ui-pop-select-btn' + ($opDisabled ? ' disabled' : '') + '" role="button" data-value="' + $opVal + '"';
-        if ($targetVal == $opVal) $popHtml += ' title="' + ($opTxt.length > 20 ? $opTxt.substring(20, $opTxt.lastIndexOf('(')) : $opTxt) + ' 선택됨"';
-        $popHtml += '>';
-        // $popHtml += '<div class="checkbox ty2"><i aria-hidden="true"></i></div>';
-        if ($opSub && $type === 'reverse') {
-          $popHtml += '<div class="select-item-txt">' + $opSub + '</div>';
-          $popHtml += '<div class="select-item-sub">' + $opTxt + '</div>';
-        } else {
-          if ($type === 'date') {
-            $popHtml += '<div class="select-item-txt">' + $monthTxt($opTxt) + '</div>';
-          } else {
-            $popHtml += '<div class="select-item-txt">' + $opTxt + '</div>';
-          }
-          if ($opSub) $popHtml += '<div class="select-item-sub">' + $opSub + '</div>';
-        }
-        $popHtml += '</a>';
-        $popHtml += '</div>';
-        $popHtml += '</li>';
-      }
+  tooltip: function (contents, title) {
+    const tooltipPopId = 'uiPopToolTip';
+    let $html = '<div id="' + tooltipPopId + '" class="' + Layer.className.popup + ' small tooltip ' + Layer.className.removePopup + '" role="dialog" aria-hidden="true">';
+    $html += Layer.bgCloseHtml();
+    $html += '<article class="' + Layer.className.wrap + '">';
+    if (title !== undefined && title !== '') {
+      $html += '<header class="' + Layer.className.header + '">';
+      $html += '<div class="' + Layer.className.headerInner + '">';
+      $html += '<div class="' + Layer.className.headerLeft + '">';
+      $html += '<h1>' + title + '</h1>';
+      $html += '</div>';
+      $html += '<div class="' + Layer.className.headerRight + '">';
+      $html += Layer.closeHtml();
+      $html += '</div>';
+      $html += '</div>';
+      $html += '</header>';
     }
-    $popHtml += '</ul>';
-    $popHtml += '</main>';
-    $popHtml += '</article>';
-    $popHtml += '</div>';
+    $html += '<main class="' + Layer.className.body + '">';
+    $html += '<div class="' + Layer.className.bodyInner + '">';
+    if (title === undefined) {
+      $html += Layer.closeHtml();
+    }
+    $html += contents;
+    $html += '</div>';
+    $html += '</main>';
+    $html += '</article>';
+    $html += '</div>';
 
-    $('body').append($popHtml);
-
-    $target.data('popup', '#' + $popId);
-    const $pop = $('#' + $popId);
-    $pop.on('click', '.ui-pop-select-btn', function (e) {
-      e.preventDefault();
-      if (!$(this).hasClass('disabled')) {
-        const $btnVal = $(this).data('value');
-        // const $btnTxt = $(this).text();
-        $(this).parent().addClass('selected').closest('li').siblings().find('.selected').removeClass('selected');
-        ui.form.selectSetVal($target, $btnVal);
-        Layer.close('#' + $popId, function () {
-          $target.change();
-        });
-      }
-    });
+    $('body').append($html);
+    Layer.open('#' + tooltipPopId);
   },
-  isSelectOpen: false,
-  selectOpen: function (select, e) {
-    const $select = $(select);
-    const $txtLengthArry = [];
-    if ($select.prop('disabled')) return false;
-    if ($select.find('option').length < 1) return console.log('select에 option 없음');
-    if ($select.find('option').length == 1 && $select.find('option').val() == '') return console.log('select에 option의 value가 0이라 리턴');
-    Layer.isSelectOpen = true;
-    $select.find('option').each(function () {
-      const $optVal = $(this).val();
-      const $optTxt = $(this).text();
-      if ($optVal != '') {
-        $txtLengthArry.push($optTxt.length);
-      }
-    });
-    Layer.select($select);
-
-    const $pop = $select.data('popup');
-    Layer.open($pop, function () {
-      //if(!!e)$($pop).data('returnFocus',$currentTarget);
-    });
-  },
-  selectUI: function () {
-    //셀렉트 팝업
-    $(document).on('click', '.ui-select-open', function (e) {
-      e.preventDefault();
-      let $select = '';
-      if (Layer.isSelectOpen == false) {
-        $select = $($(this).attr('href'));
-        if (!$select.length) $select = $(this).prev('select');
-        Layer.selectOpen($select, e);
-      }
-    });
-    $(document).on('click', '.ui-select-lbl', function (e) {
-      e.preventDefault();
-      const $tar = $(this).is('a') ? $(this).attr('href') : '#' + $(this).attr('for');
-      $($tar).next('.ui-select-open').focus().click();
-    });
-  },
-  toast: function (txt, fn, type, delayTime) {
-    if (type === undefined) type = 'toast';
-    const $isAlarm = type === 'alarm';
-    const $isFn = !!fn;
-    const $className = '.' + type + '-box';
-
-    if (delayTime == undefined) delayTime = 2000;
-
-    let $boxHtml = '<div class="' + $className.substring(1) + '">';
-    $boxHtml += '<div>';
-    if ($isFn) {
-      $boxHtml += '<a href="#" role="button" class="txt">' + txt + '</a>';
-    } else {
-      $boxHtml += '<div class="txt">' + txt + '</div>';
-    }
-    if ($isAlarm) {
-      $boxHtml += '<button type="button" class="close" aria-label="닫기"></button>';
-    }
-    $boxHtml += '</div>';
-    $boxHtml += '</div>';
-    $('body').before($boxHtml);
-    const $toast = $($className).last();
-    const $toastClose = function () {
-      $toast.removeClass('on');
-      $toast.one('transitionend', function () {
-        $(this).remove();
-      });
-    };
-    const $bottomFixedSpace = $(ui.className.mainWrap + ':visible ' + ui.className.bottomFixedSpace);
-    const $spaceH = $bottomFixedSpace.outerHeight();
-    if ($spaceH) {
-      // const $top = parseInt($toast.css('bottom'));
-      // $toast.css('bottom', $top + $spaceH);
-      $toast.css('bottom', $spaceH);
-    }
-    $toast.addClass('on');
-    let $closeTime;
-    if (!$isAlarm) {
-      $closeTime = setTimeout($toastClose, delayTime);
-    }
-    if ($isFn) {
-      $toast.find('a.txt').one('click', function (e) {
-        e.preventDefault();
-        fn();
-
-        // 이벤트 실행시 바로 닫기
-        clearTimeout($closeTime);
-        $toastClose();
+  resizeUI: function () {
+    const $show = $('.popup.show');
+    if ($show.length) {
+      $show.each(function () {
+        Layer.position(this);
       });
     }
   },
-  alarm: function (txt, fn, delayTime) {
-    Layer.toast(txt, fn, 'alarm', delayTime);
-  },
-
-  resize: function () {
-    const $popup = $('.' + Layer.className.popup + '.' + Layer.className.active);
-    if (!$popup.length) return;
-    const headHeight = function (headCont, contentCont) {
-      const $headH = headCont.children().outerHeight();
-      const $position = headCont.css('position');
-      const $padTop = parseInt(contentCont.css('padding-top'));
-      if ($headH > $padTop) {
-        contentCont.css('padding-top', $headH);
-      }
-    };
-    const bottomFixedHeight = function (fixedEl, bodyEl) {
-      const $bottomFixedH = fixedEl.children().outerHeight();
-      const $padBottom = parseInt(bodyEl.css('padding-bottom'));
-      if ($bottomFixedH > $padBottom) bodyEl.css('padding-bottom', $bottomFixedH);
-    };
-    $popup.each(function () {
-      const $this = $(this);
-      const $wrap = $this.find('.' + Layer.className.wrap);
-      const $head = $wrap.find('.' + Layer.className.header);
-      const $body = $wrap.find('.' + Layer.className.body);
-      const $bottomFixed = $body.siblings(ui.className.bottomFixed);
-      // const $tit = $head.find('h1');
-
-      $head.removeAttr('style');
-      $body.removeAttr('tabindex style');
-
-      const $bottomFixedH = $bottomFixed.outerHeight() ? $bottomFixed.outerHeight() : $bottomFixed.children().outerHeight();
-      const $bodyPdB = parseInt($body.css('padding-bottom'));
-
-      // if ($head.length) headHeight($head, $body);
-      // if ($bottomFixed.length) bottomFixedHeight($bottomFixed, $body);
-      if ($bottomFixed.length && ($bottomFixed.css('position') === 'fixed' || $bottomFixed.children().css('position') === 'fixed') && $bottomFixedH !== $bodyPdB) $body.css('padding-bottom', $bottomFixedH);
-
-      //레이어팝업
-      //컨텐츠 스크롤이 필요할때
-      const $height = $this.height();
-      // const  $popHeight = $this.find('.'+Layer.className.wrap).outerHeight();
-      if ($this.hasClass('bottom') || $this.hasClass('modal')) $wrap.css('max-height', $height);
-
-      //팝업 fixed
-      Layer.fixed($wrap);
-
-      //바텀시트 선택요소로 스크롤
-      if ($this.hasClass(Layer.selectClass) && $this.find('.selected').length && !$wrap.hasClass('scrolling')) {
-        const $headH = $head.outerHeight();
-        const $wrapH = $wrap.outerHeight();
-        const $wrapH2 = $wrap.get(0).scrollHeight;
-        const $selected = $wrap.find('.selected');
-        const $selectedH = $selected.outerHeight();
-        const $selectedTop = $selected.position().top;
-
-        if ($wrapH < $wrapH2) {
-          $wrap.addClass('scrolling');
-          const $sclTop = $selectedTop - $wrapH + $wrapH / 2 - $selectedH / 2 + $headH / 2;
-          $wrap.animate({ scrollTop: $sclTop }, 300, function () {
-            $wrap.removeClass('scrolling');
-          });
-        }
-      }
-    });
-  },
-  fixed: function (el) {
-    //  pop fixed
-    let $wrap = $(el);
-    if ($wrap.find('.' + Layer.className.wrap).length) $wrap = $wrap.find('.' + Layer.className.wrap);
-    if ($wrap.closest('.' + Layer.className.wrap).length) $wrap = $wrap.closest('.' + Layer.className.wrap);
-    const $head = $wrap.find('.' + Layer.className.header);
-    const $body = $wrap.find('.' + Layer.className.body);
-    const $bottomFixed = $body.siblings(ui.className.bottomFixed);
-    const $scrollTop = $wrap.scrollTop();
-    const $scrollHeight = $wrap[0].scrollHeight;
-    const $wrapHeight = $wrap.outerHeight();
-    const $topClassName = ui.className.topFixed.slice(1);
-    const $bottomClassName = 'ing-fixed';
-    if ($head.length) {
-      if ($scrollTop > 0) {
-        $head.addClass($topClassName);
-      } else {
-        $head.removeClass($topClassName);
-      }
-    }
-
-    if ($bottomFixed.length) {
-      if ($scrollTop + $wrapHeight >= $scrollHeight - 10) {
-        $bottomFixed.removeClass($bottomClassName);
-      } else {
-        $bottomFixed.addClass($bottomClassName);
-      }
-    }
-    const $fixed = $wrap.find('.pop-fixed');
-    const $wrapTop = $wrap.position().top;
-    if ($fixed.length) {
-      $fixed.each(function () {
-        const $this = $(this);
-        const $offsetTop = $this.data('top') !== undefined ? $this.data('top') : Math.max(0, getOffset(this).top);
-        const $topMargin = getTopFixedHeight($this, $topClassName);
-        let $topEl = $this;
-        const $top = $offsetTop - $wrapTop;
-        if ($scrollTop + $topMargin > $top) {
-          $this.data('top', $offsetTop);
-          $this.addClass($topClassName);
-          if ($topEl.css('position') !== 'fixed' && $topEl.css('position') !== 'sticky') $topEl = $topEl.children();
-          if ($topMargin !== parseInt($topEl.css('top')) && $topEl.css('position') === 'fixed') $topEl.css('top', $topMargin);
-          // if ($head.hasClass($topClassName)) $head.addClass('end-fixed');
-        } else {
-          $this.removeData('top');
-          if ($topEl.css('position') !== 'fixed' && $topEl.css('position') !== 'sticky') $topEl = $topEl.children();
-          $topEl.removeCss('top');
-          $this.removeClass($topClassName);
-          // if (($head.hasClass($topClassName) && $wrap.find('.' + $topClassName).length === 1) || !$wrap.find('.' + $topClassName).length) $head.removeClass('end-fixed');
-        }
-      });
-    }
-  },
-  position: function (tar) {
-    const $popup = $(tar);
-    if (!$popup.hasClass(Layer.className.active)) return false;
-    if ($popup.data('popPosition') == true) return false;
-    $popup.data('popPosition', true);
-    let $wrap = $popup.find('.' + Layer.className.wrap);
-    let $wrapH = $wrap.outerHeight();
-    let $wrapSclH = $wrap[0].scrollHeight;
-    const $head = $popup.find('.' + Layer.className.header);
-    const $body = $popup.find('.' + Layer.className.body);
-    const $bottomFixed = $body.siblings(ui.className.bottomFixed);
-    let $bottomFixedH = 0;
-    if ($bottomFixed.length) {
-      $bottomFixedH = $bottomFixed.children().css('position') === 'fixed' ? $bottomFixed.children().outerHeight() : $bottomFixed.outerHeight();
-    }
-
-    const $btnTop = $popup.find(ui.className.btnTop);
-    if ($btnTop.length) $btnTop.closest(ui.className.floatingBtn).css('bottom', !$bottomFixedH ? 24 : $bottomFixedH + 10);
-
-    let $animation = $wrap.find('[data-animation]');
-    if ($animation.length) {
-      setTimeout(function () {
-        ui.animation.sclCheckIn($animation, $wrap);
-      }, 500);
-    }
-
-    let $lastSclTop = 0;
-    let $timer;
-    if (!$wrap.data('_ui-init')) {
-      $wrap.data('_ui-init', true);
-      $wrap.on('scroll', function () {
-        const $this = $(this);
-        const $wrapSclTop = $this.scrollTop();
-
-        if ($wrapSclTop > ui.btnTop.min) {
-          if ($('html').hasClass('input-focus') && ui.mobile.any()) return;
-          ui.btnTop.on($btnTop);
-        } else {
-          ui.btnTop.off($btnTop);
-        }
-
-        // 고정확인
-        Layer.fixed($this);
-      });
-
-      $wrap.on('click', function () {
-        setTimeout(function () {
-          $wrap.scroll();
-        }, 50);
-      });
-
-      $wrap.on(
-        'scroll resize',
-        _.debounce(function () {
-          $animation = $wrap.find('[data-animation]');
-          if ($animation.length) ui.animation.sclCheckIn($animation, $wrap);
-        }, 100)
-      );
-      $wrap.on(
-        'scroll',
-        _.debounce(function () {
-          ui.btnTop.off($btnTop);
-        }, 1500)
-      );
-    }
-
-    Layer.resize();
-    // Layer.fixed($wrap);
-  },
-  focusMove: function (tar) {
-    if (!$(tar).hasClass(Layer.className.active)) return false;
-    if ($(tar).data('focusMove') == true) return false;
-    $(tar).data('focusMove', true);
-    const $tar = $(tar);
-    const $focusaEls = $tar.find($focusableEl);
-    let $isFirstBackTab = false;
-
-    $focusaEls.on('keydown', function (e) {
-      const $keyCode = e.keyCode ? e.keyCode : e.which;
-      const $focusable = $tar.find($focusableEl);
-      const $focusLength = $focusable.length;
-      const $firstFocus = $focusable.first();
-      const $lastFocus = $focusable.last();
-      const $index = $focusable.index(this);
-
-      $isFirstBackTab = false;
-      if ($index == $focusLength - 1) {
-        //last
-        if ($keyCode == 9) {
-          if (!e.shiftKey) {
-            $firstFocus.focus();
-            e.preventDefault();
-          }
-        }
-      } else if ($index == 0) {
-        //first
-        if ($keyCode == 9) {
-          if (e.shiftKey) {
-            $isFirstBackTab = true;
-            $lastFocus.focus();
-            e.preventDefault();
-          }
-        }
-      }
-    });
-
-    $tar.on('keydown', function (e) {
-      const $keyCode = e.keyCode ? e.keyCode : e.which;
-      const $focusable = $tar.find($focusableEl);
-      const $lastFocus = $focusable.last();
-
-      if (e.target == this && $keyCode == 9) {
-        if (e.shiftKey) {
-          $lastFocus.focus();
-          e.preventDefault();
-        }
-      }
-    });
-  },
-  init: function () {
-    if ($('.' + Layer.className.popup + '.' + Layer.className.active + '[aria-hidden="true"]').length) {
-      Layer.open('.' + Layer.className.popup + '.' + Layer.className.active + '[aria-hidden="true"]');
-    }
-
+  UI: function () {
     $(document).on('click', $focusableEl, function (e) {
       Layer.openEl = e.currentTarget;
     });
@@ -5780,7 +4449,7 @@ const Layer = {
     }, 100);
 
     //열기
-    $(document).on('click', '.ui-pop-open', function (e) {
+    $(document).on('click', '.' + Layer.className.openUI, function (e) {
       e.preventDefault();
       const $pop = $(this).attr('href');
       const $currentTarget = $(e.currentTarget);
@@ -5797,15 +4466,30 @@ const Layer = {
     });
 
     //닫기
-    $(document).on('click', '.ui-pop-close', function (e) {
+    $(document).on('click', '.' + Layer.className.closeUI, function (e) {
       e.preventDefault();
       let $pop = $(this).attr('href');
       if ($pop == '#' || $pop == '#none' || $pop == undefined) $pop = $(this).closest('.' + Layer.className.popup);
       if ($pop.length) Layer.close($pop);
     });
 
-    Layer.alertKeyEvt();
-    Layer.selectUI();
+    //focus
+    $(document).on('focus mousedown', '.' + Layer.className.popup + '.' + Layer.className.active, function (e) {
+      const $this = $(this);
+      const $popup = $this.hasClass(Layer.className.popup) ? $this : $this.closest(Layer.className.popup);
+
+      // z-index 재설정
+      Layer.openPop.splice(Layer.openPop.indexOf($popup[0]), 1);
+      Layer.openPop.push($popup[0]);
+      Layer.setOrder();
+    });
+
+    //pop body scroll
+    $('.' + Layer.className.body).on('scroll', function (e) {
+      e.preventDefault();
+      Layer.bodyScrollChk(this);
+      ui.form.selectResize();
+    });
 
     // 알람박스 닫기
     $(document).on('click', '.alarm-box .close', function (e) {
@@ -5816,235 +4500,38 @@ const Layer = {
         $(this).remove();
       });
     });
-  },
-  tooltip: function (contents, title) {
-    const tooltipPopId = 'uiPopToolTip';
-    let $html = '<div id="' + tooltipPopId + '" class="' + Layer.className.popup + ' modal tooltip ' + Layer.className.removePopup + '" role="dialog" aria-hidden="true">';
-    $html += '<article class="' + Layer.className.wrap + '">';
-    if (title !== undefined && title !== '') {
-      $html += '<header class="' + Layer.className.header + '">';
-      $html += '<div class="' + Layer.className.headerInner + '">';
-      $html += '<div class="' + Layer.className.headerLeft + '">';
-      $html += '<h1>' + title + '</h1>';
-      $html += '</div>';
-      $html += '<div class="' + Layer.className.headerRight + '">';
-      $html += Layer.closeBtn;
-      $html += '</div>';
-      $html += '</div>';
-      $html += '</header>';
-    }
-    $html += '<div class="' + Layer.className.body + '">';
-    $html += '<div class="' + Layer.className.inner + '">';
-    if (title === undefined) {
-      $html += Layer.closeBtn;
-    }
-    $html += contents;
-    $html += '</div>';
-    $html += '</div>';
-    $html += '</article>';
-    $html += '</div>';
 
-    $('body').append($html);
-    Layer.open('#' + tooltipPopId);
-  },
-  like: function () {
-    const wrapClass = '.layer-like';
-    const $delayTime = 2000;
-    let $fileUrl = ui.basePath() + '/lottie/love.json';
-    const $html = '<div class="' + wrapClass.slice(1) + '" aria-hidden="true"><div class="lottie" data-lottie="' + $fileUrl + '"></div></div>';
-    if ($(wrapClass).length) return;
-    // 넣고
-    $('body').append($html);
-    // 보여주고
-    ui.common.lottie(
-      function (target) {
-        if ($(target).closest(wrapClass).length) {
-          $(wrapClass).addClass('show');
-        }
-      },
-      function (target) {
-        if ($(target).closest(wrapClass).length) {
-          $(wrapClass).removeClass('show');
-          const $transitionend = function () {
-            $(wrapClass).remove();
-            $(wrapClass).off('transitionend', $transitionend);
-          };
-          $(wrapClass).on('transitionend', $transitionend);
-        }
-      }
-    );
-    /*
-    setTimeout(function () {
-      $('.layer-like')
-      ui.common.lottie();
-      // 숨기고
-      setTimeout(function () {
-        $('.layer-like').removeClass('show');
-        // 지우고
-        setTimeout(function () {
-          $('.layer-like').remove();
-        }, 310);
-      }, $delayTime);
-    }, 10);
-    */
+    //page
+    $('.' + Layer.className.wrap).each(function () {
+      const $this = $(this);
+      const $layer = $this.closest('.' + Layer.className.popup);
+      if (!$layer.length) $this.addClass(Layer.className.page);
+    });
   }
 };
-Layer.morphing = {
-  is: false,
-  open: function (btn, target) {
-    const dfd = $.Deferred();
-    const $btn = $(btn);
-    const $pop = $(target);
-    const $currentTarget = $(btn);
-    if (!$pop.length || Layer.morphing.is) return;
-    Layer.morphing.is = true;
-    Body.lock();
-    let $bgEl;
-    let $toMin;
-    let $width;
-    let $height;
-    let $left;
-    let $top;
-    let $radius;
-    let $scale;
-    const $getScaleValue = function (topValue, leftValue, radiusValue) {
-      const windowW = $(window).width();
-      const windowH = $(window).height();
-      const maxDistHor = leftValue > windowW / 2 ? leftValue : windowW - leftValue;
-      const maxDistVert = topValue > windowH / 2 ? topValue : windowH - topValue;
-      return Math.ceil(Math.sqrt(Math.pow(maxDistHor, 2) + Math.pow(maxDistVert, 2)) / radiusValue);
-    };
-    const $wrap = $btn.closest(ui.className.wrap);
-    $wrap.addClass('overflow-hidden');
-    const $position = function () {
-      const $popId = $pop.attr('id');
-      $width = $btn.outerWidth();
-      $height = $btn.outerHeight();
-      const $offset = $btn.offset();
-      $top = $offset.top - $(window).scrollTop();
-      $left = $offset.left - $(window).scrollLeft();
-      // $top = $offset.top - $wrap.offset().top;
-      // $left = $offset.left - $wrap.offset().left;
-      const $bg = $btn.css('background-color');
-      const $border = $btn.css('border');
-      const $borderWidth = parseInt($btn.css('border-width'));
-      const $borderRadius = parseInt($btn.css('border-radius'));
-      const $shadow = $btn.css('box-shadow');
-      let $style = '';
-      $style += 'left:' + $left + 'px;';
-      $style += 'top:' + $top + 'px;';
-      $style += 'width:' + $width + 'px;';
-      $style += 'height:' + $height + 'px;';
-      $style += 'border-radius:' + $borderRadius + 'px;';
-      if ($bg !== 'rgba(0, 0, 0, 0)') $style += 'background:' + $bg + ';';
-      if ($borderWidth) $style += 'border:' + $border + ';';
-      if ($shadow !== 'none') $style += 'box-shadow:' + $shadow + ';';
-      $bgEl = '.morphing-bg[data-pop="#' + $popId + '"]';
-      if (!$($bgEl).length) {
-        const $html = '<div class="morphing-bg" data-pop="#' + $popId + '" style="' + $style + '"></div>';
-        $($pop).before($html);
-      } else {
-        $($bgEl).removeAttr('style').attr('style', $style);
-      }
 
-      $($bgEl).data('left', $left);
-      $($bgEl).data('top', $top);
-      $($bgEl).data('width', $width);
-      $($bgEl).data('height', $height);
-      $($bgEl).data('border-radius', $borderRadius);
-
-      $toMin = $width < $height ? $width : $height;
-      $radius = $toMin / 2;
-      $scale = $getScaleValue($left, $top, $radius);
-    };
-    $position();
-    setTimeout(function () {
-      $btn.addClass('morphing-btn-hidden');
-    }, 300);
-    const tl = anime.timeline({
-      // easing: 'easeOutExpo',
-      // easing: 'linear',
-      easing: 'easeOutQuad',
-      duration: 300
-    });
-    tl.add({
-      targets: $bgEl,
-      opacity: 1
-    })
-      .add({
-        targets: $bgEl,
-        left: $left + ($width - $toMin) / 2 + 'px',
-        top: $top + ($height - $toMin) / 2 + 'px',
-        width: $toMin + 'px',
-        height: $toMin + 'px',
-        borderRadius: $radius + 'px'
-      })
-      .add({
-        targets: $bgEl,
-        duration: 500,
-        scale: $scale * 1.5,
-        complete: function () {
-          Layer.open($pop).then(function () {
-            $($pop).data('returnFocus', $currentTarget);
-            dfd.resolve();
-          });
-        }
+function winPop(url, map, width, height, name) {
+  if (!url) return;
+  let $name = !!name ? name : url.split('/').pop();
+  if ($name.indexOf('.') >= 0) $name = $name.split('.').shift();
+  const $width = width ? width : window.screen.width;
+  const $height = height ? height : window.screen.height;
+  const $url = encodeURI(url);
+  if (map == true || map == 'true') {
+    if (ui.pc.msie()) {
+      Layer.alert('해당서비스는 <span class="fc-primary">최신 브라우저</span>에<br /><span class="fc-primary">최적화</span> 되어있습니다.<br />확인 버튼을 누르면 <span class="fc-primary">Edge브라우저</span>로<br /> 자동으로 <span class="fc-primary">이동</span>합니다.').then(function () {
+        window.location = 'microsoft-edge:' + window.location.origin + $url;
       });
-    return dfd.promise();
-  },
-  close: function (target) {
-    const dfd = $.Deferred();
-    const $pop = $(target);
-    const $btn = $pop.data('returnFocus');
-    const $wrap = $btn.closest(ui.className.wrap);
-
-    $pop.addClass('morphing-close');
-    const $popClose = function () {
-      const $popId = $pop.attr('id');
-      const $bgEl = '.morphing-bg[data-pop="#' + $popId + '"]';
-      const $left = $($bgEl).data('left');
-      const $top = $($bgEl).data('top');
-      console.log($left, $top);
-      const $width = $($bgEl).data('width');
-      const $height = $($bgEl).data('height');
-      const $radius = $($bgEl).data('border-radius');
-      const tl = anime.timeline({
-        easing: 'easeOutQuad',
-        duration: 300
-      });
-      tl.add({
-        targets: $bgEl,
-        duration: 500,
-        scale: 1,
-        complete: function () {
-          $wrap.removeClass('overflow-hidden');
-        }
-      })
-        .add({
-          targets: $bgEl,
-          left: $left,
-          top: $top,
-          width: $width,
-          height: $height,
-          borderRadius: $radius,
-          complete: function () {
-            $btn.removeClass('morphing-btn-hidden');
-          }
-        })
-        .add({
-          targets: $bgEl,
-          opacity: 0,
-          complete: function () {
-            $($bgEl).remove();
-            Layer.morphing.is = false;
-          }
-        });
-    };
-    Layer.close(target).then(function () {
-      $pop.removeClass('morphing-close');
-      $popClose();
-      dfd.resolve();
-    });
-    return dfd.promise();
+      return;
+    }
   }
-};
+  return window.open($url, $name, 'width=' + $width + ', height=' + $height + ', scrollbars=yes');
+}
+
+function goToEdge() {
+  if (ui.pc.msie()) {
+    Layer.alert('해당서비스는 <span class="fc-primary">최신 브라우저</span>에<br /><span class="fc-primary">최적화</span> 되어있습니다.<br />확인 버튼을 누르면 <span class="fc-primary">Edge브라우저</span>로<br /> 자동으로 <span class="fc-primary">이동</span>합니다.').then(function () {
+      window.location = 'microsoft-edge:' + window.location.href;
+    });
+  }
+}

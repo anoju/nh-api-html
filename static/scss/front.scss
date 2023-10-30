@@ -1,46 +1,52 @@
-@charset "utf-8";
+@charset 'utf-8';
 
 @import url('./fonts.css');
 @import url('./lib/animated.4.1.1.css');
-@import url('./lib/swiper-bundle.9.3.2.min.css');
+@import url('./lib/swiper_4.5.1.min.css');
+@import url('./fontawesome/css/all.min.css');
 
-@import 'base/variables',
-        'base/mixin',
-        'base/function',
+@import 'base/mixin', 
+        'base/function', 
+        'base/variables', 
         'base/reset', 
         'base/common';
 
-@import 'layout/page', 
-        'layout/floating';
+@import 'layout/page';
 
-@import 'component/animation',
-        'component/badge',
-        'component/button',
-        'component/breadcrumb',
-        'component/etc',
-        'component/chart',
-        'component/datepicker',
-        'component/folding',
-        'component/checkRadio',
-        'component/input',
-        'component/formItems',
-        'component/select',
-        'component/textarea',
-        'component/icon',
+@import 'component/animation', 
+        'component/badge', 
+        'component/button', 
+        'component/breadcrumb', 
+        'component/etc', 
+        'component/chart', 
+        'component/datepicker', 
+        'component/folding', 
+        'component/checkRadio', 
+        'component/input', 
+        'component/formItems', 
+        'component/select', 
+        'component/textarea', 
+        'component/timepicker', 
+        'component/icon', 
         'component/img',
-        'component/list',
-        'component/loading',
-        'component/pagination',
-        'component/slider',
-        'component/spinner',
-        'component/swiper',
-        'component/tab',
-        'component/table',
-        'component/text',
-        'component/toast',
-        'component/tooltip',
-        'component/scrollSelector';
+        'component/list', 
+        'component/loading', 
+        'component/pagination', 
+        'component/slider', 
+        'component/spinner', 
+        'component/swiper', 
+        'component/tab', 
+        'component/table', 
+        'component/text', 
+        'component/toast', 
+        'component/tooltip';
 
-@import 'popup/popup'; 
+@import 'popup/popup';
 
-@import 'contents/guide';
+@import 'contents/guide', 
+        'contents/error', 
+        'contents/contents', 
+        'contents/map', 
+        'contents/main';
+
+@import 'base/print';

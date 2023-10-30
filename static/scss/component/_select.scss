@@ -1,20 +1,211 @@
+@use 'sass:math';
+
 .select {
-  height: var(--input-height);
-  padding: 0 2.8rem 0 2rem;
-  border-radius: var(--input-radius);
-  background-color: #fff;
-  @include ico-select;
-  @include bg-etc(1.3rem auto, right 1rem center);
-  appearance: none;
-  border: 0.1rem solid var(--select-line-color);
+  position: relative;
+  display: inline-block;
   vertical-align: middle;
-  font-size: var(--select-font-size);
-  // &.off {
-  //   color: var(--placeholder-txt-color);
-  // }
-  &:disabled {
-    color: var(--input-disabled-color);
-    background-color: var(--input-disabled-color);
-    @include ico-select('220,220,220');
+  font-size: $select-font-size;
+  text-align: left;
+  select,
+  .btn-select {
+    height: $select-height;
+    padding: 0 33px 0 20px;
+    border-radius: $input-radius;
+    background-color: $white-color;
+    border: 1px solid $select-line-color;
+    &:focus {
+      border-color: $primary-color;
+    }
+  }
+  select {
+    display: block;
+    width: 100%;
+    outline: none;
+    color: inherit;
+    html.msie & {
+      padding-right: 0;
+    }
+    html:not(.msie) & {
+      -ms-appearance: none;
+      appearance: none;
+      @include ico-select;
+      @include bg-etc(13px auto, right 10px center);
+    }
+    &:disabled {
+      color: $input-disabled-color;
+      background-color: $input-disabled-bg-color;
+      html:not(.msie) & {
+        @include ico-select('220,220,220');
+      }
+      ~ .btn-select {
+        pointer-events: none;
+        color: $input-disabled-color;
+        background-color: $input-disabled-bg-color;
+        &:after {
+          @include ico-select('220,220,220');
+        }
+      }
+    }
+  }
+
+  .btn-select {
+    display: flex;
+    position: relative;
+    align-items: center;
+    // white-space: nowrap;
+    &:after {
+      @include after-append(13px, 8px);
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      margin-top: -4px;
+      @include ico-select;
+      @include bg-etc;
+      transition: 0.3s;
+    }
+    &.open {
+      &:after {
+        @include rotateZ(180);
+      }
+      + .select-option-wrap {
+        display: block;
+      }
+    }
+  }
+  .btn-select-val {
+    display: block;
+    width: 100%;
+    @include ellipsis(1);
+  }
+  &.off {
+    color: $placeholder-txt-color;
+    select {
+      option {
+        color: $base-txt-color;
+      }
+    }
+  }
+  .select-option-wrap {
+    display: none;
+    min-width: 100%;
+  }
+
+  &.no-line {
+    select,
+    .btn-select {
+      // line-height: $select-height;
+      border-radius: 0;
+      border-width: 0;
+    }
+    select {
+      &:disabled {
+        background: none;
+        ~ .btn-select {
+          background: none;
+        }
+      }
+    }
+  }
+
+  &.large {
+    font-size: $select-lg-font-size;
+    select,
+    .btn-select {
+      height: $select-lg-height;
+      border-radius: $input-lg-radius;
+    }
+  }
+
+  .select-option-wrap {
+    visibility: hidden;
+  }
+}
+
+.select-option-wrap {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: $white-color;
+  border-radius: 10px;
+  box-shadow: 0 0 7px rgba(127, 127, 127, 0.4);
+  text-align: left;
+  font-size: $select-font-size;
+  overflow: hidden;
+  z-index: 20;
+  transform: translateY(5px);
+  html.msie & {
+    box-shadow: 0 0 7px rgba(127, 127, 127, 0.8);
+  }
+  &.to-up {
+    transform: translateY(-5px);
+  }
+  .select-option-inner {
+    position: relative;
+    padding: 5px 0;
+    max-height: 200px;
+    // overflow: hidden auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .option {
+    position: relative;
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    padding: 0.5em 40px 0.5em 1.25em;
+    line-height: 1.4;
+    color: $gray-color5;
+    &:after {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      margin-top: -8px;
+      @include after-append(16px, 16px);
+      @include ico-check('230, 230, 230');
+      background-size: contain;
+    }
+    &:hover,
+    &:focus {
+      background-color: to-light($primary-color, 96);
+      font-weight: 500;
+    }
+    &.selected {
+      color: $primary-color;
+      font-weight: 500;
+      &:after {
+        @include ico-check($primary-color-rgb);
+      }
+    }
+  }
+  .option-none {
+    text-align: center;
+    padding: 20px;
+    margin: -5px 0;
+    color: $gray-color;
+    background-color: $input-disabled-bg-color;
+    font-size: 13px;
+  }
+  &.ty2 {
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid #ccced0;
+    transform: translateY(0);
+    &:not(.to-up) {
+      border-top-width: 0;
+    }
+    &.to-up {
+      border-bottom-width: 0;
+      transform: translateY(0);
+    }
+  }
+}
+
+.select.is-error select,
+.select.is-error .btn-select,
+.is-error .select select,
+.is-error .select .btn-select {
+  border-color: $red-color;
+  &:not(:focus) {
+    color: $red-color;
   }
 }

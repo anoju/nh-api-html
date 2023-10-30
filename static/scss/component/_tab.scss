@@ -1,4 +1,20 @@
+@use 'sass:math';
+
 // 탭
+.tab-fixed.top-fixed {
+  position: sticky;
+  top: $page-title-fixed-height;
+  z-index: $content-zIndex;
+  /*
+  .tab-inner {
+    position: fixed;
+    top: 50px;
+    width: $contents-lnb-width;
+    @include dimm-white;
+    z-index: $content-zIndex;
+  }
+  */
+}
 .tab-line {
   position: absolute;
   left: 0;
@@ -18,7 +34,6 @@
 .tab-inner {
   position: relative;
   @include scroll-x;
-  @include scroll-hide;
 }
 .tab-list {
   position: relative;
@@ -29,37 +44,176 @@
 }
 .tab-navi-menu {
   position: relative;
-  height: 5rem;
-  background: #fff;
-  border-bottom: 0.1rem solid #ddd;
-  transition: box-shadow 0.3s, transform 0.3s;
-  &.tab-fixed,
-  &.pop-fixed {
-    position: sticky;
-    top: 4rem;
-    z-index: 10;
-  }
-  // &.top-fixed,
-  // &.pop-top-fixed {
-  // @include dimm-white;
-  //}
+  background-color: $white-color;
+  // &.top-fixed {
+  //   height: 67px;
+  // }
   .tab-line {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid $black-color;
+    border-bottom-width: 0;
+    box-sizing: border-box;
+    pointer-events: none;
     z-index: 1;
-    &:after {
+  }
+  .tab {
+    width: 100%;
+    position: relative;
+    text-align: center;
+    padding-bottom: 2px;
+    &:before {
       content: '';
       display: block;
       position: absolute;
-      bottom: 1.1rem;
-      left: 50%;
-      width: 0.4rem;
-      height: 0.4rem;
-      margin-left: -0.2rem;
-      border-radius: 50%;
-      background: var(--primary-color);
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 0;
+      border: 2px solid $black-color;
+      border-bottom-width: 0;
+      box-sizing: border-box;
+      transition: height 0.3s ease-out;
+      pointer-events: none;
+    }
+    & > a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      height: 65px;
+      text-align: center;
+      color: $gray-color3;
+      font-size: 18px;
+      line-height: 1.4;
+      overflow: hidden;
+      transition: 0.3s;
+      border: 1px solid $line-color;
+      border-bottom-width: 0;
+      //border-bottom: 2px solid $black-color;
+    }
+    + .tab > a {
+      margin-left: -1px;
+    }
+    &.active {
+      z-index: 1;
+      &:before {
+        height: 100%;
+        z-index: 1;
+      }
+      > a {
+        font-size: 20px;
+        color: $tab-navi-active-color;
+        font-weight: bold;
+      }
     }
   }
-  .tab-list {
-    padding: 0 1.2rem;
+  /*
+  &.tab-2 {
+    .tab {
+      &.active {
+        a {
+          color: $tab-navi-active-color2;
+        }
+      }
+    }
+  }
+  */
+}
+.tab-fill-menu {
+  position: relative;
+  .tab {
+    position: relative;
+    width: 100%;
+    &:first-child > a {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    &:last-child > a {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    > a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 65px;
+      padding: 0 10px;
+      text-align: center;
+      overflow: hidden;
+      transition: 0.3s;
+      font-size: 18px;
+      background-color: $white-color;
+      border: 1px solid $line-color3;
+      color: $gray-color3;
+    }
+    &.active {
+      z-index: 1;
+      > a {
+        background-color: $lightblue-color2;
+        border-color: $lightblue-color2;
+        color: $white-color;
+      }
+    }
+    + .tab {
+      margin-left: -1px;
+    }
+  }
+  &.ty2 {
+    .tab {
+      a {
+        border-radius: 0;
+        width: 240px;
+        height: 75px;
+        background-color: transparent;
+        border: 0 none;
+        font-weight: 500;
+        color: $white-color;
+      }
+      &.active {
+        a {
+          background-color: $darkblue-color;
+        }
+      }
+    }
+  }
+  &.ty3 {
+    .tab {
+      > a {
+        // height: 66px;
+        background-color: $bg-color;
+      }
+      &.active {
+        > a {
+          background-color: $white-color;
+          border-color: $primary-color;
+          color: $primary-color;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+.tab-hill-menu {
+  position: relative;
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: $bg-color12;
+  }
+  &.top-fixed {
+    height: 52px;
   }
   .tab {
     width: 100%;
@@ -67,107 +221,39 @@
     text-align: center;
     & > a {
       position: relative;
-      display: block;
-      padding: 1rem 0.8rem 1.7rem;
-      height: 5rem;
-      text-align: center;
-      color: var(--strong-txt-color);
-      font-weight: 500;
-      font-size: 1.5rem;
-      line-height: 2.2rem;
-      overflow: hidden;
-      transition: 0.3s;
-    }
-    &.active > a {
-      color: var(--primary-color);
-    }
-  }
-  .tab-expand-btn {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 3.4rem;
-    height: calc(100% - 0.1rem);
-    background: #fff;
-    z-index: 1;
-    // box-shadow: -1rem 0 1rem rgba(255,255,255,1);
-    &:before {
-      content: '';
-      position: absolute;
-      right: 100%;
-      top: 0;
-      width: 2rem;
-      height: 100%;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 50%, #fff 100%);
-      pointer-events: none;
-    }
-    button {
       display: flex;
       align-items: center;
-      width: 100%;
-      height: 100%;
-      &:before {
-        content: '';
-        display: block;
-        width: 2.4rem;
-        height: 2.4rem;
-        margin-top: -0.5rem;
-        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M18.707 8.2929C19.0977 8.6834 19.0977 9.31658 18.707 9.70708L12.3428 16.0711C12.1426 16.2717 11.8774 16.3692 11.6147 16.3637C11.3521 16.3692 11.0869 16.2717 10.8867 16.0711L4.52246 9.70709C4.13184 9.31658 4.13184 8.6834 4.52246 8.2929C4.91309 7.90237 5.54639 7.90237 5.93652 8.2929L11.6147 13.9708L17.293 8.2929C17.6831 7.90237 18.3164 7.90237 18.707 8.2929Z' fill='%23666666'/%3E%3C/svg%3E") no-repeat center center / contain;
-        @include rotateZ(0);
-        transition: 0.3s;
-      }
-      &.on {
-        opacity: 1;
-        &:before {
-          @include rotateZ(180);
+      justify-content: center;
+      padding: 0 10px;
+      border-radius: 15px 15px 0 0;
+      height: 80px;
+      text-align: center;
+      overflow: hidden;
+      transition: 0.3s;
+      background-color: $bg-color12;
+      color: $white-color;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    &:not(.active) {
+      a {
+        &:hover,
+        &:focus {
+          background-color: to-dark($bg-color12, 10);
         }
       }
     }
-  }
-  .tab-expand {
-    position: absolute;
-    top: 4.9rem;
-    left: 0;
-    width: 100%;
-    border-top: 0.1rem solid #eee;
-    background: #f7f7f7;
-    box-shadow: 0 1rem 1rem 0 rgba(0, 0, 0, 0.2);
-    ul {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 1.6rem 1.8rem;
-      li {
-        padding: 0.4rem 0.6rem;
-        a {
-          font-size: 1.5rem;
-          font-weight: 500;
-          color: var(--strong-txt-color);
-        }
-        &.active {
-          a {
-            color: var(--primary-color);
-          }
-        }
+    &.active {
+      > a {
+        background-color: $tab-fill-active-color;
       }
     }
-  }
-  &.scroll-able {
-    &:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 2rem;
-      height: 100%;
-      background-image: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9) 50%, #fff 100%);
-      z-index: 1;
-      pointer-events: none;
-    }
-    .tab-list {
-      padding-right: 4.6rem;
+    + .tab {
+      margin-left: 4px;
     }
   }
 }
+
 .tab-panels {
   &.transition {
     overflow: hidden;
@@ -195,26 +281,25 @@
 .tab-box-menu {
   position: relative;
   .tab-line {
-    border: 0.1rem solid #222;
-    background: #fff;
-    border-radius: 0.4rem;
+    border: 1px solid $black-color;
+    background-color: $white-color;
+    border-radius: 4px;
     height: 100%;
     z-index: 1;
   }
   .tab-list {
-    padding: 0 var(--base-padding);
     &:before {
       content: '';
       display: block;
       position: absolute;
-      left: var(--base-padding);
+      left: 0;
       top: 0;
-      right: var(--base-padding);
+      right: 0;
       bottom: 0;
-      border: 0.1rem solid #ddd;
-      border-radius: 0.4rem;
-      background: #f8f8f8;
-      border-radius: 0.4rem;
+      border: 1px solid $line-color2;
+      border-radius: 4px;
+      background-color: $bg-color;
+      border-radius: 4px;
     }
   }
   .tab {
@@ -225,88 +310,143 @@
     & > a {
       position: relative;
       display: block;
-      padding: 1.2rem 1rem;
+      padding: 12px 10px;
       text-align: center;
 
-      font-size: 1.5rem;
-      line-height: 2.4rem;
+      font-size: 15px;
+      line-height: 24px;
       overflow: hidden;
       transition: color 0.3s;
     }
     &.active > a {
-      font-size: 1.6rem;
+      font-size: 16px;
       font-weight: bold;
-      color: var(--strong-txt-color);
     }
   }
 }
 
 .tab-line-menu {
   position: relative;
-  background: #fff;
-  transition: box-shadow 0.3s, transform 0.3s;
-  &.tab-fixed,
-  &.pop-fixed {
-    position: sticky;
-    top: 4rem;
-  }
-  &.top-fixed {
-    @include dimm-white;
-    z-index: 10;
-  }
   .tab-line {
-    height: 0.2rem;
-    background: var(--strong-txt-color);
+    height: 4px;
+    background-color: $lightblue-color3;
+    &[data-color='1'] {
+      background-color: $green-color;
+    }
+    &[data-color='2'] {
+      background-color: $yellow-color;
+    }
+    &[data-color='3'] {
+      background-color: $orange-color;
+    }
   }
   .tab-list {
-    padding: 0 var(--base-padding);
     &:before {
       content: '';
       display: block;
       position: absolute;
-      left: var(--base-padding);
-      right: var(--base-padding);
+      left: 0;
+      right: 0;
       bottom: 0;
       width: auto;
-      height: 0.2rem;
-      background: var(--line-color);
+      height: 1px;
+      background: $line-color4;
     }
   }
   .tab {
     position: relative;
     text-align: center;
-    width: 100%;
     & > a {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 4.8rem;
-      color: var(--gray-txt-color);
-      font-weight: 500;
-      font-size: 1.6rem;
-      line-height: 2rem;
+      height: 60px;
+      color: $gray-color5;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
       overflow: hidden;
-      padding: 0 1.2rem;
+      padding: 0 24px;
       transition: 0.3s;
     }
-    &.active > a {
-      font-weight: 700;
-      color: var(--strong-txt-color);
-      &:after {
-        left: 0;
-        width: 100%;
-        opacity: 1;
+    &:first-child {
+      padding-left: 20px;
+    }
+    &:last-child {
+      padding-right: 20px;
+    }
+    &.active {
+      > a {
+        color: $lightblue-color3;
+      }
+      &[data-color='1'] {
+        > a {
+          color: $green-color;
+        }
+      }
+      &[data-color='2'] {
+        > a {
+          color: $yellow-color;
+        }
+      }
+      &[data-color='3'] {
+        > a {
+          color: $orange-color;
+        }
       }
     }
   }
   &.tab-fixed {
     .tab-list {
       padding: 0;
-      // padding: 0 0.8rem;
       &:before {
         left: 0;
         right: 0;
+      }
+    }
+  }
+  &.ty2 {
+    .tab-list:before {
+      content: none;
+    }
+    .tab-line {
+      background-color: $primary-color;
+    }
+    .tab {
+      font-weight: 700;
+      padding: 0 17px;
+      > a {
+        height: 52px;
+        padding: 0;
+        color: $gray-color4;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      &.active > a {
+        color: $primary-color;
+      }
+    }
+  }
+  &.ty3 {
+    .tab-list:before {
+      content: none;
+    }
+    .tab-line {
+      background-color: $black-color;
+    }
+    .tab {
+      font-weight: 700;
+      padding: 0 8px;
+      > a {
+        height: 52px;
+        padding: 0;
+        color: $gray-color;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      &.active > a {
+        color: $black-color;
       }
     }
   }
@@ -314,40 +454,37 @@
 
 .tab-round-menu {
   .tab-line {
+    display: none;
     height: 100%;
     background-color: rgba($primary-color, 0.3);
-    border-radius: 1.8rem;
+    border-radius: 18px;
     z-index: 0;
-  }
-  .tab-list {
-    padding: 0 var(--base-padding);
   }
   .tab {
     position: relative;
     + .tab {
-      margin-left: 0.8rem;
+      margin-left: 8px;
     }
     & > a {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 3.6rem;
-      padding: 0 1.6rem;
-      border: 0.1rem solid var(--line-color);
-      background-color: #fff;
-      // background: #eee;
-      border-radius: 1.8rem;
-      color: var(--gray-txt-color);
-      font-size: 1.4rem;
+      height: 36px;
+      padding: 0 16px;
+      border: 1px solid $line-color;
+      background-color: $white-color;
+      border-radius: 18px;
+      color: $gray-color;
+      font-size: 14px;
       font-weight: 500;
       overflow: hidden;
       transition: 0.3s;
     }
     &.active {
       > a {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
+        border-color: $primary-color;
+        color: $primary-color;
       }
     }
   }
@@ -361,18 +498,18 @@
   }
   .tab {
     position: relative;
-    padding-right: 0.1rem;
-    margin: 0.4rem 0;
+    padding-right: 1px;
+    margin: 4px 0;
     &:after {
       content: '';
       display: block;
-      width: 0.1rem;
-      height: 1.2rem;
+      width: 1px;
+      height: 12px;
       position: absolute;
       right: 0;
       top: 50%;
-      margin-top: -0.6rem;
-      background: #ddd;
+      margin-top: -6px;
+      background-color: $bg-color13;
     }
     &:first-child {
       a {
@@ -389,15 +526,15 @@
     }
     > a {
       display: block;
-      padding: 0 1.2rem;
-      font-size: 1.4rem;
-      line-height: 2rem;
-      color: #999;
+      padding: 0 12px;
+      font-size: 14px;
+      line-height: 20px;
+      color: $gray-color;
       white-space: nowrap;
     }
     &.active {
       > a {
-        color: var(--strong-txt-color);
+        color: $base-txt-color;
       }
     }
   }
@@ -416,5 +553,44 @@
   }
   .spy-scroll-body {
     position: relative;
+  }
+}
+.tab-btn-menu {
+  .tab {
+    > a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid $line-color9;
+      min-width: 130px;
+      padding: 0 15px;
+      height: 48px;
+      font-size: 16px;
+      color: $gray-color;
+      transition: 0.3s;
+    }
+    &:first-child {
+      > a {
+        border-radius: 5px 0 0 5px;
+      }
+    }
+    &:last-child {
+      > a {
+        border-radius: 0 5px 5px 0;
+      }
+    }
+    + .tab {
+      > a {
+        border-left-width: 0;
+      }
+    }
+    &.active {
+      > a {
+        border-color: $gray-color7;
+        background-color: $gray-color7;
+        color: $white-color;
+        font-weight: bold;
+      }
+    }
   }
 }

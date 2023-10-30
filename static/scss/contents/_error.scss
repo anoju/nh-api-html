@@ -1,0 +1,60 @@
+.error-page {
+  .page-body {
+    padding: 20px;
+  }
+  .page-body {
+    .page-contents {
+      width: 100%;
+      min-height: auto;
+    }
+  }
+  .page-footer .foot-inner {
+    padding-right: 0;
+  }
+}
+.error-info {
+  display: flex;
+  min-height: calc(100vh - 200px);
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  > div {
+    width: 800px;
+  }
+  .inner {
+    padding: 70px 60px 66px 60px;
+    background-color: $bg-color;
+    border: 1px solid $line-color3;
+    border-radius: 13px;
+    text-align: center;
+  }
+  .page-logo {
+    margin-bottom: 20px;
+    span {
+      background-image: url(../images/common/page-logo-2.png);
+    }
+  }
+  .title {
+    font-size: 30px;
+    color: $primary-color;
+    margin-bottom: 27px;
+    &:before {
+      @include after-append(115px, 115px);
+      background-image: url(../images/icon/ico-error.png);
+      margin: 0 auto 18px;
+    }
+  }
+  .msg-box {
+    padding: 14px;
+    border-radius: 10px;
+    background-color: $bg-color17;
+    border: 1px solid $line-color5;
+    font-size: 12px;
+    text-align: left;
+    word-break: break-all;
+    dd,
+    p {
+      color: $gray-color4;
+    }
+  }
+}

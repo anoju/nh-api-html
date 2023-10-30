@@ -1,0 +1,603 @@
+@use 'sass:math';
+
+.map-container {
+  font-size: 13px;
+  display: flex;
+  > .map-container-left {
+    position: relative;
+    width: 430px;
+    flex-shrink: 0;
+    padding: 15px;
+    z-index: 1;
+    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    > * {
+      width: 100%;
+    }
+    .address-result-dl {
+      height: 100%;
+      flex: 1 1 auto;
+    }
+  }
+  > .map-container-right {
+    position: relative;
+    // flex: 1 1 auto;
+    width: calc(100% - 430px);
+    display: flex;
+    flex-direction: column;
+    > * {
+      width: 100%;
+    }
+  }
+}
+.map-search-box {
+  .inp-focus,
+  .select select,
+  .select .btn-select,
+  .input,
+  .radio.btn .lbl {
+    border-color: $lightblue-color;
+  }
+  .select select,
+  .select .btn-select {
+    height: 50px;
+    padding-left: 15px;
+  }
+  .radio.btn {
+    .lbl {
+      height: 50px;
+    }
+    > input:checked ~ .lbl {
+      background-color: $lightblue-color2;
+    }
+  }
+  .inp-focus {
+    .select select,
+    .select .btn-select {
+      height: 48px;
+    }
+  }
+  .input {
+    input {
+      height: 48px;
+      padding-left: 15px;
+    }
+  }
+  .map-select {
+    .select {
+      select,
+      .btn-select {
+        padding: 0 5px;
+        text-align: center;
+        background: none;
+      }
+      .btn-select {
+        &:after {
+          content: none;
+        }
+      }
+      + .select {
+        &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 8px;
+          height: 13px;
+          transform: translate(-50%, -50%);
+          @include bg-etc(100% auto);
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='8px' height='13px'%3E%3Cpath fill-rule='evenodd' fill='rgb(150, 184, 225)' d='M7.535,7.535 C7.287,7.783 6.944,7.855 6.625,7.788 L1.878,12.535 C1.488,12.925 0.854,12.925 0.464,12.535 C0.73,12.144 0.73,11.511 0.464,11.121 L5.85,6.499 L0.464,1.878 C0.73,1.488 0.73,0.854 0.464,0.464 C0.854,0.73 1.488,0.73 1.878,0.464 L6.625,5.211 C6.944,5.144 7.287,5.216 7.535,5.464 C7.815,5.744 7.886,6.148 7.764,6.499 C7.886,6.850 7.815,7.255 7.535,7.535 Z'/%3E%3C/svg%3E");
+        }
+      }
+    }
+    &.col-4 {
+      .select {
+        font-size: 14px;
+      }
+    }
+  }
+  .map-select2 {
+    .unit {
+      font-weight: 500;
+      padding-left: 15px;
+    }
+    .inp-flex {
+      + .inp-flex {
+        margin-top: 0;
+        border-left: 1px solid $lightblue-color;
+      }
+    }
+    .select {
+      margin-left: auto;
+      width: auto;
+    }
+  }
+}
+.address-result-dl {
+  background-color: $white-color;
+  border: 1px solid $line-color4;
+  border-radius: $input-radius;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  > dt {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 58px;
+    padding: 0 20px;
+    flex-shrink: 0;
+    .tit {
+      font-size: 16px;
+      font-weight: bold;
+      word-break: break-all;
+    }
+  }
+  > dd {
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    border-top: 1px solid $line-color4;
+    &.result-empty {
+      margin: auto;
+      flex: 0 0 auto;
+      border-top: 0;
+    }
+  }
+  &.height-1 {
+    height: calc(100vh - 294px);
+  }
+  &.height-2 {
+    height: calc(100vh - 240px);
+  }
+  &.ty2 {
+    dt {
+      background-color: $lightblue-color;
+      color: $white-color;
+      .tit {
+        font-weight: 500;
+      }
+    }
+    dd {
+      padding: 15px 20px;
+    }
+    .address-list li {
+      margin-bottom: 10px;
+      border: none;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    .address-item {
+      padding: 0;
+    }
+  }
+}
+.address-list {
+  > li {
+    + li {
+      border-top: 1px solid $line-color;
+    }
+  }
+  .address-item {
+    padding: 14px 19px;
+  }
+}
+.result-empty {
+  padding: 40px 0;
+  text-align: center;
+  font-size: 15px;
+  color: $primary-color;
+  &:before {
+    @include after-append(35px, 32px);
+    background-image: url(../images/icon/ico-sm-error.png);
+    margin: 0 auto 10px;
+  }
+}
+.address-item {
+  display: block;
+  font-size: 15px;
+  line-height: 21px;
+
+  .address-item-row {
+    display: flex;
+    + .address-item-row {
+      margin-top: 6px;
+    }
+  }
+  .item-tit {
+    font-size: 16px;
+    font-weight: 500;
+    color: $darkblue-color2;
+  }
+  .badge {
+    width: 52px;
+    padding: 0;
+    flex-shrink: 0;
+    margin-right: 8px;
+    border-radius: 4px;
+    height: 24px;
+    font-size: 13px;
+  }
+  .address-txt,
+  .item-tit {
+    flex: 1 1 auto;
+    padding: 1px 0;
+    word-break: break-all;
+    line-height: 22px;
+  }
+}
+
+.certificate-dl {
+  background-color: $white-color;
+  border: 1px solid $line-color4;
+  border-radius: $input-radius $input-radius 0 0;
+  overflow: hidden;
+  > dt {
+    display: flex;
+    align-items: center;
+    height: 58px;
+    padding: 10px 20px;
+    flex-shrink: 0;
+    background-color: $lightblue-color;
+    color: $white-color;
+    .tit {
+      font-weight: 500;
+    }
+  }
+  > dd {
+    padding: 15px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 360px;
+  }
+  .certificate-list {
+    font-size: 16px;
+    li {
+      margin-bottom: 8px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+@mixin map-shadow {
+  background-color: $white-color;
+  box-shadow: 0.5px 0.9px 4px 0 rgba(0, 0, 0, 0.27);
+  border-radius: 3px;
+}
+.map-area {
+  position: relative;
+  height: 100%;
+  background: $bg-color;
+  font-size: 13px;
+  html.msie & {
+    &:after {
+      content: 'map은 IE에서 정상 작동되지 않습니다.\A엣지 및 크롬 등 다른 브라우저를 이용해주세요.';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      font-weight: 500;
+      font-size: 20px;
+      color: $white-color;
+      text-align: center;
+      white-space: pre;
+      @include dimm;
+    }
+  }
+  * {
+    font-family: 'Noto Sans KR' !important;
+  }
+  button {
+    text-align: center;
+  }
+  .odf-view {
+    height: 100%;
+  }
+  .odf-map {
+    height: 100%;
+    margin: auto;
+  }
+  /*
+  &.map-height-1 {
+    height: calc(100vh - 203px);
+  }
+  */
+  .map-area-search {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    &.right {
+      left: auto;
+      right: 20px;
+      + .map-util-menu {
+        top: 80px;
+      }
+    }
+    html.msie & {
+      display: none;
+    }
+  }
+  .administrativeDistrictSearch_location {
+    position: relative;
+    z-index: 1;
+    border: 1px solid $line-color6;
+    @include map-shadow;
+    justify-content: center;
+  }
+
+  .odf_addressSearch_widget {
+    width: 100%;
+    margin-right: 0;
+  }
+  .addressSearch_searchArea,
+  .addressSearch_result {
+    margin-top: 5px;
+    @include map-shadow;
+  }
+  .addressSearch_inputWrap {
+    width: 100%;
+  }
+  .addressSearch_frame {
+    select.addressSearch_type {
+      box-shadow: none;
+      flex-shrink: 0;
+      border-radius: 3px 0 0 3px;
+    }
+    .addressSearch_inputBox {
+      width: 100%;
+      box-shadow: none;
+      border-left: 1px solid $line-color5;
+    }
+  }
+
+  .toolbar {
+    > li {
+      + li {
+        margin-top: 5px;
+      }
+      > button {
+        width: 100%;
+        padding: 2px;
+        text-align: center;
+        @include map-shadow;
+        &:hover {
+          background-color: $darkblue-color4;
+          color: $white-color;
+        }
+        > span {
+          display: block;
+          margin-top: 40px;
+        }
+      }
+      .basemap_tool {
+        min-height: 65px;
+      }
+    }
+
+    .basemap_toolbox {
+      font-size: 12px;
+      .basemap_basemapGroup {
+        li {
+          + li {
+            margin-left: 3px;
+          }
+        }
+      }
+      .basemap_basemapArea {
+        button.basemap_layer.basemap_active > img {
+          border-width: 2px !important;
+        }
+      }
+    }
+  }
+  #rotationControlWidget {
+    height: 50px;
+  }
+  .map-control {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    align-items: flex-end;
+    > div {
+      overflow: hidden;
+      + div {
+        margin-left: 10px;
+      }
+    }
+    .zoomControl_zoomControlContent {
+      width: 30px;
+    }
+    html.msie & {
+      display: none;
+    }
+  }
+  .scaleControl_scaleControlContent {
+    .scaleControl_scaleInfoInput,
+    .scaleControl_scaleInput,
+    .scaleControl_applyBtn {
+      display: none;
+    }
+    .scaleControl_displayDiv {
+      background: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .map-util-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 65px;
+    html.msie & {
+      display: none;
+    }
+  }
+  #widget {
+    position: relative;
+    top: auto;
+    right: auto;
+    .group {
+      position: relative;
+      width: auto;
+      box-shadow: none;
+    }
+    .dep1 {
+      @include map-shadow;
+      margin-top: 5px;
+      > li {
+        background: none;
+        padding: 0;
+        &:first-of-type {
+          border-radius: 3px 3px 0 0;
+          button {
+            border-radius: 3px 3px 0 0;
+          }
+        }
+        &:last-of-type {
+          border-radius: 0 0 3px 3px;
+          button {
+            border-radius: 0 0 3px 3px;
+          }
+        }
+        > div {
+          > button {
+            display: block;
+            width: 65px;
+            height: 65px;
+            min-height: 65px;
+            background-color: $white-color;
+            &:hover {
+              background-color: $darkblue-color4;
+              color: $white-color;
+            }
+          }
+          > div > button {
+            height: 65px;
+            width: 60px;
+            font-size: 12px;
+            + button {
+              border-left: 1px solid $line-color5;
+            }
+          }
+        }
+        .moveControl_moveControlContent {
+          display: flex;
+          > button {
+            width: 50%;
+            height: 50px;
+            min-height: 50px;
+            font-size: 11px;
+            border-radius: 0;
+            &:first-child {
+              border-top-left-radius: 3px;
+            }
+            &:last-child {
+              border-top-right-radius: 3px;
+            }
+            span {
+              padding-top: 25px;
+            }
+            + button {
+              border-left: 1px solid $line-color5;
+            }
+          }
+        }
+        .rotationControl_rotateBtn {
+          width: 100%;
+          display: flex;
+          height: 50px;
+          min-height: 50px;
+          font-size: 11px;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          &:before {
+            content: '회전 초기화';
+            display: block;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+          }
+          .rotationControl_rotateSpan {
+            position: relative;
+            margin: 0 0 8px 0 !important;
+          }
+        }
+      }
+      li.resetWidget > .clearControl_clearControlContent > .clearControl_clearBtn {
+        width: 65px;
+        height: 65px;
+      }
+    }
+  }
+
+  .downloadControl_downloadGrpDiv {
+    right: 100%;
+    top: 0;
+    padding: 0;
+    margin-right: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .map-coord {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+}
+.map-info-list {
+  > li {
+    padding: 5px 0;
+    + li {
+      border-top: 1px solid $line-color;
+    }
+  }
+}
+.map-info-item {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  line-height: 1.2;
+  padding: 0 20px;
+  .map-txt {
+    flex: 1 1 auto;
+    word-break: break-all;
+    padding-right: 20px;
+    @include ellipsis(2);
+  }
+  .button {
+    flex-shrink: 0;
+    margin: 5px 0;
+  }
+}
+.map-service-wrap {
+  width: 1280px;
+  height: 700px;
+  &.ty-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  &.fixed-map {
+    .map-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}

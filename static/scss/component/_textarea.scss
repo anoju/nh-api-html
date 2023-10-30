@@ -1,136 +1,66 @@
+@use 'sass:math';
+
 .textarea {
   position: relative;
-  border: 0.1rem solid var(--line-color);
-  border-radius: 1rem;
-  background: #fff;
-  &.focus {
-    border-color: var(--primary-color);
-  }
+  border: 1px solid $input-line-color;
+  border-radius: $input-radius;
+  transition: border 0.3s;
+  overflow: hidden;
   textarea {
-    border-radius: 1rem;
     display: block;
+    width: 100%;
+    background-color: $white-color;
+    padding: $textarea-padding;
+    line-height: $input-height - ($textarea-padding-y * 2) - 2px;
+    font-size: $input-font-size;
+    border-radius: $input-radius;
     border: 0 none;
+    appearance: none;
     outline: none;
-    padding: 1.1rem 1.6rem;
-    // min-height: 4.6rem;
     resize: none;
-    line-height: 2.4rem;
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: var(--strong-txt-color);
-    background: transparent;
-    &:not(:last-child) {
-      padding-right: 0.8rem;
+    &:disabled {
+      color: $input-disabled-color;
+      background-color: $input-disabled-bg-color;
     }
   }
-  > *:not(textarea):last-child {
-    margin-right: 1.6rem;
-  }
-
-  &.line {
-    @include line-form;
-    &.focus,
-    &.focused {
-      &:before {
-        width: 100%;
-      }
-    }
+  &.readonly {
+    background-color: $input-disabled-bg-color;
     textarea {
-      padding-left: 0;
-      padding-left: 0;
-      line-height: 2.4rem;
-      @include line-form-input;
-    }
-    .btn-inp-del {
-      margin-right: 0;
-      &:nth-last-child(2) {
-        margin-right: 0;
-      }
-    }
-
-    &.line-lbl {
-      @include line-form-lbl;
-      textarea {
-        @include line-form-lbl-input;
-        &::placeholder {
-          color: transparent;
-        }
-        &:not(:placeholder-shown) ~ .lbl {
-          @include line-form-lbl-on;
-        }
-      }
-
-      .lbl {
-        @include line-form-lbl-off;
-      }
+      background-color: $input-disabled-bg-color;
     }
   }
   &.disabled {
-    background-color: var(--input-disabled-bg-color);
-  }
-  &.disabled textarea,
-  textarea:disabled {
-    color: var(--input-disabled-color);
-  }
-  &.readonly input,
-  input[readonly] {
-    color: var(--base-txt-color);
-  }
-  .btn-inp-del {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.2rem;
-  }
-  &.auto-height {
+    background-color: $input-disabled-bg-color;
+    color: $input-disabled-color;
     textarea {
-      // box-sizing: content-box;
-      min-height: auto;
-      line-height: 2.4rem;
-      overflow: hidden;
-    }
-    &.add-btn {
-      textarea {
-        padding-right: 6rem;
-        max-height: 14.2rem;
-        @include scroll-y;
-      }
-      .button {
-        position: absolute;
-        bottom: 0.7rem;
-        right: 0rem;
-        width: 4.5rem;
-        margin-right: 0.8rem;
-      }
-
-      &.focus {
-        .button {
-          background: var(--primary-color);
-        }
-      }
+      color: $input-disabled-color;
+      background-color: $input-disabled-bg-color;
     }
   }
-  &:not(.form-box) {
-    & + :is(.flex, .input, .select, .textarea) {
-      margin-top: var(--item-margin-y);
-    }
+  &.focus {
+    border-color: $primary-color;
   }
-  .textarea-count {
-    font-size: 1.2rem;
-    line-height: 1.8rem;
+  &.txt-count {
+    padding-bottom: 42px;
+  }
+  .inp-txt-count {
     position: absolute;
-    right: 1.2rem;
-    bottom: 1.2rem;
+    right: 20px;
+    bottom: 16px;
   }
-  &.in-count {
-    padding-bottom: 3rem;
-    textarea {
-      padding-bottom: 0;
-    }
+}
+.inp-txt-count {
+  font-size: 15px;
+  text-align: right;
+  white-space: nowrap;
+  strong {
+    font-weight: normal;
   }
-  &.is-error {
-    // border-color: var(--alert-txt-color);
-    textarea:not(:focus) {
-      color: var(--alert-txt-color);
-    }
+}
+.textarea.is-error textarea,
+.is-error .textarea textarea {
+  border-color: $red-color;
+  &:not(:focus) {
+    color: $red-color;
   }
 }

@@ -1,25 +1,30 @@
+@use 'sass:math';
+
 .breadcrumb {
   display: flex;
   font-weight: 500;
-  line-height: 2.2rem;
+  line-height: 22px;
   li + li {
     position: relative;
-    padding-left: 3rem;
+    padding-left: 30px;
     &:before {
-      @include ico-after-apend(0.6rem, 1rem);
+      @include after-append(6px, 10px);
       position: absolute;
-      top: 0.6rem;
-      left: 1.3rem;
-      @include bg-etc(0.7rem auto);
+      top: 6px;
+      left: 13px;
+      @include bg-etc;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='7px' height='10px'%3E%3Cpath fill-rule='evenodd' fill='rgb(161, 167, 166)' d='M6.561,5.121 L5.147,6.535 L5.026,6.414 L1.904,9.535 L0.490,8.121 L3.612,4.1000 L0.490,1.878 L1.904,0.464 L5.026,3.586 L5.147,3.464 L6.561,4.878 L6.440,4.1000 L6.561,5.121 Z'/%3E%3C/svg%3E");
     }
   }
   .home {
     display: block;
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 22px;
+    height: 22px;
     @include text-blind;
-    @include bg-etc(2.2rem auto);
+    @include bg-etc;
     background-image: url(../images/common/breadcrumb-home.png);
+  }
+  strong {
+    font-weight: normal;
   }
 }

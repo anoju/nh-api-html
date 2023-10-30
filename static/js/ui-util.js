@@ -1,7 +1,13 @@
 /********************************
- * front 유틸함수 *
+ * 유틸함수 *
  * 작성자: 안효주
  ********************************/
+if (!Number.isNaN) {
+  Number.isNaN = function isNaN(value) {
+    return value !== value;
+  };
+}
+
 const getTopFixedHeight = function (element, className) {
   if (className == undefined) className = 'top-fixed';
   let $element = $(element);
@@ -66,6 +72,18 @@ const getOffset = function (element) {
   return { left: $elX, top: $elY };
 };
 
+const getScrollableParents = function (element) {
+  const parents = [];
+  let $el = element;
+  while ($el && $el !== document) {
+    const $overflowY = window.getComputedStyle($el).overflowY;
+    const isScrollable = $el.scrollHeight > $el.clientHeight && ($overflowY === 'auto' || $overflowY === 'scroll');
+    if (isScrollable) parents.push($el);
+    $el = $el.parentElement;
+  }
+  return parents;
+};
+
 // Convert radians to degrees
 const radToDeg = function (radians) {
   const pi = Math.PI;
@@ -116,12 +134,18 @@ const hex2rgba = function (str) {
   const ary = [(num >> 16) & 255, (num >> 8) & 255, num & 255, (num >> 24) & 255];
   return ary.join(',');
 };
+/*
 const rgba2hex = function (rgba) {
-  const $match = rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/).slice(1);
-  const $map = $match.map((n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n)).toString(16).padStart(2, '0').replace('NaN', ''));
-  const $rtnVal = $map.join('');
-  return '#' + $rtnVal;
+  try {
+    const $match = rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/).slice(1);
+    const $map = $match.map((n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n)).toString(16).padStart(2, '0').replace('NaN', ''));
+    const $rtnVal = $map.join('');
+    return '#' + $rtnVal;
+  } catch (e) {
+    return null;
+  }
 };
+*/
 
 //br 태그 삽입
 //brTxtInsert(엘리먼트,기준마크,최대글자수);
@@ -179,7 +203,7 @@ const randomNumber = function (min, max, point) {
 };
 
 //전화번호 포맷
-const autoPhoneFormet = function (str, mark) {
+const autoPhoneFormat = function (str, mark) {
   const $phone = str.replace(/[^0-9]/g, '');
   const $phoneAry = [];
   if (!mark) mark = '-';
@@ -200,16 +224,35 @@ const autoPhoneFormet = function (str, mark) {
   return $phoneAry.join(mark);
 };
 
+// 사업자번호 포맷
+const autoCompanyNumberFormat = function (str, type) {
+  const $str = typeof str === 'number' ? str.toString() : str;
+  const $number = $str.replace(/[^0-9]/g, '');
+  const $numberAry = [];
+  const mark = '-';
+  if ($number.length > 10 || type === 'co') {
+    $numberAry.push($number.substr(0, 6));
+    if ($number.length > 6) $numberAry.push($number.substr(6));
+  } else {
+    $numberAry.push($number.substr(0, 3));
+    if ($number.length > 3) $numberAry.push($number.substr(3, 2));
+    if ($number.length > 5) $numberAry.push($number.substr(5));
+  }
+  return $numberAry.join(mark);
+};
+
 //Input date
-const autoDateFormet = function (str, mark) {
-  const $date = str.replace(/[^0-9]/g, '');
+const autoDateFormat = function (str, mark) {
+  const $str = typeof str === 'number' ? str.toString() : str;
+  // const $str
+  const $date = $str.replace(/[^0-9]/g, '');
   const $dateAry = [];
-  if (!mark) mark = '.';
+  if (!mark) mark = '-';
   if ($date.length < 5) {
     $dateAry.push($date);
-  } else if (str.length < 7) {
+  } else if ($date.length < 7) {
     $dateAry.push($date.substr(0, 4));
-    $dateAry.push($date.substr(4));
+    $dateAry.push($date.substr(4, 2));
   } else {
     $dateAry.push($date.substr(0, 4));
     $dateAry.push($date.substr(4, 2));
@@ -217,20 +260,15 @@ const autoDateFormet = function (str, mark) {
   }
   return $dateAry.join(mark);
 };
-const autoTimeFormet = function (str, mark) {
+const autoTimeFormat = function (str, mark) {
   const $time = str.replace(/[^0-9]/g, '');
   const $timeAry = [];
-  if (!mark) mark = '.';
+  if (!mark) mark = ':';
   if ($time.length <= 2) {
     $timeAry.push($time);
-  } else if (str.length == 3 || str.length == 5) {
-    $timeAry.push($time.substr(0, 1));
-    $timeAry.push($time.substr(1, 2));
-    if (str.length == 5) $timeAry.push($time.substr(3));
-  } else if (str.length >= 4) {
+  } else {
     $timeAry.push($time.substr(0, 2));
-    $timeAry.push($time.substr(2, 2));
-    if (str.length > 4) $timeAry.push($time.substr(4));
+    $timeAry.push($time.substr(2));
   }
   return $timeAry.join(mark);
 };
@@ -286,9 +324,12 @@ const uiCookie = {
 };
 
 //날짜구하기
-const todayTimeString = function (addDay) {
+const todayTimeString = function (addDay, addMonth, addYear) {
+  // const $type = addType ? addType : 'day';
   const $today = new Date();
-  if (!!addDay) $today.setDate($today.getDate() + addDay);
+  if (!!addDay && addDay !== 0) $today.setDate($today.getDate() + addDay);
+  if (!!addMonth && addMonth !== 0) $today.setMonth($today.getMonth() + addMonth);
+  if (!!addYear && addYear !== 0) $today.setFullYear($today.getFullYear() + addYear);
   return timeString($today);
 };
 const timeString = function (date) {
@@ -305,8 +346,8 @@ const timeString = function (date) {
   if (('' + $sec).length == 1) $sec = '0' + $sec;
   return '' + $year + $month + $day + $hour + $min + $sec;
 };
-const $dayLabelPrint = function () {
-  const $today = new Date();
+const $dayLabelPrint = function ($date) {
+  const $today = $date ? new Date($date) : new Date();
   const $week = ['일', '월', '화', '수', '목', '금', '토'];
   const $dayLabel = $week[$today.getDay()];
   return $dayLabel;
@@ -324,10 +365,10 @@ const $nowDateOnlyHour = parseInt(todayTimeString().substr(8, 2)); //시
 const $nowDateOnlyMin = parseInt(todayTimeString().substr(10, 2)); //분
 const $nowDateOnlySec = parseInt(todayTimeString().substr(12, 2)); //초
 const $nowDateDayLabel = $dayLabelPrint(); //요일
-const $afterDateDay = function (day) {
-  return parseInt(todayTimeString(day - 1).substr(0, 8));
+const $addDate = function (day, month, year) {
+  return parseInt(todayTimeString(day, month, year).substr(0, 8));
 };
-//console.log($nowDateFull,$nowDateHour,$nowDateDay,$afterDateDay(7),$nowDateMonth,$nowDateOnlyFullTime,$nowDateOnlyTime,$nowDateOnlyYear,$nowDateOnlyMonth,$nowDateOnlyDay,$nowDateOnlyHour,$nowDateOnlyMin,$nowDateOnlySec)
+//console.log($nowDateFull,$nowDateHour,$nowDateDay,$addDateDay(7),$nowDateMonth,$nowDateOnlyFullTime,$nowDateOnlyTime,$nowDateOnlyYear,$nowDateOnlyMonth,$nowDateOnlyDay,$nowDateOnlyHour,$nowDateOnlyMin,$nowDateOnlySec)
 
 //남은시간 체크 : DdayChk('2020-09-19 07:00:00');
 const DdayChk = function (time) {
@@ -394,18 +435,36 @@ const onlyNumber = function (num) {
   return num.toString().replace(/[^0-9]/g, '');
 };
 
+//영어+숫자만
+const onlyEngNumber = function (num) {
+  return num.toString().replace(/[^A-Za-z0-9]+/g, '');
+};
+
+//영어+한글만
+const onlyEngKor = function (num) {
+  return num.toString().replace(/[^A-Za-z가-힣ㄱ-ㅎㅏ-ㅑ]+/g, '');
+};
+
+const onlyKorean = function (num) {
+  // return num.toString().replace(/[^가-힣ㄱ-ㅎㅏ-ㅑ\s]+/g, ''); //띄워쓰기만
+  // return num.toString().replace(/[A-Za-z0-9]+/g, ''); //영어, 숫자 제외
+  return num.toString().replace(/[^가-힣ㄱ-ㅎㅏ-ㅑ]+/g, ''); //오로지 한글만(기호 띄워쓰기 다 막힘)
+};
+
 //콤마넣기
-const addComma = function (num) {
+const addComma = function (str, decimal) {
   try {
     str += '';
     const x = str.split('.');
     let x1 = x[0];
-    const x2 = x.length > 1 ? '.' + x[1] : '';
+    let x2 = x.length > 1 ? '.' + x[1] : '';
+    if (decimal > 0) x2 = x2.substring(0, decimal + 1);
     const rgx = /(\d+)(\d{3})/;
     while (rgx.test(x1)) {
       x1 = x1.replace(rgx, '$1' + ',' + '$2');
     }
-    return x1 + x2;
+    if (decimal == 0) return x1;
+    else return x1 + x2;
   } catch (error) {
     console.error(error.name + ':' + error.message);
   }
@@ -414,12 +473,6 @@ const addComma = function (num) {
 //콤마빼기
 const removeComma = function (num) {
   return num.toString().replace(/,/gi, '');
-};
-
-// 마스킹
-const maskingText = function (str, count) {
-  const $str = str.toString();
-  return $str.substring(0, count) + $str.substring(count, str.length).replace(/(?<=.{0})./gi, '*');
 };
 
 //배열에서 문자열 찾기
@@ -453,31 +506,8 @@ const imgError = function (img) {
   // $(img).hide();
 };
 
-//****  as-is 함수추가  ******//
-const getPageAjax = function (url, param) {
-  var dfd = $.Deferred();
-
-  $.ajax({
-    type: 'get',
-    url: url,
-    data: param
-  })
-    .done(function (result, textStatus, jqXHR) {
-      dfd.resolve(result, textStatus);
-    })
-    .fail(function (jqXHR, textStatus, errorThrown) {
-      dfd.reject();
-    })
-    .always(function (result, textStatus, jqXHR) {
-      // 항상 실행할 코드
-      // console.log(result);	// 테스트 코드
-    });
-
-  return dfd.promise();
-};
-
 // 전화번호 형태로 반환
-function fn_getTelVal(val) {
+function getTelFormat(val) {
   try {
     return val
       .replace(/[^0-9]/g, '')
@@ -487,8 +517,9 @@ function fn_getTelVal(val) {
     return val;
   }
 }
+
 // 휴대폰 형태로 반환
-function fn_getHpVal(val) {
+function getHpFormat(val) {
   try {
     return val
       .replace(/[^0-9]/g, '')
@@ -496,37 +527,5 @@ function fn_getHpVal(val) {
       .replace('--', '-');
   } catch (e) {
     return val;
-  }
-}
-// 숫자만 반환
-function fn_getOnlyNumber(val) {
-  try {
-    return val.replace(/[^0-9]/g, '');
-  } catch (e) {
-    return val;
-  }
-}
-// 숫자에 콤마 찍기
-function fn_getCommaNumber(val) {
-  return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-// 입력 형식 체크
-function fn_checkValid(type, checkValue) {
-  switch (type) {
-    case 'number':
-      var pattern = /^[0-9]$/i;
-      return pattern.test(checkValue);
-    case 'email':
-      var pattern = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-      return pattern.test(checkValue);
-    case 'tel':
-      var pattern = /(^02|^0505|^1[0-9]{3}|^0[0-9]{2})-([0-9]{3,4})-([0-9]{4})/;
-      return pattern.test(checkValue);
-    case 'hp':
-      var pattern = /(^01[0-9]-([0-9]{3,4})-([0-9]{4}))/;
-      return pattern.test(checkValue);
-    default:
-      return false;
   }
 }

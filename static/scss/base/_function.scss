@@ -3,7 +3,7 @@
 
 // px to rem
 @function rem($value) {
-  $remValue: math.div($value, 16) * 1rem;
+  $remValue: math.div($value, 16) * 10px;
   @return $remValue;
 }
 
@@ -34,7 +34,7 @@
 }
 
 @function -absPX($add) {
-  @return abs($add) * 0.1rem;
+  @return abs($add) * 1px;
 }
 
 @function strip-unit($number) {

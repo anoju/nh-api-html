@@ -115,7 +115,6 @@ caption {
 li {
   list-style: none;
 }
-// pre{white-space:pre-line;}
 code {
   font-family: inherit;
 }
@@ -132,15 +131,18 @@ a {
 a[href*='tel'] {
   cursor: default;
 }
-button,
-input[type='button'] {
+// input[type='button'],
+button {
   border: none;
   background: none;
-  cursor: pointer;
   letter-spacing: inherit;
   padding: 0;
   color: inherit;
   text-align: inherit;
+}
+// input[type='button']:not(:disabled),
+button:not(:disabled) {
+  cursor: pointer;
 }
 optgroup,
 pre {
@@ -151,9 +153,9 @@ em {
   font-style: normal;
 }
 hr {
-  margin: 2rem 0;
+  margin: 20px 0;
   border: 0;
-  border-bottom: 0.1rem solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 sub {
   vertical-align: 0;
@@ -188,7 +190,7 @@ optgroup {
 option:disabled,
 input:disabled,
 button:disabled {
-  background: inherit;
+  background-color: inherit;
   color: inherit;
 }
 button:disabled,
@@ -197,23 +199,23 @@ a.disabled {
 }
 
 ::placeholder {
-  color: var(--placeholder-txt-color);
+  color: $placeholder-txt-color;
   opacity: 1;
 }
 ::-webkit-input-placeholder {
-  color: var(--placeholder-txt-color);
+  color: $placeholder-txt-color;
   opacity: 1;
 }
 :-moz-placeholder {
-  color: var(--placeholder-txt-color);
+  color: $placeholder-txt-color;
   opacity: 1;
 }
 ::-moz-placeholder {
-  color: var(--placeholder-txt-color);
+  color: $placeholder-txt-color;
   opacity: 1;
 }
 :-ms-input-placeholder {
-  color: var(--placeholder-txt-color);
+  color: $placeholder-txt-color;
   opacity: 1;
 }
 
@@ -242,4 +244,8 @@ input:disabled,
 textarea:disabled {
   -webkit-text-fill-color: inherit;
   opacity: 1;
+}
+sup,
+sub {
+  font-size: 0.46em;
 }

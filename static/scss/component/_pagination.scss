@@ -1,31 +1,35 @@
+@use 'sass:math';
+
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 5rem;
-  font-size: 1.4rem;
+  margin-top: 50px;
+  font-size: 14px;
 
   .btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 3.3rem;
-    height: 3.3rem;
-    padding: 0 0.4rem;
-    border: 1px solid #dfdfdf;
-    @include bg-etc(auto 1.4rem);
+    min-width: 33px;
+    height: 33px;
+    padding: 0 4px;
+    border: 1px solid $line-color3;
+    @include bg-etc;
     + .btn {
-      margin-left: 0.4rem;
+      margin-left: 4px;
     }
     &.disabled,
     &:disabled {
       pointer-events: none;
-      // border-color: #dfdfdf;
       opacity: 0.4;
     }
+    &:hover {
+      border-color: $black-color;
+    }
     &[aria-current='page'] {
-      color: #fff;
-      background: #000;
+      color: $white-color;
+      background-color: $black-color;
       pointer-events: none;
     }
     &.first {
@@ -41,8 +45,8 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='14px' height='14px'%3E%3Cpath fill-rule='evenodd' fill='rgb(107, 116, 130)' d='M13.419,7.178 L12.005,8.593 L11.823,8.410 L6.639,13.594 L5.224,12.179 L10.408,6.996 L5.224,1.813 L6.639,0.398 L11.823,5.581 L12.005,5.399 L13.419,6.814 L13.237,6.996 L13.419,7.178 ZM7.003,5.399 L8.418,6.814 L8.236,6.996 L8.418,7.178 L7.003,8.593 L6.821,8.410 L1.637,13.594 L0.222,12.179 L5.406,6.996 L0.222,1.813 L1.637,0.398 L6.821,5.581 L7.003,5.399 Z'/%3E%3C/svg%3E");
     }
   }
-  a.btn + button.btn,
-  button.btn + a.btn {
-    margin-left: 1.2rem;
+  .btn.prev + .btn,
+  .btn + .btn.next {
+    margin-left: 12px;
   }
 }

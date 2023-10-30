@@ -1,37 +1,37 @@
+@use 'sass:math';
+
 // folding
 .folding-list {
+  border-top: 1px solid $line-color3;
+  font-size: 15px;
   > li {
-    border-bottom: 0.1rem solid var(--line-color);
+    border-bottom: 1px solid $line-color3;
   }
   > li,
   > .folding-head {
     position: relative;
   }
   .folding-head {
-    background: #fff;
-    font-size: 1.5rem;
-    line-height: 1.47;
+    background-color: $white-color;
   }
   .folding-btn {
     display: block;
     position: relative;
-    padding: 1.8rem 5.8rem 1.8rem var(--base-padding);
-    font-size: 1.4rem;
-    line-height: 2rem;
-    color: var(--strong-txt-color);
+    padding: 19px 58px 19px $base-padding;
+    line-height: 20px;
+    color: $base-txt-color;
     overflow: hidden;
-    font-weight: 500;
     &:after {
       content: '';
       display: block;
       position: absolute;
-      top: 1.6rem;
-      right: var(--base-padding);
-      width: 2.4rem;
-      height: 2.4rem;
+      top: 50%;
+      right: $base-padding;
+      width: 18px;
+      height: 12px;
+      margin-top: -6px;
       @include bg-etc;
-      // background-image: url(../images/icon/ico-folding.png);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M7 10L12 15L17 10' stroke='%23B0B0B0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      @include ico-toggle;
       @include rotateZ(0);
       transition: 0.3s;
     }
@@ -41,68 +41,120 @@
       }
     }
     &.disabled {
-      background: #f0f0f0;
-      color: #858585;
+      background-color: $input-disabled-bg-color;
+      color: $input-disabled-color;
       &:after {
-        border-color: #858585;
+        border-color: $input-disabled-color;
       }
     }
     &.open {
       font-weight: 500;
-      color: var(--strong-txt-color);
     }
   }
   div.folding-btn {
-    padding-right: var(--base-padding);
+    padding-right: $base-padding;
     &:after {
       content: none;
     }
   }
 
   > li.open {
-    border-bottom-width: 0;
     .folding-btn {
       font-weight: 500;
-      color: var(--strong-txt-color);
     }
   }
   li.open .folding-btn:after,
   .folding-btn.open:after {
+    @include ico-toggle('0,0,0');
     @include rotateZ(180);
-  }
-  li.open .folding-btn.reverse-arr:after,
-  .folding-btn.reverse-arr.open:after {
-    @include rotateZ(0);
   }
   .folding-panel {
     display: none;
     position: relative;
-  }
-  &.notice-dl {
-    border-top: 0.8rem solid #f3f3f3;
-    border-bottom-color: var(--line-color);
-    .folding-head {
-      border-top: 0.1rem solid var(--line-color);
+    img {
+      max-width: 100%;
     }
+  }
+  .folding-file-dl {
+    border-top: 1px solid $line-color3;
+    display: flex;
+    padding: 20px 0;
+    > dt {
+      width: 94px;
+      line-height: 35px;
+      border-radius: 18px;
+      background-color: $white-color;
+      border: 1px solid $line-color3;
+      font-size: 15px;
+      color: $base-txt-color;
+      text-align: center;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    > dd {
+      padding: 8px 0 8px 20px;
+    }
+  }
+  &.faq-list {
     .folding-btn {
       display: flex;
-      align-items: center;
-      padding-top: 2.9rem;
-      padding-bottom: 2.9rem;
-      font-size: 1.5rem;
-      line-height: 2.2rem;
-      margin: 0;
-      &:after {
-        top: 2.8rem;
+      padding-left: 0;
+      .faq-cate {
+        width: 175px;
+        flex-shrink: 0;
+        text-align: center;
       }
-      @include class-begins('i-ico-') {
-        &:first-child {
-          margin-right: 0.8rem;
+      .title {
+        flex: 1 1 auto;
+        padding-left: 20px;
+      }
+    }
+    .folding-panel {
+      border-top: 2px solid $black-color;
+      background-color: $bg-color5;
+      padding: 0 40px;
+      .folding-panel-inner {
+        padding: 30px 0 50px;
+      }
+    }
+    li.open {
+      .folding-btn {
+        font-weight: bold;
+      }
+    }
+  }
+  &.ty-2 {
+    border: none;
+    > li {
+      border: none;
+      // &.open {
+      //   .folding-head {
+      //     border-radius: 0 0 15px 15px;
+      //   }
+      // }
+    }
+    .folding-head {
+      background-color: $lightblue-color2;
+      border-radius: 15px 15px 0 0;
+      transition: border-radius 0.3s;
+      .folding-btn {
+        display: flex;
+        align-items: center;
+        padding: 0 60px 0 28px;
+        height: 64px;
+        font-weight: 500;
+        font-size: 18px;
+        color: $white-color;
+        &:after {
+          @include ico-toggle('255,255,255');
+          right: 30px;
         }
       }
     }
     .folding-panel {
-      padding: 0 var(--base-padding) 3rem;
+      border: 1px solid $line-color3;
+      padding: 40px 29px;
+      border-radius: 0 0 15px 15px;
     }
   }
 }
@@ -115,6 +167,39 @@
   &.open {
     @include class-begins('i-ico-arr') {
       @include rotateZ(180);
+    }
+  }
+}
+
+.folding-tail {
+  position: relative;
+  .folding-tail-panel {
+    display: none;
+  }
+  .folding-tail-btn {
+    text-align: center;
+    a {
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+      height: 25px;
+      padding: 0 10px;
+      border: 1px solid $line-color;
+      border-top-width: 0;
+      border-radius: 0 0 8px 8px;
+      background-color: $bg-color;
+      vertical-align: top;
+      &:after {
+        @include after-append(13px, 8px);
+        margin-left: 5px;
+        @include ico-select;
+        @include bg-etc;
+      }
+      &.open {
+        &:after {
+          @include rotateZ(180);
+        }
+      }
     }
   }
 }
