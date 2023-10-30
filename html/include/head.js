@@ -7,7 +7,7 @@
       loot += '../';
     }
   }
-  let str = `<link rel="shortcut icon" type="image/x-icon" href="${loot}images/favicon.png" />
+  let str = `<link rel="shortcut icon" type="image/x-icon" href="${loot}static/images/favicon.ico" />
   <link href="${loot}static/css/front.min.css" rel="stylesheet" />
   <script type="text/javascript" src="${loot}static/js/lib/jquery-3.7.0.min.js"></script>
   <script type="text/javascript" src="${loot}static/js/lib/jquery-ui.1.13.2.min.js"></script>
