@@ -2635,6 +2635,7 @@ ui.form = {
     const nextYrBtn = $('<a href="#" role="button" class="ui-datepicker-next-y ' + $focusClass + '" aria-label="다음년도 보기"><span>다음년도 보기</span></a>');
     const $monthName = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
     const $dayName = ['일', '월', '화', '수', '목', '금', '토'];
+    const $dayNameFull = $dayName.map((day) => day + '요일');
 
     const calendarOpen = function (target, ob) {
       const $focus = $(':focus');
@@ -2782,7 +2783,7 @@ ui.form = {
           buttonText: '기간조회',
           monthNames: $monthName,
           monthNamesShort: $monthName,
-          dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+          dayNames: $dayNameFull,
           dayNamesMin: $dayName,
           dateFormat: 'yy-mm-dd',
           yearSuffix: ' ',
