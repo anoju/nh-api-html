@@ -2629,10 +2629,20 @@ ui.form = {
   },
   jqCalendar: function (element, defaultDate) {
     //jquery UI datepicker
-    const prevYrBtn = $('<a href="#" role="button" class="ui-datepicker-prev-y" aria-label="이전년도 보기"><span>이전년도 보기</span></a>');
-    const nextYrBtn = $('<a href="#" role="button" class="ui-datepicker-next-y" aria-label="다음년도 보기"><span>다음년도 보기</span></a>');
-    const calendarOpen = function (target, ob, delay) {
-      if (delay == undefined || delay == '') delay = 5;
+    const $disabledClass = 'ui-state-disabled';
+    const $focusClass = 'ui-datepicker-btn';
+    const prevYrBtn = $('<a href="#" role="button" class="ui-datepicker-prev-y ' + $focusClass + '" aria-label="이전년도 보기"><span>이전년도 보기</span></a>');
+    const nextYrBtn = $('<a href="#" role="button" class="ui-datepicker-next-y ' + $focusClass + '" aria-label="다음년도 보기"><span>다음년도 보기</span></a>');
+    const $monthName = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+    const $dayName = ['일', '월', '화', '수', '목', '금', '토'];
+
+    const calendarOpen = function (target, ob) {
+      const $focus = $(':focus');
+      let prevFocusClass = '';
+      if ($focus.hasClass($focusClass)) {
+        const $class = $focus.attr('class').split(' ');
+        prevFocusClass = $class[0];
+      }
       setTimeout(function () {
         const $isInline = ob.inline ? true : false;
         const $calendar = $isInline ? '#' + ob.id : '#' + ob.dpDiv[0].id;
@@ -2655,8 +2665,8 @@ ui.form = {
           //팝업달력
         }
 
-        $header.find('.ui-datepicker-year').attr('title', '년 선택');
-        $header.find('.ui-datepicker-month').attr('title', '월 선택');
+        $header.find('select.ui-datepicker-year').addClass($focusClass);
+        $header.find('select.ui-datepicker-month').addClass($focusClass);
         $container.find('td>a').attr('role', 'button');
         if ($container.find('.ui-state-highlight').length) $container.find('.ui-state-highlight').attr('title', '오늘 일자');
         if ($container.find('.ui-state-active').length) $container.find('.ui-state-active').attr('title', '현재 달력에서 선택된 일자');
@@ -2668,77 +2678,82 @@ ui.form = {
             role: 'button',
             'aria-label': '이전달 보기'
           })
+          .addClass($focusClass)
           .before(prevYrBtn);
-        const $prevYearBtn = $header.find('.ui-datepicker-prev-y');
         if ($selectedYear <= $minY) {
-          $prevYearBtn.addClass('ui-state-disabled').attr('aria-disabled', true);
+          prevYrBtn.addClass($disabledClass).attr('aria-disabled', true);
         } else {
-          $prevYearBtn.removeClass('ui-state-disabled').removeAttr('aria-disabled');
+          prevYrBtn.removeClass($disabledClass).removeAttr('aria-disabled');
         }
         $nextMonthBtn
           .attr({
             role: 'button',
             'aria-label': '다음달 보기'
           })
+          .addClass($focusClass)
           .after(nextYrBtn);
-        const $nextYearBtn = $header.find('.ui-datepicker-next-y');
+
         if ($selectedYear >= $maxY) {
-          $nextYearBtn.addClass('ui-state-disabled').attr('aria-disabled', true);
+          nextYrBtn.addClass($disabledClass).attr('aria-disabled', true);
         } else {
-          $nextYearBtn.removeClass('ui-state-disabled').removeAttr('aria-disabled');
+          nextYrBtn.removeClass($disabledClass).removeAttr('aria-disabled');
         }
-        if ($prevMonthBtn.hasClass('ui-state-disabled')) {
+        if ($prevMonthBtn.hasClass($disabledClass)) {
           $prevMonthBtn.attr('aria-disabled', true);
         } else {
           $prevMonthBtn.removeAttr('aria-disabled');
         }
-        if ($nextMonthBtn.hasClass('ui-state-disabled')) {
+        if ($nextMonthBtn.hasClass($disabledClass)) {
           $nextMonthBtn.attr('aria-disabled', true);
         } else {
           $nextMonthBtn.removeAttr('aria-disabled');
         }
 
-        $header.find('.ui-datepicker-prev, .ui-datepicker-next').attr('href', '#');
+        // $header.find('.ui-datepicker-prev, .ui-datepicker-next').attr('href', '#');
         if (!$isInline) {
           if (ui.mobile.any()) {
             $($calendar).find('.title').attr('tabindex', -1).focus();
             if ($(ui.className.mainWrap + ':visible').length) $(ui.className.mainWrap + ':visible').attr('aria-hidden', true);
           } else {
-            $($calendar).attr('tabindex', 0).focus();
+            if (prevFocusClass)
+              $($calendar)
+                .find('.' + prevFocusClass)
+                .focus();
+            else $($calendar).attr('tabindex', 0).focus();
             Layer.focusMove($calendar);
           }
         }
 
-        $header
-          .find('.ui-datepicker-prev-y')
-          .unbind('click')
-          .bind('click', function () {
-            if (!$(this).hasClass('ui-state-disabled')) $.datepicker._adjustDate(target, -1, 'Y');
-          });
-        $header
-          .find('.ui-datepicker-next-y')
-          .unbind('click')
-          .bind('click', function () {
-            if (!$(this).hasClass('ui-state-disabled')) $.datepicker._adjustDate(target, +1, 'Y');
-          });
-      }, delay);
+        prevYrBtn.unbind('click').bind('click', function () {
+          if (!$(this).hasClass($disabledClass)) $.datepicker._adjustDate(target, -1, 'Y');
+        });
+        nextYrBtn.unbind('click').bind('click', function () {
+          if (!$(this).hasClass($disabledClass)) $.datepicker._adjustDate(target, +1, 'Y');
+        });
+      }, 5);
     };
-    const calendarClose = function (target, ob, date) {
+    const calendarClose = function (ob, date) {
       const $isInline = ob.inline ? true : false;
       const $calendar = $isInline ? '#' + ob.id : '#' + ob.dpDiv[0].id;
       const $cal = $($calendar);
+      let $input = $(ob.input);
+      const $prevVal = $input.data('prevVal');
+      const $val = $input.val();
       if ($isInline) {
         //인라인달력
-        const $date = date;
-        const $input = $cal.find('.ui-datepicker-inline-inp');
-        if ($input.length) $input.val($date);
+        $input = $cal.find('.ui-datepicker-inline-inp');
+        if ($input.length) $input.val(date);
       } else {
         //팝업달력
-        $(ob.input).change();
         if ($(ui.className.mainWrap + ':visible').length) $(ui.className.mainWrap + ':visible').removeAttr('aria-hidden');
         $cal.find('.title').removeAttr('tabindex');
-        $(target).next('.ui-datepicker-trigger').focus();
+        if ($val === '' || $val === $prevVal) {
+          $input.next('.ui-datepicker-trigger').focus();
+        } else {
+          $input.focus();
+        }
         // if ($(target).data('isReadonly') != true) $(target).prop('readonly', false);
+        $input.data('prevVal', $input.val()).change();
       }
     };
 
@@ -2746,37 +2761,30 @@ ui.form = {
       $(element).each(function () {
         const $this = $(this);
         if ($this.hasClass('_inited')) return;
-        let $minDate = $(this).data('min');
-        let $maxDate = $(this).data('max');
-        let $defaultDate = $(this).data('default');
-        let $range = $(this).data('range');
+        let $minDate = $this.data('min');
         if ($minDate == undefined) $minDate = '-100y';
+        let $maxDate = $this.data('max');
         if ($maxDate == undefined) $maxDate = '+100y';
-        if ($defaultDate == undefined) {
-          $defaultDate = null;
-        } else {
-          if ($this.val() == '') $this.val($defaultDate);
-        }
-        if (!!defaultDate) $defaultDate = defaultDate;
+        let $range = $this.data('range');
         if ($range == undefined) $range = '-100:+100';
+        const $setDate = $this.data('setdate');
         const $inlineTag = 'div, span';
         let $isInline = false;
         if ($this.is($inlineTag)) $isInline = true;
-        $this.datepicker({
+        const $datepickerOption = {
           minDate: $minDate,
           maxDate: $maxDate,
-          defaultDate: $defaultDate,
+          yearRange: $range,
           closeText: '닫기',
           prevText: '이전달 보기',
           nextText: '다음달 보기',
           currentText: '오늘',
           buttonText: '기간조회',
-          monthNames: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
-          monthNamesShort: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+          monthNames: $monthName,
+          monthNamesShort: $monthName,
           dayNames: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-          dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesMin: $dayName,
           dateFormat: 'yy-mm-dd',
-          yearRange: $range,
           yearSuffix: ' ',
           showMonthAfterYear: true,
           showButtonPanel: true,
@@ -2796,9 +2804,10 @@ ui.form = {
               }
             }
             */
+            if ($setDate && $this.val() === '') $this.datepicker('setDate', $setDate);
 
             //기간 선택
-            const $closest = $(this).closest('.date_wrap');
+            const $closest = $this.closest('.date_wrap');
             if ($closest.length && $closest.find(element).length == 2) {
               const $idx = $closest.find(element).index(this);
               const $first = $closest.find(element).eq(0);
@@ -2815,14 +2824,18 @@ ui.form = {
           },
           onSelect: function (d, ob) {
             //선택할때
-            calendarClose($this, ob, d);
-            if ($isInline) calendarOpen($this, ob);
+            if ($isInline) {
+              calendarClose(ob, d);
+              calendarOpen($this, ob);
+            }
           },
           onClose: function (d, ob) {
             //닫을때
-            calendarClose($this, ob, d);
+            calendarClose(ob, d, true);
           }
-        });
+        };
+        $this.data('prevVal', $this.val());
+        $this.datepicker($datepickerOption);
         $this.addClass('_inited');
         if ($isInline) {
           const $ob = $.datepicker._getInst($this[0]);
