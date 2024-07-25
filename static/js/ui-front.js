@@ -1389,14 +1389,14 @@ ui.tab = {
         let $active;
         if ($hashActive) {
           $active = $hashActive;
-        } else if ($this.find(ui.tab.className.active.slice(1)).length) {
-          $active = $this.find(ui.tab.className.active.slice(1)).find('a');
+        } else if ($this.find(ui.tab.className.active).length) {
+          $active = $this.find(ui.tab.className.active).find('a');
         } else {
           $active = $this.find('li').eq(0).find('a');
         }
         ui.tab.tabActive($active);
         const $href = $active.attr('href');
-        ui.tab.panelActive($href);
+        ui.tab.panelActive($href, $tarAry.join(','));
       });
     }
 
@@ -2805,7 +2805,6 @@ ui.form = {
               }
             }
             */
-            if ($setDate && $this.val() === '') $this.datepicker('setDate', $setDate);
 
             //기간 선택
             const $closest = $this.closest('.date_wrap');
@@ -2837,6 +2836,7 @@ ui.form = {
         };
         $this.data('prevVal', $this.val());
         $this.datepicker($datepickerOption);
+
         $this.addClass('_inited');
         if ($isInline) {
           const $ob = $.datepicker._getInst($this[0]);
